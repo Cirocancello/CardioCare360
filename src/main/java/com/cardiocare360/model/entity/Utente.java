@@ -2,10 +2,15 @@ package com.cardiocare360.model.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "utente")
-public class Utente {
+public class Utente implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,17 +35,15 @@ public class Utente {
     @Column(name = "data_registrazione")
     private LocalDateTime dataRegistrazione = LocalDateTime.now();
 
-    // ENUM Ruolo
     public enum Ruolo {
         PAZIENTE,
         MEDICO,
         ADMIN
     }
 
-    // Costruttore vuoto richiesto da JPA
     public Utente() {}
 
-    // Getter e Setter (puoi usare Lombok se vuoi)
+    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -53,6 +56,7 @@ public class Utente {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
+    @Override
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
@@ -61,4 +65,36 @@ public class Utente {
 
     public LocalDateTime getDataRegistrazione() { return dataRegistrazione; }
     public void setDataRegistrazione(LocalDateTime dataRegistrazione) { this.dataRegistrazione = dataRegistrazione; }
+
+    // SPRING SECURITY
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(); // Nessun ruolo richiesto per ora
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // Identificatore dell'utente
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
