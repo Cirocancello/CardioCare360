@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "utente")
+@Inheritance(strategy = InheritanceType.JOINED)  // 🔥 Fondamentale per JOINED con Paziente/Medico/Admin
 public class Utente implements UserDetails {
 
     @Id
@@ -43,7 +44,10 @@ public class Utente implements UserDetails {
 
     public Utente() {}
 
+    // -------------------------
     // Getter e Setter
+    // -------------------------
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -66,11 +70,13 @@ public class Utente implements UserDetails {
     public LocalDateTime getDataRegistrazione() { return dataRegistrazione; }
     public void setDataRegistrazione(LocalDateTime dataRegistrazione) { this.dataRegistrazione = dataRegistrazione; }
 
+    // -------------------------
     // SPRING SECURITY
+    // -------------------------
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(); // Nessun ruolo richiesto per ora
+        return List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + this.ruolo.name()));
     }
 
     @Override
@@ -79,22 +85,14 @@ public class Utente implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    public boolean isEnabled() { return true; }
 }

@@ -1,28 +1,27 @@
-package com.cardiocare360.model.entity;
+package com.cardiocare360.model.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "paziente")
-@PrimaryKeyJoinColumn(name = "id")   // 🔥 Fondamentale per JOINED
-public class Paziente extends Utente {
+public class PazienteUpdateDTO {
 
-    @Column(name = "codice_fiscale", nullable = false, unique = true, length = 16)
+    private String nome;
+    private String cognome;
+
     private String codiceFiscale;
-
-    @Column(name = "data_nascita", nullable = false)
     private LocalDate dataNascita;
 
-    @Column(length = 20)
     private String telefono;
-
-    @Column(length = 255)
     private String indirizzo;
 
-    public Paziente() {}
+    public PazienteUpdateDTO() {}
 
     // Getter e Setter
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+
+    public String getCognome() { return cognome; }
+    public void setCognome(String cognome) { this.cognome = cognome; }
+
     public String getCodiceFiscale() { return codiceFiscale; }
     public void setCodiceFiscale(String codiceFiscale) { this.codiceFiscale = codiceFiscale; }
 
