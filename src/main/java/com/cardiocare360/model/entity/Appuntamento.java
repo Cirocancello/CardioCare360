@@ -1,11 +1,18 @@
 package com.cardiocare360.model.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "appuntamento")
 public class Appuntamento {
+
+    public enum StatoAppuntamento {
+        PRENOTATO,
+        COMPLETATO,
+        ANNULLATO
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,17 +26,19 @@ public class Appuntamento {
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "slot_id", nullable = false, unique = true)
-    private SlotOrario slot;
+    @Column(name = "data_appuntamento", nullable = false)
+    private LocalDate dataAppuntamento;
 
-    @Column(nullable = false, length = 20)
-    private String stato; // es: "PRENOTATO", "COMPLETATO", "ANNULLATO"
+    @Column(name = "ora_appuntamento", nullable = false)
+    private LocalTime oraAppuntamento;
 
-    @Column(name = "data_creazione", nullable = false)
-    private LocalDateTime dataCreazione = LocalDateTime.now();
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatoAppuntamento stato;
 
-    // Costruttore vuoto richiesto da JPA
+    @Column(columnDefinition = "TEXT")
+    private String note;
+
     public Appuntamento() {}
 
     // Getter e Setter
@@ -42,12 +51,15 @@ public class Appuntamento {
     public Medico getMedico() { return medico; }
     public void setMedico(Medico medico) { this.medico = medico; }
 
-    public SlotOrario getSlot() { return slot; }
-    public void setSlot(SlotOrario slot) { this.slot = slot; }
+    public LocalDate getDataAppuntamento() { return dataAppuntamento; }
+    public void setDataAppuntamento(LocalDate dataAppuntamento) { this.dataAppuntamento = dataAppuntamento; }
 
-    public String getStato() { return stato; }
-    public void setStato(String stato) { this.stato = stato; }
+    public LocalTime getOraAppuntamento() { return oraAppuntamento; }
+    public void setOraAppuntamento(LocalTime oraAppuntamento) { this.oraAppuntamento = oraAppuntamento; }
 
-    public LocalDateTime getDataCreazione() { return dataCreazione; }
-    public void setDataCreazione(LocalDateTime dataCreazione) { this.dataCreazione = dataCreazione; }
+    public StatoAppuntamento getStato() { return stato; }
+    public void setStato(StatoAppuntamento stato) { this.stato = stato; }
+
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 }

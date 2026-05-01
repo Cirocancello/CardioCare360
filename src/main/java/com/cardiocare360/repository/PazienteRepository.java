@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface PazienteRepository extends JpaRepository<Paziente, Long> {
 
     Optional<Paziente> findByCodiceFiscale(String codiceFiscale);
+
+    Optional<Paziente> findByEmail(String email);
 }
