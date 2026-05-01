@@ -1,19 +1,29 @@
-package com.cardiocare360.model.entity;
+package com.cardiocare360.model.dto;
 
-import jakarta.persistence.*;
+public class MedicoUpdateDTO {
 
-@Entity
-@Table(name = "medico")
-@PrimaryKeyJoinColumn(name = "id")
-public class Medico extends Utente {
-
-    @Column(nullable = false, length = 100)
+    private String nome;
+    private String cognome;
     private String specializzazione;
-
-    @Column(name = "numero_licenza", nullable = false, unique = true, length = 50)
     private String numeroLicenza;
 
-    public Medico() {}
+    public MedicoUpdateDTO() {}
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCognome() {
+        return cognome;
+    }
+
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
+    }
 
     public String getSpecializzazione() {
         return specializzazione;

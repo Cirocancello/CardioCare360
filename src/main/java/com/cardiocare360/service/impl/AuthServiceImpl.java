@@ -9,7 +9,9 @@ import com.cardiocare360.security.jwt.JwtUtil;
 import com.cardiocare360.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+    private final AuthenticationManager authenticationManager;
     private final UtenteRepository utenteRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -33,8 +36,6 @@ public class AuthServiceImpl implements AuthService {
         utente.setCognome(request.getCognome());
         utente.setEmail(request.getEmail());
         utente.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        // Conversione STRINGA → ENUM
         utente.setRuolo(Utente.Ruolo.valueOf(request.getRuolo()));
 
         utenteRepository.save(utente);
@@ -50,12 +51,26 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(LoginRequest request) {
 
-        Utente utente = utenteRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Email o password errati"));
+        System.out.println(">>> AuthServiceImpl.login() chiamato con email = " + request.getEmail());
 
-        if (!passwordEncoder.matches(request.getPassword(), utente.getPassword())) {
-            throw new BadCredentialsException("Email o password errati");
+        // ⭐ BLOCCO TRY/CATCH PER CAPIRE PERCHÉ FALLISCE L’AUTENTICAZIONE
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+            System.out.println(">>> Autenticazione riuscita per email = " + request.getEmail());
+        } catch (Exception e) {
+            System.out.println(">>> AUTENTICAZIONE FALLITA: " 
+                    + e.getClass().getSimpleName() 
+                    + " - " + e.getMessage());
+            throw e;
         }
+
+        Utente utente = utenteRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
         String token = jwtUtil.generateToken(
                 utente.getEmail(),

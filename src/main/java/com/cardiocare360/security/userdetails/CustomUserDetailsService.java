@@ -1,5 +1,3 @@
-//l CustomUserDetailsService, necessario perché Spring Security possa caricare l’utente dal database quando il token JWT è valido.
-
 package com.cardiocare360.security.userdetails;
 
 import com.cardiocare360.repository.UtenteRepository;
@@ -17,6 +15,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        // ⭐ STAMPA DI DEBUG
+        System.out.println(">>> CustomUserDetailsService: sto caricando utente con email = " + email);
+
         return utenteRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato: " + email));
     }

@@ -1,5 +1,3 @@
-//Questo filtro intercetta ogni richiesta, legge il token e imposta l’utente autenticato nel SecurityContext.
-
 package com.cardiocare360.security.jwt;
 
 import com.cardiocare360.repository.UtenteRepository;
@@ -29,6 +27,18 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        // ⭐ STAMPE DI DEBUG
+        System.out.println(">>> AUTH HEADER: " + request.getHeader("Authorization"));
+        System.out.println(">>> URI: [" + request.getRequestURI() + "]");
+
+        String uri = request.getRequestURI();
+
+        // ⭐ Escludi SEMPRE login e register
+        if (uri.startsWith("/auth/login") || uri.startsWith("/auth/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -38,9 +48,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
         String email = jwtUtil.extractEmail(token);
-        
-        System.out.println("JWT FILTER → email estratta: " + email);
-
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -50,7 +57,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                utente, null, utente.getAuthorities()
+                                utente,
+                                null,
+                                utente.getAuthorities()
                         );
 
                 authToken.setDetails(
@@ -58,9 +67,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                
-                System.out.println("JWT FILTER → utente autenticato: " + utente.getEmail());
-
             }
         }
 
