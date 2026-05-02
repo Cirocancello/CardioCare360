@@ -36,8 +36,17 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // ⭐ Preflight libero
-                        .requestMatchers("/auth/**").permitAll()                 // ⭐ Login/Register pubblici
+
+                        // ⭐ Preflight libero
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // ⭐ Login/Register pubblici
+                        .requestMatchers("/auth/**").permitAll()
+
+                        // ⭐ Endpoint pubblici per generazione e lettura slot
+                        .requestMatchers("/disponibilita/slot/**").permitAll()
+
+                        // ⭐ Tutto il resto richiede autenticazione
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

@@ -15,8 +15,8 @@ public class DisponibilitaMedico {
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
-    @Column(nullable = false, length = 20)
-    private String giorno; // es: "LUNEDI", "MARTEDI", ecc.
+    @Column(name = "giorno_settimana", nullable = false, length = 10)
+    private String giornoSettimana; // es: "LUN", "MAR", "MER"
 
     @Column(name = "ora_inizio", nullable = false)
     private LocalTime oraInizio;
@@ -24,18 +24,16 @@ public class DisponibilitaMedico {
     @Column(name = "ora_fine", nullable = false)
     private LocalTime oraFine;
 
-    // Costruttore vuoto richiesto da JPA
     public DisponibilitaMedico() {}
 
-    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public Medico getMedico() { return medico; }
     public void setMedico(Medico medico) { this.medico = medico; }
 
-    public String getGiorno() { return giorno; }
-    public void setGiorno(String giorno) { this.giorno = giorno; }
+    public String getGiornoSettimana() { return giornoSettimana; }
+    public void setGiornoSettimana(String giornoSettimana) { this.giornoSettimana = giornoSettimana; }
 
     public LocalTime getOraInizio() { return oraInizio; }
     public void setOraInizio(LocalTime oraInizio) { this.oraInizio = oraInizio; }
