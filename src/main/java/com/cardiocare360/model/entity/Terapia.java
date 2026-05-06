@@ -31,6 +31,9 @@ public class Terapia {
     @Column(nullable = false, length = 255)
     private String dosaggio;
 
+    @Column(length = 500)
+    private String note;
+
     @Column(name = "data_inizio", nullable = false)
     private LocalDate dataInizio;
 
@@ -40,10 +43,8 @@ public class Terapia {
     @Column(name = "data_creazione", nullable = false)
     private LocalDateTime dataCreazione = LocalDateTime.now();
 
-    // Costruttore vuoto richiesto da JPA
     public Terapia() {}
 
-    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -61,6 +62,9 @@ public class Terapia {
 
     public String getDosaggio() { return dosaggio; }
     public void setDosaggio(String dosaggio) { this.dosaggio = dosaggio; }
+
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 
     public LocalDate getDataInizio() { return dataInizio; }
     public void setDataInizio(LocalDate dataInizio) { this.dataInizio = dataInizio; }
