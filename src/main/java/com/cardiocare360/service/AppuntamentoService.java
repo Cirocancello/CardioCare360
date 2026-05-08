@@ -1,8 +1,8 @@
 package com.cardiocare360.service;
 
-import com.cardiocare360.model.dto.AppuntamentoDTO;
-
 import java.util.List;
+
+import com.cardiocare360.model.response.AppuntamentoDTO;
 
 public interface AppuntamentoService {
 

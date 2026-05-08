@@ -1,4 +1,4 @@
-package com.cardiocare360.model.dto;
+package com.cardiocare360.model.response;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

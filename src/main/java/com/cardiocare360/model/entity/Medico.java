@@ -1,10 +1,13 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "medico")
 @PrimaryKeyJoinColumn(name = "id")
+@JsonIgnoreProperties({"notifiche"}) // 🔥 evita loop Medico → Notifica → Medico
 public class Medico extends Utente {
 
     @Column(nullable = false, length = 100)
@@ -12,6 +15,11 @@ public class Medico extends Utente {
 
     @Column(name = "numero_licenza", nullable = false, unique = true, length = 50)
     private String numeroLicenza;
+
+    // ⭐ Relazione con Notifica (necessaria!)
+    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("medico")
+    private List<Notifica> notifiche;
 
     public Medico() {}
 
@@ -29,5 +37,13 @@ public class Medico extends Utente {
 
     public void setNumeroLicenza(String numeroLicenza) {
         this.numeroLicenza = numeroLicenza;
+    }
+
+    public List<Notifica> getNotifiche() {
+        return notifiche;
+    }
+
+    public void setNotifiche(List<Notifica> notifiche) {
+        this.notifiche = notifiche;
     }
 }

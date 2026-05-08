@@ -1,8 +1,8 @@
 package com.cardiocare360.model.mapper;
 
-import com.cardiocare360.model.dto.RefertoRequest;
-import com.cardiocare360.model.dto.RefertoResponse;
 import com.cardiocare360.model.entity.Referto;
+import com.cardiocare360.model.request.RefertoRequest;
+import com.cardiocare360.model.response.RefertoResponse;
 import com.cardiocare360.model.entity.Medico;
 import com.cardiocare360.model.entity.Paziente;
 

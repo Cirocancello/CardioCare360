@@ -43,8 +43,14 @@ public class SecurityConfig {
                         // ⭐ Login/Register pubblici
                         .requestMatchers("/auth/**").permitAll()
 
-                        // ⭐ Endpoint pubblici per generazione e lettura slot
+                        // ⭐ Endpoint pubblici per disponibilità slot
                         .requestMatchers("/disponibilita/slot/**").permitAll()
+
+                        // ⭐ Endpoint pubblici per notifiche
+                        .requestMatchers("/api/notifiche/**").permitAll()
+
+                        // ⭐ MESSAGGI: accessibili a Medico e Paziente
+                        .requestMatchers("/messaggi/**").hasAnyRole("MEDICO", "PAZIENTE")
 
                         // ⭐ Tutto il resto richiede autenticazione
                         .anyRequest().authenticated()

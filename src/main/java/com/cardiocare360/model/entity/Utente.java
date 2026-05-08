@@ -1,5 +1,6 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -10,7 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "utente")
-@Inheritance(strategy = InheritanceType.JOINED)  // 🔥 Fondamentale per JOINED con Paziente/Medico/Admin
+@Inheritance(strategy = InheritanceType.JOINED)
+@JsonIgnoreProperties({"notifiche"}) // 🔥 evita ricorsioni Notifica → Utente → Notifica
 public class Utente implements UserDetails {
 
     @Id
@@ -35,6 +37,11 @@ public class Utente implements UserDetails {
 
     @Column(name = "data_registrazione")
     private LocalDateTime dataRegistrazione = LocalDateTime.now();
+
+    // ⭐ Relazione con Notifica (mancava!)
+    @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("utente") // evita loop Notifica → Utente → Notifica
+    private List<Notifica> notifiche;
 
     public enum Ruolo {
         PAZIENTE,
@@ -70,6 +77,9 @@ public class Utente implements UserDetails {
     public LocalDateTime getDataRegistrazione() { return dataRegistrazione; }
     public void setDataRegistrazione(LocalDateTime dataRegistrazione) { this.dataRegistrazione = dataRegistrazione; }
 
+    public List<Notifica> getNotifiche() { return notifiche; }
+    public void setNotifiche(List<Notifica> notifiche) { this.notifiche = notifiche; }
+
     // -------------------------
     // SPRING SECURITY
     // -------------------------
@@ -81,7 +91,7 @@ public class Utente implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email; // Identificatore dell'utente
+        return this.email;
     }
 
     @Override

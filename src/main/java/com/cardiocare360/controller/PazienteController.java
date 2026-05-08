@@ -1,7 +1,7 @@
 package com.cardiocare360.controller;
 
-import com.cardiocare360.model.dto.PazienteDTO;
-import com.cardiocare360.model.dto.PazienteUpdateDTO;
+import com.cardiocare360.model.request.PazienteUpdateDTO;
+import com.cardiocare360.model.response.PazienteDTO;
 import com.cardiocare360.model.response.PazienteResponse;
 import com.cardiocare360.service.PazienteService;
 import org.springframework.beans.factory.annotation.Autowired;

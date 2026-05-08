@@ -1,8 +1,8 @@
 package com.cardiocare360.service.impl;
 
-import com.cardiocare360.model.dto.MedicoDTO;
-import com.cardiocare360.model.dto.MedicoUpdateDTO;
 import com.cardiocare360.model.entity.Medico;
+import com.cardiocare360.model.request.MedicoUpdateDTO;
+import com.cardiocare360.model.response.MedicoResponse;
 import com.cardiocare360.repository.MedicoRepository;
 import com.cardiocare360.service.MedicoService;
 import org.springframework.stereotype.Service;
@@ -17,15 +17,15 @@ public class MedicoServiceImpl implements MedicoService {
     }
 
     @Override
-    public MedicoDTO getMedicoById(Long id) {
+    public MedicoResponse getMedicoById(Long id) {
         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
-        return convertToDTO(medico);
+        return convertToResponse(medico);
     }
 
     @Override
-    public MedicoDTO updateMedico(Long id, MedicoUpdateDTO updateDTO) {
+    public MedicoResponse updateMedico(Long id, MedicoUpdateDTO updateDTO) {
         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
@@ -47,16 +47,16 @@ public class MedicoServiceImpl implements MedicoService {
 
         medicoRepository.save(medico);
 
-        return convertToDTO(medico);
+        return convertToResponse(medico);
     }
 
-    private MedicoDTO convertToDTO(Medico medico) {
-        MedicoDTO dto = new MedicoDTO();
-        dto.setId(medico.getId());
-        dto.setNomeCompleto(medico.getNome() + " " + medico.getCognome());
-        dto.setEmail(medico.getEmail());
-        dto.setSpecializzazione(medico.getSpecializzazione());
-        dto.setNumeroLicenza(medico.getNumeroLicenza());
-        return dto;
+    private MedicoResponse convertToResponse(Medico medico) {
+        MedicoResponse response = new MedicoResponse();
+        response.setId(medico.getId());
+        response.setNomeCompleto(medico.getNome() + " " + medico.getCognome());
+        response.setEmail(medico.getEmail());
+        response.setSpecializzazione(medico.getSpecializzazione());
+        response.setNumeroLicenza(medico.getNumeroLicenza());
+        return response;
     }
 }

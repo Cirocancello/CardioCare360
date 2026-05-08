@@ -3,9 +3,9 @@ package com.cardiocare360.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cardiocare360.model.dto.PazienteDTO;
-import com.cardiocare360.model.dto.PazienteUpdateDTO;
 import com.cardiocare360.model.entity.Paziente;
+import com.cardiocare360.model.request.PazienteUpdateDTO;
+import com.cardiocare360.model.response.PazienteDTO;
 import com.cardiocare360.repository.PazienteRepository;
 import com.cardiocare360.service.PazienteService;
 

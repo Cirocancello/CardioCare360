@@ -1,10 +1,12 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifica")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Notifica {
 
     @Id
@@ -13,6 +15,14 @@ public class Notifica {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "utente_id", nullable = false)
+    @JsonIgnoreProperties({
+            "password",
+            "ruolo",
+            "appuntamenti",
+            "terapie",
+            "referti",
+            "notifiche"
+    })
     private Utente utente;
 
     @Column(nullable = false, length = 255)
@@ -29,35 +39,87 @@ public class Notifica {
 
     @ManyToOne
     @JoinColumn(name = "appuntamento_id")
-    private Appuntamento appuntamento; // opzionale
+    @JsonIgnoreProperties({
+            "paziente",
+            "medico",
+            "slot",
+            "notifiche"
+    })
+    private Appuntamento appuntamento;
 
     @ManyToOne
     @JoinColumn(name = "parametro_id")
-    private ParametroClinico parametroClinico; // opzionale
+    @JsonIgnoreProperties({
+            "paziente",
+            "notifiche"
+    })
+    private ParametroClinico parametroClinico;
 
     public Notifica() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // GETTER & SETTER COMPLETI
 
-    public Utente getUtente() { return utente; }
-    public void setUtente(Utente utente) { this.utente = utente; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getTitolo() { return titolo; }
-    public void setTitolo(String titolo) { this.titolo = titolo; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getMessaggio() { return messaggio; }
-    public void setMessaggio(String messaggio) { this.messaggio = messaggio; }
+    public Utente getUtente() {
+        return utente;
+    }
 
-    public boolean isLetto() { return letto; }
-    public void setLetto(boolean letto) { this.letto = letto; }
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
 
-    public LocalDateTime getDataCreazione() { return dataCreazione; }
-    public void setDataCreazione(LocalDateTime dataCreazione) { this.dataCreazione = dataCreazione; }
+    public String getTitolo() {
+        return titolo;
+    }
 
-    public Appuntamento getAppuntamento() { return appuntamento; }
-    public void setAppuntamento(Appuntamento appuntamento) { this.appuntamento = appuntamento; }
+    public void setTitolo(String titolo) {
+        this.titolo = titolo;
+    }
 
-    public ParametroClinico getParametroClinico() { return parametroClinico; }
-    public void setParametroClinico(ParametroClinico parametroClinico) { this.parametroClinico = parametroClinico; }
+    public String getMessaggio() {
+        return messaggio;
+    }
+
+    public void setMessaggio(String messaggio) {
+        this.messaggio = messaggio;
+    }
+
+    public boolean isLetto() {
+        return letto;
+    }
+
+    public void setLetto(boolean letto) {
+        this.letto = letto;
+    }
+
+    public LocalDateTime getDataCreazione() {
+        return dataCreazione;
+    }
+
+    public void setDataCreazione(LocalDateTime dataCreazione) {
+        this.dataCreazione = dataCreazione;
+    }
+
+    public Appuntamento getAppuntamento() {
+        return appuntamento;
+    }
+
+    public void setAppuntamento(Appuntamento appuntamento) {
+        this.appuntamento = appuntamento;
+    }
+
+    public ParametroClinico getParametroClinico() {
+        return parametroClinico;
+    }
+
+    public void setParametroClinico(ParametroClinico parametroClinico) {
+        this.parametroClinico = parametroClinico;
+    }
 }

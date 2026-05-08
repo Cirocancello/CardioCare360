@@ -1,11 +1,11 @@
 package com.cardiocare360.service;
 
-import com.cardiocare360.model.dto.MedicoDTO;
-import com.cardiocare360.model.dto.MedicoUpdateDTO;
+import com.cardiocare360.model.request.MedicoUpdateDTO;
+import com.cardiocare360.model.response.MedicoResponse;
 
 public interface MedicoService {
 
-    MedicoDTO getMedicoById(Long id);
+    MedicoResponse getMedicoById(Long id);
 
-    MedicoDTO updateMedico(Long id, MedicoUpdateDTO updateDTO);
+    MedicoResponse updateMedico(Long id, MedicoUpdateDTO updateDTO);
 }

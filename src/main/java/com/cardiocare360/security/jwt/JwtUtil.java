@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -23,9 +24,7 @@ public class JwtUtil {
     }
 
     public String generateToken(String email, String ruolo) {
-    	
-    	System.out.println(">>> SECRET LETTA DA SPRING: " + secret);
-
+        System.out.println(">>> SECRET LETTA DA SPRING: " + secret);
 
         return Jwts.builder()
                 .setSubject(email)
@@ -37,8 +36,7 @@ public class JwtUtil {
     }
 
     public String extractEmail(String token) {
-    	
-    	System.out.println(">>> SECRET USATA PER VALIDARE: " + secret);
+        System.out.println(">>> SECRET USATA PER VALIDARE: " + secret);
 
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -57,15 +55,24 @@ public class JwtUtil {
                 .get("ruolo");
     }
 
-    public boolean isTokenValid(String token) {
+    // ⭐ Metodo di validazione compatibile con JwtFilter
+    public boolean validateToken(String token, UserDetails userDetails) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
+            String email = extractEmail(token);
+            return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
+    }
+
+    // ⭐ Metodo di supporto per scadenza
+    private boolean isTokenExpired(String token) {
+        Date expirationDate = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+        return expirationDate.before(new Date());
     }
 }

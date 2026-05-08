@@ -1,6 +1,6 @@
 package com.cardiocare360.security.jwt;
 
-import com.cardiocare360.repository.UtenteRepository;
+import com.cardiocare360.security.userdetails.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,7 +20,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UtenteRepository utenteRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -27,13 +28,11 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // ⭐ STAMPE DI DEBUG
         System.out.println(">>> AUTH HEADER: " + request.getHeader("Authorization"));
         System.out.println(">>> URI: [" + request.getRequestURI() + "]");
 
         String uri = request.getRequestURI();
 
-        // ⭐ Escludi SEMPRE login e register
         if (uri.startsWith("/auth/login") || uri.startsWith("/auth/register")) {
             filterChain.doFilter(request, response);
             return;
@@ -51,15 +50,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            var utente = utenteRepository.findByEmail(email).orElse(null);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
-            if (utente != null && jwtUtil.isTokenValid(token)) {
+            if (jwtUtil.validateToken(token, userDetails)) {
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                utente,
+                                userDetails,
                                 null,
-                                utente.getAuthorities()
+                                userDetails.getAuthorities()
                         );
 
                 authToken.setDetails(
@@ -67,6 +66,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                System.out.println(">>> Utente autenticato con ruoli: " + userDetails.getAuthorities());
             }
         }
 

@@ -1,7 +1,7 @@
 package com.cardiocare360.service;
 
-import com.cardiocare360.model.dto.PazienteDTO;
-import com.cardiocare360.model.dto.PazienteUpdateDTO;
+import com.cardiocare360.model.request.PazienteUpdateDTO;
+import com.cardiocare360.model.response.PazienteDTO;
 
 public interface PazienteService {
 

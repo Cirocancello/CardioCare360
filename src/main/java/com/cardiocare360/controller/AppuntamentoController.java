@@ -1,6 +1,6 @@
 package com.cardiocare360.controller;
 
-import com.cardiocare360.model.dto.AppuntamentoDTO;
+import com.cardiocare360.model.response.AppuntamentoDTO;
 import com.cardiocare360.repository.PazienteRepository;
 import com.cardiocare360.service.AppuntamentoService;
 import org.springframework.http.ResponseEntity;

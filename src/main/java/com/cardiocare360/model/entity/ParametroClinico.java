@@ -1,10 +1,13 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "parametro_clinico")
+@JsonIgnoreProperties({"notifiche"}) // 🔥 evita loop Parametro → Notifica → Parametro
 public class ParametroClinico {
 
     @Id
@@ -13,6 +16,7 @@ public class ParametroClinico {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
+    @JsonIgnoreProperties({"notifiche"})
     private Paziente paziente;
 
     @Column(nullable = false, length = 100)
@@ -24,7 +28,11 @@ public class ParametroClinico {
     @Column(name = "data_rilevazione", nullable = false)
     private LocalDateTime dataRilevazione = LocalDateTime.now();
 
-    // Costruttore vuoto richiesto da JPA
+    // ⭐ Relazione con Notifica (necessaria!)
+    @OneToMany(mappedBy = "parametroClinico", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("parametroClinico")
+    private List<Notifica> notifiche;
+
     public ParametroClinico() {}
 
     // Getter e Setter
@@ -42,4 +50,7 @@ public class ParametroClinico {
 
     public LocalDateTime getDataRilevazione() { return dataRilevazione; }
     public void setDataRilevazione(LocalDateTime dataRilevazione) { this.dataRilevazione = dataRilevazione; }
+
+    public List<Notifica> getNotifiche() { return notifiche; }
+    public void setNotifiche(List<Notifica> notifiche) { this.notifiche = notifiche; }
 }

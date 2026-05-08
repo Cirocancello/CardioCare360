@@ -12,7 +12,10 @@ public class Cardiocare360Application {
 		SpringApplication.run(Cardiocare360Application.class, args);
 		
 		 PasswordEncoder encoder = new BCryptPasswordEncoder();
-		    System.out.println("HASH = " + encoder.encode("123"));
+		  //  System.out.println("HASH = " + encoder.encode("123"));
+		    
+		   System.out.println(new BCryptPasswordEncoder().encode("12345"));
+
 	}
 
 }

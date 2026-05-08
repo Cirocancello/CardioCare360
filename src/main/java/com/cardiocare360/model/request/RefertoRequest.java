@@ -1,4 +1,4 @@
-package com.cardiocare360.model.dto;
+package com.cardiocare360.model.request;
 
 public class RefertoRequest {
 

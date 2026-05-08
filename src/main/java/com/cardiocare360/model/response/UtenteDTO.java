@@ -1,7 +1,7 @@
 // Cosa rappresenta: i dati dell’utente che vogliamo esporre al frontend (senza password).
 
 
-package com.cardiocare360.model.dto;
+package com.cardiocare360.model.response;
 
 import lombok.Data;
 

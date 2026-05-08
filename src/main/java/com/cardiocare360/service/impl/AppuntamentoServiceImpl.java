@@ -1,10 +1,10 @@
 package com.cardiocare360.service.impl;
 
-import com.cardiocare360.model.dto.AppuntamentoDTO;
 import com.cardiocare360.model.entity.Appuntamento;
 import com.cardiocare360.model.entity.Medico;
 import com.cardiocare360.model.entity.Paziente;
 import com.cardiocare360.model.entity.Appuntamento.StatoAppuntamento;
+import com.cardiocare360.model.response.AppuntamentoDTO;
 import com.cardiocare360.repository.AppuntamentoRepository;
 import com.cardiocare360.repository.MedicoRepository;
 import com.cardiocare360.repository.PazienteRepository;

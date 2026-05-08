@@ -1,11 +1,14 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "appuntamento")
+@JsonIgnoreProperties({"notifiche"}) // 🔥 evita loop Appuntamento → Notifica → Appuntamento
 public class Appuntamento {
 
     public enum StatoAppuntamento {
@@ -20,10 +23,12 @@ public class Appuntamento {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
+    @JsonIgnoreProperties({"notifiche"})
     private Paziente paziente;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
+    @JsonIgnoreProperties({"notifiche"})
     private Medico medico;
 
     @Column(name = "data_appuntamento", nullable = false)
@@ -38,6 +43,11 @@ public class Appuntamento {
 
     @Column(columnDefinition = "TEXT")
     private String note;
+
+    // ⭐ Relazione con Notifica (necessaria!)
+    @OneToMany(mappedBy = "appuntamento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("appuntamento")
+    private List<Notifica> notifiche;
 
     public Appuntamento() {}
 
@@ -62,4 +72,7 @@ public class Appuntamento {
 
     public String getNote() { return note; }
     public void setNote(String note) { this.note = note; }
+
+    public List<Notifica> getNotifiche() { return notifiche; }
+    public void setNotifiche(List<Notifica> notifiche) { this.notifiche = notifiche; }
 }
