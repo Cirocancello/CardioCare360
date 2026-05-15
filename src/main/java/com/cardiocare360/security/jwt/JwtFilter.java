@@ -28,16 +28,21 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        System.out.println(">>> AUTH HEADER: " + request.getHeader("Authorization"));
-        System.out.println(">>> URI: [" + request.getRequestURI() + "]");
-
         String uri = request.getRequestURI();
+        System.out.println(">>> URI: [" + uri + "]");
+        System.out.println(">>> AUTH HEADER: " + request.getHeader("Authorization"));
 
-        if (uri.startsWith("/auth/login") || uri.startsWith("/auth/register")) {
+        // 🔥 Escludi SEMPRE endpoint pubblici (login, register, forgot-password, disponibilità, notifiche)
+        if (uri.startsWith("/auth/") ||
+            uri.startsWith("/disponibilita/slot") ||
+            uri.startsWith("/api/notifiche")) {
+
+            System.out.println(">>> [JWT] Endpoint pubblico, filtro saltato");
             filterChain.doFilter(request, response);
             return;
         }
 
+        // 🔥 Recupera header Authorization
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -45,6 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        // 🔥 Estrai token e email
         String token = authHeader.substring(7);
         String email = jwtUtil.extractEmail(token);
 
@@ -67,7 +73,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                System.out.println(">>> Utente autenticato con ruoli: " + userDetails.getAuthorities());
+                System.out.println(">>> [JWT] Utente autenticato: " + email +
+                        " | Ruoli: " + userDetails.getAuthorities());
+            } else {
+                System.out.println(">>> [JWT] Token non valido per utente: " + email);
             }
         }
 

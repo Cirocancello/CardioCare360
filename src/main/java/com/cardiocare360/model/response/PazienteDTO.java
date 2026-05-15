@@ -12,24 +12,25 @@ public class PazienteDTO {
     private String email;
 
     private String codiceFiscale;
+    private String luogoNascita;
     private LocalDate dataNascita;
 
     private String telefono;
     private String indirizzo;
 
     public PazienteDTO() {}
-    
+
     public PazienteDTO(Paziente p) {
         this.setId(p.getId());
         this.setNome(p.getNome());
         this.setCognome(p.getCognome());
         this.setEmail(p.getEmail());
         this.setCodiceFiscale(p.getCodiceFiscale());
+        this.setLuogoNascita(p.getLuogoNascita());
         this.setDataNascita(p.getDataNascita());
         this.setTelefono(p.getTelefono());
         this.setIndirizzo(p.getIndirizzo());
     }
-
 
     // Getter e Setter
     public Long getId() { return id; }
@@ -47,6 +48,9 @@ public class PazienteDTO {
     public String getCodiceFiscale() { return codiceFiscale; }
     public void setCodiceFiscale(String codiceFiscale) { this.codiceFiscale = codiceFiscale; }
 
+    public String getLuogoNascita() { return luogoNascita; }
+    public void setLuogoNascita(String luogoNascita) { this.luogoNascita = luogoNascita; }
+
     public LocalDate getDataNascita() { return dataNascita; }
     public void setDataNascita(LocalDate dataNascita) { this.dataNascita = dataNascita; }
 
@@ -55,6 +59,4 @@ public class PazienteDTO {
 
     public String getIndirizzo() { return indirizzo; }
     public void setIndirizzo(String indirizzo) { this.indirizzo = indirizzo; }
-    
-    
 }

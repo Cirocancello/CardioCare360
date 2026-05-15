@@ -1,36 +1,22 @@
 package com.cardiocare360.model.request;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
+@Data
 public class PazienteUpdateDTO {
 
     private String nome;
     private String cognome;
 
     private String codiceFiscale;
-    private LocalDate dataNascita;
+
+    private String luogoNascita;
+
+    // 🔥 Il frontend invia "yyyy-MM-dd"
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String dataNascita;
 
     private String telefono;
     private String indirizzo;
-
-    public PazienteUpdateDTO() {}
-
-    // Getter e Setter
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-
-    public String getCognome() { return cognome; }
-    public void setCognome(String cognome) { this.cognome = cognome; }
-
-    public String getCodiceFiscale() { return codiceFiscale; }
-    public void setCodiceFiscale(String codiceFiscale) { this.codiceFiscale = codiceFiscale; }
-
-    public LocalDate getDataNascita() { return dataNascita; }
-    public void setDataNascita(LocalDate dataNascita) { this.dataNascita = dataNascita; }
-
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
-
-    public String getIndirizzo() { return indirizzo; }
-    public void setIndirizzo(String indirizzo) { this.indirizzo = indirizzo; }
 }

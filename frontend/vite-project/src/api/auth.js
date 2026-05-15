@@ -1,3 +1,6 @@
+// =========================
+// LOGIN
+// =========================
 export async function login(email, password) {
   try {
     const response = await fetch("http://localhost:8080/auth/login", {
@@ -7,7 +10,7 @@ export async function login(email, password) {
     });
 
     if (!response.ok) {
-      throw new Error("Errore durante il login: " + response.status);
+      throw new Error("Credenziali errate");
     }
 
     const data = await response.json();
@@ -25,3 +28,56 @@ export async function login(email, password) {
     throw error;
   }
 }
+
+
+
+// =========================
+// REGISTER
+// =========================
+export async function register(form) {
+  try {
+    const response = await fetch("http://localhost:8080/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form)
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(errorMessage);
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    console.error("Errore nella funzione register:", error);
+    throw error;
+  }
+}
+
+
+
+// =========================
+// FORGOT PASSWORD
+// =========================
+export async function forgotPassword(email) {
+  try {
+    const response = await fetch("http://localhost:8080/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(errorMessage);
+    }
+
+    const message = await response.text();
+    return message; // ✅ Restituisce testo semplice
+  } catch (error) {
+    console.error("Errore nella funzione forgotPassword:", error);
+    throw error;
+  }
+}
+

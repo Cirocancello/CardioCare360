@@ -8,6 +8,7 @@ public class PazienteResponse {
     private String nomeCompleto;
     private String email;
     private String codiceFiscale;
+    private String luogoNascita;
     private LocalDate dataNascita;
     private String telefono;
     private String indirizzo;
@@ -44,6 +45,14 @@ public class PazienteResponse {
 
     public void setCodiceFiscale(String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
+    }
+
+    public String getLuogoNascita() {
+        return luogoNascita;
+    }
+
+    public void setLuogoNascita(String luogoNascita) {
+        this.luogoNascita = luogoNascita;
     }
 
     public LocalDate getDataNascita() {

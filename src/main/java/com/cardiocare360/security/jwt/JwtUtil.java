@@ -1,7 +1,6 @@
 package com.cardiocare360.security.jwt;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,17 +54,16 @@ public class JwtUtil {
                 .get("ruolo");
     }
 
-    // ⭐ Metodo di validazione compatibile con JwtFilter
     public boolean validateToken(String token, UserDetails userDetails) {
         try {
             String email = extractEmail(token);
             return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException e) {
+            System.out.println(">>> JWT NON VALIDO: " + e.getMessage());
             return false;
         }
     }
 
-    // ⭐ Metodo di supporto per scadenza
     private boolean isTokenExpired(String token) {
         Date expirationDate = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -73,6 +71,7 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getExpiration();
+
         return expirationDate.before(new Date());
     }
 }

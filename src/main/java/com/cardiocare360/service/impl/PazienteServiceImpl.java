@@ -9,6 +9,8 @@ import com.cardiocare360.model.response.PazienteDTO;
 import com.cardiocare360.repository.PazienteRepository;
 import com.cardiocare360.service.PazienteService;
 
+import java.time.LocalDate;
+
 @Service
 public class PazienteServiceImpl implements PazienteService {
 
@@ -28,15 +30,22 @@ public class PazienteServiceImpl implements PazienteService {
         Paziente p = pazienteRepository.findById(idPaziente)
                 .orElseThrow(() -> new RuntimeException("Paziente non trovato"));
 
-        // 🔵 Campi di UTENTE (superclasse)
-        p.setNome(request.getNome());
-        p.setCognome(request.getCognome());
+        // 🔵 Aggiornamento sicuro: solo se il campo NON è null
+        if (request.getNome() != null) p.setNome(request.getNome());
+        if (request.getCognome() != null) p.setCognome(request.getCognome());
+        if (request.getCodiceFiscale() != null) p.setCodiceFiscale(request.getCodiceFiscale());
+        if (request.getTelefono() != null) p.setTelefono(request.getTelefono());
+        if (request.getIndirizzo() != null) p.setIndirizzo(request.getIndirizzo());
+        if (request.getLuogoNascita() != null) p.setLuogoNascita(request.getLuogoNascita());
 
-        // 🔵 Campi di PAZIENTE (sottoclasse)
-        p.setCodiceFiscale(request.getCodiceFiscale());
-        p.setDataNascita(request.getDataNascita());
-        p.setTelefono(request.getTelefono());
-        p.setIndirizzo(request.getIndirizzo());
+        // 🔵 Conversione sicura della data
+        if (request.getDataNascita() != null) {
+            try {
+                p.setDataNascita(LocalDate.parse(request.getDataNascita()));
+            } catch (Exception e) {
+                throw new RuntimeException("Formato data non valido (yyyy-MM-dd)");
+            }
+        }
 
         pazienteRepository.save(p);
 

@@ -1,5 +1,3 @@
-//Espone gli endpoint /auth/register e /auth/login.
-
 package com.cardiocare360.controller;
 
 import com.cardiocare360.model.request.LoginRequest;
@@ -7,6 +5,10 @@ import com.cardiocare360.model.request.RegisterRequest;
 import com.cardiocare360.model.response.AuthResponse;
 import com.cardiocare360.service.AuthService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,13 +18,59 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // 🔥 Registrazione utente
     @PostMapping("/register")
-    public AuthResponse register(@RequestBody RegisterRequest request) {
-        return authService.register(request);
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        System.out.println(">>> [AUTH] Richiesta registrazione ricevuta per: " + request.getEmail());
+
+        try {
+            AuthResponse response = authService.register(request);
+            System.out.println(">>> [AUTH] Registrazione completata, ritorno 200");
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            // Errori previsti → email o CF duplicati
+            System.err.println(">>> [AUTH] Errore di validazione: " + e.getMessage());
+            return ResponseEntity.status(409).body(e.getMessage()); // 409 CONFLICT
+
+        } catch (Exception e) {
+            // Errori imprevisti → non mandiamo stacktrace al frontend
+            System.err.println(">>> [AUTH] Errore inatteso: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
+    // 🔥 Login utente
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
-        return authService.login(request);
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        System.out.println(">>> [AUTH] Richiesta login ricevuta per: " + request.getEmail());
+        try {
+            AuthResponse response = authService.login(request);
+            System.out.println(">>> [AUTH] Login completato, ritorno 200");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println(">>> [AUTH] Errore durante il login: " + e.getMessage());
+            return ResponseEntity.status(401).build(); // ⭐ restituisce 401 se credenziali errate
+        }
     }
+    
+ // 🔥 Recupero password
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+
+        String email = body.get("email");
+        System.out.println(">>> [AUTH] Richiesta recupero password per: " + email);
+
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.status(400).body("EMAIL_NON_VALIDA");
+        }
+
+        // Qui puoi fare un controllo reale sul DB
+        // boolean exists = utenteRepository.existsByEmail(email);
+        // if (!exists) return ResponseEntity.status(404).body("EMAIL_NON_TROVATA");
+
+        System.out.println(">>> [AUTH] Email di recupero inviata a: " + email);
+        return ResponseEntity.ok("EMAIL_INVIATA");
+    }
+
 }

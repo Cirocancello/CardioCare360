@@ -8,11 +8,14 @@ import java.util.List;
 @Entity
 @Table(name = "paziente")
 @PrimaryKeyJoinColumn(name = "id")
-@JsonIgnoreProperties({"notifiche"}) // 🔥 evita loop Paziente → Notifica → Paziente
+@JsonIgnoreProperties({"notifiche"}) 
 public class Paziente extends Utente {
 
     @Column(name = "codice_fiscale", nullable = false, unique = true, length = 16)
     private String codiceFiscale;
+
+    @Column(name = "luogo_nascita", nullable = false, length = 100)
+    private String luogoNascita;
 
     @Column(name = "data_nascita", nullable = false)
     private LocalDate dataNascita;
@@ -23,7 +26,6 @@ public class Paziente extends Utente {
     @Column(length = 255)
     private String indirizzo;
 
-    // ⭐ Relazione con Notifica (necessaria!)
     @OneToMany(mappedBy = "paziente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("paziente")
     private List<Notifica> notifiche;
@@ -33,6 +35,9 @@ public class Paziente extends Utente {
     // Getter e Setter
     public String getCodiceFiscale() { return codiceFiscale; }
     public void setCodiceFiscale(String codiceFiscale) { this.codiceFiscale = codiceFiscale; }
+
+    public String getLuogoNascita() { return luogoNascita; }
+    public void setLuogoNascita(String luogoNascita) { this.luogoNascita = luogoNascita; }
 
     public LocalDate getDataNascita() { return dataNascita; }
     public void setDataNascita(LocalDate dataNascita) { this.dataNascita = dataNascita; }

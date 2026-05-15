@@ -11,5 +11,8 @@ public interface PazienteRepository extends JpaRepository<Paziente, Long> {
 
     Optional<Paziente> findByEmail(String email);
 
-    Optional<Paziente> findById(Long id);
+    // 🔥 Controllo duplicato codice fiscale
+    boolean existsByCodiceFiscale(String codiceFiscale);
+
+    
 }

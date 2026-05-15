@@ -11,16 +11,15 @@ import com.cardiocare360.security.jwt.JwtUtil;
 import com.cardiocare360.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final AuthenticationManager authenticationManager;
     private final UtenteRepository utenteRepository;
     private final PazienteRepository pazienteRepository;
     private final PasswordEncoder passwordEncoder;
@@ -29,53 +28,71 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse register(RegisterRequest request) {
 
+        // 🔥 Controllo email duplicata
         if (utenteRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email già registrata");
+            throw new IllegalArgumentException("EMAIL_DUPLICATA");
         }
 
-        Utente utente = new Utente();
-        utente.setNome(request.getNome());
-        utente.setCognome(request.getCognome());
-        utente.setEmail(request.getEmail());
-        utente.setPassword(passwordEncoder.encode(request.getPassword()));
-        utente.setRuolo(Utente.Ruolo.valueOf(request.getRuolo()));
+        // 🔥 Controllo codice fiscale duplicato
+        if (pazienteRepository.existsByCodiceFiscale(request.getCodiceFiscale())) {
+            throw new IllegalArgumentException("CF_DUPLICATO");
+        }
 
-        utenteRepository.save(utente);
+        // 🔥 Creazione paziente (che è anche utente)
+        Paziente paziente = new Paziente();
+        paziente.setNome(request.getNome());
+        paziente.setCognome(request.getCognome());
+        paziente.setEmail(request.getEmail());
+        paziente.setPassword(passwordEncoder.encode(request.getPassword()));
+        paziente.setRuolo(Utente.Ruolo.PAZIENTE);
 
+        paziente.setCodiceFiscale(request.getCodiceFiscale());
+        paziente.setTelefono(request.getTelefono());
+        paziente.setIndirizzo(request.getIndirizzo());
+        paziente.setLuogoNascita(request.getLuogoNascita());
+
+        // 🔥 Conversione sicura della data
+        try {
+            paziente.setDataNascita(LocalDate.parse(request.getDataNascita()));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("DATA_NON_VALIDA");
+        }
+
+        // 🔥 Salvataggio
+        pazienteRepository.save(paziente);
+
+        // 🔥 Generazione token
         String token = jwtUtil.generateToken(
-                utente.getEmail(),
-                utente.getRuolo().name()
+                paziente.getEmail(),
+                paziente.getRuolo().name()
         );
 
-        return new AuthResponse(token, utente.getRuolo().name(), utente.getId(), null);
+        return new AuthResponse(
+                token,
+                paziente.getRuolo().name(),
+                paziente.getId(),
+                paziente.getId()
+        );
     }
 
     @Override
     public AuthResponse login(LoginRequest request) {
 
-        // Autenticazione
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        // Recupero utente
         Utente utente = utenteRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+                .orElseThrow(() -> new IllegalArgumentException("CREDENZIALI_ERRATE"));
 
-        // 🔥 Recupero paziente tramite ID ereditato (corretto)
+        if (!passwordEncoder.matches(request.getPassword(), utente.getPassword())) {
+            throw new IllegalArgumentException("CREDENZIALI_ERRATE");
+        }
+
         Paziente paziente = pazienteRepository.findById(utente.getId())
                 .orElse(null);
 
-        // Generazione token
         String token = jwtUtil.generateToken(
                 utente.getEmail(),
                 utente.getRuolo().name()
         );
 
-        // 🔥 Risposta completa
         return new AuthResponse(
                 token,
                 utente.getRuolo().name(),

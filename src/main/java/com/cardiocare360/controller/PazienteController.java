@@ -4,16 +4,16 @@ import com.cardiocare360.model.request.PazienteUpdateDTO;
 import com.cardiocare360.model.response.PazienteDTO;
 import com.cardiocare360.model.response.PazienteResponse;
 import com.cardiocare360.service.PazienteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/paziente")
+@RequiredArgsConstructor
 public class PazienteController {
 
-    @Autowired
-    private PazienteService pazienteService;
+    private final PazienteService pazienteService;
 
     @GetMapping("/{id}")
     public ResponseEntity<PazienteResponse> getProfilo(@PathVariable Long id) {
@@ -36,6 +36,7 @@ public class PazienteController {
         res.setNomeCompleto(dto.getNome() + " " + dto.getCognome());
         res.setEmail(dto.getEmail());
         res.setCodiceFiscale(dto.getCodiceFiscale());
+        res.setLuogoNascita(dto.getLuogoNascita());
         res.setDataNascita(dto.getDataNascita());
         res.setTelefono(dto.getTelefono());
         res.setIndirizzo(dto.getIndirizzo());

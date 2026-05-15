@@ -1,23 +1,24 @@
 package com.cardiocare360.model.request;
 
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 @Data
 public class RegisterRequest {
 
-    @NotBlank
     private String nome;
-
-    @NotBlank
     private String cognome;
-
-    @NotBlank
     private String email;
-
-    @NotBlank
     private String password;
 
-    @NotBlank
-    private String ruolo; // PAZIENTE, MEDICO, ADMIN
+    private String codiceFiscale;
+
+    private String luogoNascita;
+
+    // 🔥 Il frontend invia "yyyy-MM-dd"
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String dataNascita;
+
+    private String telefono;
+    private String indirizzo;
 }
