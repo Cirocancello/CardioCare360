@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/auth";
 import "../styles/user.css";
-import logo from "../assets/logo CardioCare360.png";
+import logo from "../assets/logo-CardioCare360.png";
 
 export default function Register() {
   const navigate = useNavigate();
