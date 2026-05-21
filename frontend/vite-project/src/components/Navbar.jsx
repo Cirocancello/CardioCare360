@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo-CardioCare360.png";
-import "../styles/HomePage.css";
+import "../styles/public/HomePage.css";
 
 function Navbar() {
   return (

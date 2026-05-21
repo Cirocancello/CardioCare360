@@ -26,18 +26,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  padding: 20px;
-  box-sizing: border-box;
+  min-height: calc(100vh - 140px); /* ridotto per meno spazio sopra/sotto */
+  padding: 20px 0; /* ridotto da 40px */
 }
 
 /* ====== CARD ====== */
 .user-card {
-  width: 100%;
-  max-width: 450px;
-  text-align: center;
-  padding: 40px 30px;
-  box-sizing: border-box;
+  margin: 0; /* elimina margini extra */
+  padding: 0; /* evita padding impliciti */
 }
 
 /* ====== LOGO ====== */
@@ -156,6 +152,11 @@ form {
 
 /* ====== RESPONSIVE ====== */
 @media (max-width: 480px) {
+  .user-page {
+    min-height: calc(100vh - 120px); /* ancora più compatto su mobile */
+    padding: 10px 0;
+  }
+
   .user-card {
     padding: 30px 20px;
   }

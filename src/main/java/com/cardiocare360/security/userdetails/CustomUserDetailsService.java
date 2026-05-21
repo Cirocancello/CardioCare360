@@ -26,11 +26,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         Utente utente = utenteRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato: " + email));
 
-        // ⭐ QUI AGGIUNGIAMO IL RUOLO CORRETTO
+        // ⭐ Nessun prefisso ROLE_ → combacia con hasAnyAuthority
         return new User(
                 utente.getEmail(),
                 utente.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + utente.getRuolo()))
+                List.of(new SimpleGrantedAuthority(utente.getRuolo().name()))
         );
     }
 }

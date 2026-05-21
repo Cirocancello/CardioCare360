@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
+import java.time.LocalDate;
+
+
 @RestController
 @RequestMapping("/appuntamenti")
 public class AppuntamentoController {
@@ -30,6 +33,20 @@ public class AppuntamentoController {
             @RequestBody AppuntamentoDTO dto,
             Principal principal) {
 
+        // 🔥 Controllo aggiuntivo per evitare DTO null o incompleti
+        if (dto == null || dto.getDataAppuntamento() == null) {
+            throw new RuntimeException("Campo dataAppuntamento mancante nel body");
+        }
+
+        if (dto.getOraAppuntamento() == null) {
+            throw new RuntimeException("Campo oraAppuntamento mancante nel body");
+        }
+
+        if (dto.getIdMedico() == null) {
+            throw new RuntimeException("Campo idMedico mancante nel body");
+        }
+
+        // 🔐 Recupero email dal token
         String email = principal.getName();
 
         Long idPaziente = pazienteRepository.findByEmail(email)
@@ -104,4 +121,17 @@ public class AppuntamentoController {
         if (ok) return ResponseEntity.ok().build();
         return ResponseEntity.status(403).build();
     }
+    
+ // ---------------------------------------------------------
+ // ORARI OCCUPATI DEL MEDICO
+ // ---------------------------------------------------------
+ @GetMapping("/occupati")
+ public ResponseEntity<List<String>> getOrariOccupati(
+         @RequestParam Long idMedico,
+         @RequestParam String data) {
+
+     List<String> orari = appuntamentoService.getOrariOccupati(idMedico, LocalDate.parse(data));
+     return ResponseEntity.ok(orari);
+ }
+
 }

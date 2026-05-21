@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/HomePage.css";
+import "../styles/public/HomePage.css";
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 
 function Footer() {

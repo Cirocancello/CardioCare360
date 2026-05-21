@@ -1,0 +1,51 @@
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background-color: #DC2626 !important; /* Accent Red ufficiale */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.sidebar-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, padding-left 0.2s ease;
+}
+
+.sidebar-link:hover {
+  background-color: #1D4ED8; /* Primary Blue */
+}
+
+.sidebar-link.active {
+  background-color: #1E3A8A; /* Dark Blue */
+  border-left: 4px solid #38BDF8; /* Secondary Blue */
+  padding-left: 8px;
+}
+
+.sidebar-icon {
+  font-size: 18px;
+}

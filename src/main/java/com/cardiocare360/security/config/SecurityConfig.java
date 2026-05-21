@@ -2,6 +2,7 @@ package com.cardiocare360.security.config;
 
 import com.cardiocare360.security.jwt.JwtFilter;
 import com.cardiocare360.security.userdetails.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,10 +21,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.util.Arrays;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -36,32 +38,39 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-            // 🔥 Gestione errori: evita 403 generici
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((req, res, excep) -> {
-                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                })
+                .authenticationEntryPoint((req, res, excep) ->
+                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+                )
             )
-
             .authorizeHttpRequests(auth -> auth
-                // ⭐ Preflight libero
+
+                // Preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // ⭐ Endpoint pubblici per autenticazione e recupero password
-                .requestMatchers("/auth/login", "/auth/register", "/auth/forgot-password").permitAll()
+                // Autenticazione pubblica
+                .requestMatchers("/auth/**").permitAll()
 
-                // ⭐ Endpoint pubblici per disponibilità slot e notifiche
+                // Disponibilità e notifiche pubbliche
                 .requestMatchers("/disponibilita/slot/**").permitAll()
+                .requestMatchers("/disponibilita/date/**").permitAll()
                 .requestMatchers("/api/notifiche/**").permitAll()
 
-                // ⭐ MESSAGGI: accessibili a Medico e Paziente
-                .requestMatchers("/messaggi/**").hasAnyRole("MEDICO", "PAZIENTE")
+                // Medici per visita
+                .requestMatchers("/medici/visita/**")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
-                // ⭐ Tutto il resto richiede autenticazione
+                // Messaggi
+                .requestMatchers("/messaggi/**")
+                    .hasAnyAuthority("MEDICO", "PAZIENTE")
+
+                // Appuntamenti → SOLO PAZIENTE
+                .requestMatchers("/appuntamenti/**")
+                    .hasAuthority("PAZIENTE")
+
+                // Tutto il resto richiede autenticazione
                 .anyRequest().authenticated()
             )
-
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -89,10 +98,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        config.setExposedHeaders(Arrays.asList("Authorization"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

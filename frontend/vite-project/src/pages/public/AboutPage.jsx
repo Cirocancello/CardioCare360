@@ -1,8 +1,8 @@
 import React from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import "../styles/AboutPage.css";
-import teamImg from "../assets/team.jpg";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import "../../styles/public/AboutPage.css";
+import teamImg from "../../assets/team.jpg";
 
 function AboutPage() {
   return (

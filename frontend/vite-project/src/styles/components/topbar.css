@@ -1,0 +1,78 @@
+.topbar {
+  height: 120px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+}
+
+.topbar-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1D4ED8;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.topbar-icon {
+  font-size: 20px;
+  color: #1D4ED8;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.topbar-icon:hover {
+  color: #153EAD;
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.topbar-avatar {
+  font-size: 28px;
+  color: #1D4ED8;
+}
+
+.topbar-username {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo {
+  height: 120px;        /* il valore perfetto per una topbar da 60px */
+  width: auto;         /* mantiene le proporzioni originali */
+  object-fit: contain; /* evita distorsioni */
+  }
+
+
+.topbar-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1D4ED8; /* Primary Blue ufficiale */
+}
+
+.topbar-logo-img {
+  height: 40px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.topbar-logo-img:hover {
+  transform: scale(1.05);
+}

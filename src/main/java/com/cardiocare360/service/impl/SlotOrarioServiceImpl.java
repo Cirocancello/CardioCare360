@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,46 +21,68 @@ public class SlotOrarioServiceImpl implements SlotOrarioService {
     private final DisponibilitaMedicoRepository disponibilitaRepo;
     private final SlotOrarioRepository slotRepo;
 
-    // ⭐ Mappa sicura e definitiva per convertire DayOfWeek → "LUN", "MAR", ...
     private static final Map<DayOfWeek, String> MAPPA_GIORNI = Map.of(
-            DayOfWeek.MONDAY, "LUN",
-            DayOfWeek.TUESDAY, "MAR",
-            DayOfWeek.WEDNESDAY, "MER",
-            DayOfWeek.THURSDAY, "GIO",
-            DayOfWeek.FRIDAY, "VEN",
-            DayOfWeek.SATURDAY, "SAB",
-            DayOfWeek.SUNDAY, "DOM"
+            DayOfWeek.MONDAY, "LUNEDI",
+            DayOfWeek.TUESDAY, "MARTEDI",
+            DayOfWeek.WEDNESDAY, "MERCOLEDI",
+            DayOfWeek.THURSDAY, "GIOVEDI",
+            DayOfWeek.FRIDAY, "VENERDI",
+            DayOfWeek.SATURDAY, "SABATO",
+            DayOfWeek.SUNDAY, "DOMENICA"
     );
 
     @Override
     public List<SlotOrario> generaSlotPerData(Long idMedico, LocalDate data) {
 
-        // ⭐ Conversione sicura e coerente con il DB
         String giornoSettimana = MAPPA_GIORNI.get(data.getDayOfWeek());
 
-        // ⭐ Recupero disponibilità (ora funziona SEMPRE)
-        DisponibilitaMedico disp = disponibilitaRepo
-                .findByMedicoIdAndGiornoSettimana(idMedico, giornoSettimana)
-                .orElseThrow(() -> new RuntimeException("Il medico non è disponibile in questo giorno"));
+        // 🔥 Recupera TUTTE le disponibilità del medico per quel giorno
+        List<DisponibilitaMedico> disponibilitaList =
+                disponibilitaRepo.findByMedicoIdAndGiornoSettimana(idMedico, giornoSettimana);
 
-        LocalTime start = disp.getOraInizio();
-        LocalTime end = disp.getOraFine();
-
-        List<SlotOrario> slots = new ArrayList<>();
-
-        // ⭐ Generazione slot da 30 minuti
-        while (start.isBefore(end)) {
-            SlotOrario slot = new SlotOrario();
-            slot.setDisponibilita(disp);
-            slot.setInizio(LocalDateTime.of(data, start));
-            slot.setFine(LocalDateTime.of(data, start.plusMinutes(30)));
-            slot.setPrenotato(false);
-
-            slots.add(slot);
-            start = start.plusMinutes(30);
+        if (disponibilitaList.isEmpty()) {
+            throw new RuntimeException("Il medico non è disponibile in questo giorno");
         }
 
-        return slotRepo.saveAll(slots);
+        List<SlotOrario> tuttiGliSlot = new ArrayList<>();
+
+        for (DisponibilitaMedico disp : disponibilitaList) {
+
+            // 🔥 Se gli slot esistono già → li riutilizziamo
+            List<SlotOrario> slotEsistenti = slotRepo.findByDisponibilitaIdAndInizioBetween(
+                    disp.getId(),
+                    data.atStartOfDay(),
+                    data.atTime(23, 59)
+            );
+
+            if (!slotEsistenti.isEmpty()) {
+                tuttiGliSlot.addAll(slotEsistenti);
+                continue;
+            }
+
+            // 🔧 Generazione slot per questa fascia oraria
+            LocalTime start = disp.getOraInizio();
+            LocalTime end = disp.getOraFine();
+
+            while (start.isBefore(end)) {
+                SlotOrario slot = new SlotOrario();
+                slot.setDisponibilita(disp);
+                slot.setInizio(LocalDateTime.of(data, start));
+                slot.setFine(LocalDateTime.of(data, start.plusMinutes(30)));
+                slot.setPrenotato(false);
+
+                tuttiGliSlot.add(slot);
+                start = start.plusMinutes(30);
+            }
+        }
+
+        // Salva solo gli slot nuovi
+        List<SlotOrario> salvati = slotRepo.saveAll(tuttiGliSlot);
+
+        // Ordina per orario
+        salvati.sort(Comparator.comparing(SlotOrario::getInizio));
+
+        return salvati;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.cardiocare360.controller;
 
 import com.cardiocare360.model.entity.DisponibilitaMedico;
+import com.cardiocare360.model.entity.Medico;
 import com.cardiocare360.model.entity.SlotOrario;
 import com.cardiocare360.security.jwt.JwtUtil;
 import com.cardiocare360.service.DisponibilitaMedicoService;
@@ -47,7 +48,6 @@ public class DisponibilitaController {
 
         return ResponseEntity.ok(disp);
     }
-
 
     // ---------------------------------------------------------
     // 2) MODIFICA DISPONIBILITÀ
@@ -115,7 +115,7 @@ public class DisponibilitaController {
     }
 
     // ---------------------------------------------------------
-    // 7) PRENOTA SLOT (usato dal modulo Appuntamenti)
+    // 7) PRENOTA SLOT
     // ---------------------------------------------------------
     @PutMapping("/slot/prenota/{idSlot}")
     public ResponseEntity<SlotOrario> prenotaSlot(@PathVariable Long idSlot) {
@@ -123,11 +123,32 @@ public class DisponibilitaController {
     }
 
     // ---------------------------------------------------------
-    // 8) LIBERA SLOT (in caso di cancellazione appuntamento)
+    // 8) LIBERA SLOT
     // ---------------------------------------------------------
     @PutMapping("/slot/libera/{idSlot}")
     public ResponseEntity<String> liberaSlot(@PathVariable Long idSlot) {
         slotService.liberaSlot(idSlot);
         return ResponseEntity.ok("Slot liberato");
+    }
+
+ // ---------------------------------------------------------
+ // 9) DATE DISPONIBILI PER TIPO VISITA (VERSIONE CORRETTA)
+ // ---------------------------------------------------------
+ @GetMapping("/date/visita/{tipoVisita}")
+ public ResponseEntity<List<String>> getDateDisponibiliPerVisita(
+         @PathVariable String tipoVisita
+ ) {
+     List<String> date = disponibilitaService.generaDateDisponibiliPerSpecializzazione(tipoVisita);
+     return ResponseEntity.ok(date);
+ }
+
+
+    // ---------------------------------------------------------
+    // 10) DATE DISPONIBILI PER MEDICO
+    // ---------------------------------------------------------
+    @GetMapping("/date/medico/{idMedico}")
+    public ResponseEntity<List<String>> getDateDisponibiliPerMedico(@PathVariable Long idMedico) {
+        List<String> date = disponibilitaService.generaDateDisponibili(idMedico);
+        return ResponseEntity.ok(date);
     }
 }

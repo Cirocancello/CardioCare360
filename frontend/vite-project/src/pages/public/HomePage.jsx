@@ -1,10 +1,10 @@
 import React from "react";
-import "../styles/HomePage.css";
+import "../../styles//public/HomePage.css";
 
-import img1 from "../assets/hero1.jpg";
-import img2 from "../assets/hero2.jpg";
-import img3 from "../assets/hero3.jpg";
-import img4 from "../assets/hero4.jpg";
+import img1 from "../../assets/hero1.jpg";
+import img2 from "../../assets/hero2.jpg";
+import img3 from "../../assets/hero3.jpg";
+import img4 from "../../assets/hero4.jpg";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
@@ -12,8 +12,8 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 function HomePage() {
   return (

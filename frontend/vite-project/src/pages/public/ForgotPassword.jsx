@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { forgotPassword } from "../api/auth";
+import { forgotPassword } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
-import "../styles/user.css";
-import logo from "../assets/logo-CardioCare360.png";
+import "../../styles/public/user.css";
+import logo from "../../assets/logo-CardioCare360.png";
 
 function ForgotPassword() {
   const navigate = useNavigate();

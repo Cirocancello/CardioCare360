@@ -43,26 +43,45 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
     @Override
     public AppuntamentoDTO creaAppuntamento(AppuntamentoDTO dto, Long idPaziente) {
 
+        // 🔍 Validazione DTO
+        if (dto == null) {
+            throw new RuntimeException("Dati appuntamento mancanti");
+        }
+        if (dto.getDataAppuntamento() == null) {
+            throw new RuntimeException("La data dell'appuntamento è obbligatoria");
+        }
+        if (dto.getOraAppuntamento() == null) {
+            throw new RuntimeException("L'orario dell'appuntamento è obbligatorio");
+        }
+        if (dto.getIdMedico() == null) {
+            throw new RuntimeException("ID medico mancante");
+        }
+
+        // 🔍 Recupero entità
         Paziente paziente = pazienteRepository.findById(idPaziente)
                 .orElseThrow(() -> new RuntimeException("Paziente non trovato"));
 
         Medico medico = medicoRepository.findById(dto.getIdMedico())
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
+        // 🔍 Controllo data futura
         if (dto.getDataAppuntamento().isBefore(LocalDate.now())) {
             throw new RuntimeException("La data dell'appuntamento deve essere futura");
         }
 
+        // 🔍 Controllo conflitti medico
         if (appuntamentoRepository.existsByMedicoIdAndDataAppuntamentoAndOraAppuntamento(
                 medico.getId(), dto.getDataAppuntamento(), dto.getOraAppuntamento())) {
             throw new RuntimeException("Il medico ha già un appuntamento in questo orario");
         }
 
+        // 🔍 Controllo conflitti paziente
         if (appuntamentoRepository.existsByPazienteIdAndDataAppuntamentoAndOraAppuntamento(
                 paziente.getId(), dto.getDataAppuntamento(), dto.getOraAppuntamento())) {
             throw new RuntimeException("Il paziente ha già un appuntamento in questo orario");
         }
 
+        // 🔧 Creazione appuntamento
         Appuntamento app = new Appuntamento();
         app.setPaziente(paziente);
         app.setMedico(medico);
@@ -172,4 +191,18 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
         dto.setNote(app.getNote());
         return dto;
     }
+    
+ // ---------------------------------------------------------
+ // ORARI OCCUPATI DEL MEDICO
+ // ---------------------------------------------------------
+ @Override
+ public List<String> getOrariOccupati(Long idMedico, LocalDate data) {
+     return appuntamentoRepository
+             .findByMedicoIdAndDataAppuntamento(idMedico, data)
+             .stream()
+             .map(Appuntamento::getOraAppuntamento)
+             .map(ora -> ora.toString())
+             .toList();
+ }
+
 }

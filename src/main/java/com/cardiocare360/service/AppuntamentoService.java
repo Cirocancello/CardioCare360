@@ -1,5 +1,6 @@
 package com.cardiocare360.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.cardiocare360.model.response.AppuntamentoDTO;
@@ -20,4 +21,7 @@ public interface AppuntamentoService {
     Long getIdUtenteByEmail(String email);
 
     Long getIdMedicoByEmail(String email);
+
+    // 🔥 NUOVO METODO — orari occupati del medico
+    List<String> getOrariOccupati(Long idMedico, LocalDate data);
 }

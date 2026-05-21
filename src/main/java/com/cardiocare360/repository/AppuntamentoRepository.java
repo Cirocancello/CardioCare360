@@ -16,6 +16,9 @@ public interface AppuntamentoRepository extends JpaRepository<Appuntamento, Long
     // Appuntamenti del medico
     List<Appuntamento> findByMedicoId(Long idMedico);
 
+    // 🔥 NUOVO METODO — Appuntamenti del medico in una data
+    List<Appuntamento> findByMedicoIdAndDataAppuntamento(Long idMedico, LocalDate data);
+
     // Controllo sovrapposizione medico
     boolean existsByMedicoIdAndDataAppuntamentoAndOraAppuntamento(
             Long idMedico, LocalDate data, LocalTime ora);

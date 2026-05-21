@@ -11,8 +11,12 @@ public interface SlotOrarioRepository extends JpaRepository<SlotOrario, Long> {
     // Tutti gli slot di una disponibilità
     List<SlotOrario> findByDisponibilitaId(Long disponibilitaId);
 
-    // Slot che iniziano in un certo intervallo (utile per controlli)
-    List<SlotOrario> findByInizioBetween(LocalDateTime start, LocalDateTime end);
+    // Slot che iniziano in un certo intervallo (per evitare duplicati)
+    List<SlotOrario> findByDisponibilitaIdAndInizioBetween(
+            Long disponibilitaId,
+            LocalDateTime start,
+            LocalDateTime end
+    );
 
     // Tutti gli slot di un medico (tramite disponibilità)
     List<SlotOrario> findByDisponibilitaMedicoId(Long medicoId);

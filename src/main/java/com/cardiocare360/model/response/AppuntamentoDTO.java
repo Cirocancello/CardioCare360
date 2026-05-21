@@ -1,5 +1,6 @@
 package com.cardiocare360.model.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -8,8 +9,13 @@ public class AppuntamentoDTO {
     private Long id;
     private Long idPaziente;
     private Long idMedico;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataAppuntamento;
+
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime oraAppuntamento;
+
     private String stato;
     private String note;
 

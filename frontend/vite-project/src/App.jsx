@@ -1,63 +1,72 @@
 import { Routes, Route } from "react-router-dom";
 
-import HomePage from "./pages/HomePage";
-import Login from "./pages/Login";
-import ForgotPassword from "./pages/ForgotPassword";
+// 🌐 Pagine pubbliche
+import HomePage from "./pages/public/HomePage";
+import AboutPage from "./pages/public/AboutPage";
+import ServicesPage from "./pages/public/ServicesPage";
+import ContactPage from "./pages/public/ContactPage";
+import Login from "./pages/public/Login";
+import ForgotPassword from "./pages/public/ForgotPassword";
 
-import AboutPage from "./pages/AboutPage";
-import ServicesPage from "./pages/ServicesPage";
-import ContactPage from "./pages/ContactPage";
-import DashboardPaziente from "./pages/DashboardPaziente";
-import DashboardMedico from "./pages/DashboardMedico";
-import AdminDashboard from "./pages/AdminDashboard";
+// 🔒 Pagine protette
+import DashboardPaziente from "./pages/paziente/DashboardPaziente";
+import DashboardMedico from "./pages/medico/DashboardMedico";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
+// 📌 Prenotazione visite
+import SelezionaVisita from "./pages/paziente/SelezionaVisita";
+import SelezionaMedico from "./pages/paziente/SelezionaMedico";
+import SelezionaData from "./pages/paziente/SelezionaData";
+import SelezionaOrario from "./pages/paziente/SelezionaOrario";
+import RiepilogoPrenotazione from "./pages/paziente/RiepilogoPrenotazione";
+import PrenotazioneConfermata from "./pages/paziente/PrenotazioneConfermata";
+
+// 📌 Altre pagine paziente
+import Appuntamenti from "./pages/paziente/Appuntamenti";
+import PrenotazioneVisite from "./pages/paziente/PrenotazioneVisite";
+
+// 🧩 Layout e protezione
+import DashboardLayout from "./Layouts/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
 
-      {/* 🌐 Rotta pubblica: Home Page */}
+      {/* 🌐 Rotte pubbliche */}
       <Route path="/" element={<HomePage />} />
-
-      {/* 🌐 Rotte pubbliche aggiunte */}
       <Route path="/about" element={<AboutPage />} />
       <Route path="/services" element={<ServicesPage />} />
-
-      {/* 🔓 Rotte pubbliche */}
+      <Route path="/contatti" element={<ContactPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/contatti" element={<ContactPage />} />
-
 
       {/* 🔒 Rotte protette */}
       <Route
-        path="/dashboard-paziente"
         element={
           <ProtectedRoute>
-            <DashboardPaziente />
+            <DashboardLayout />
           </ProtectedRoute>
         }
-      />
+      >
 
-      <Route
-        path="/dashboard-medico"
-        element={
-          <ProtectedRoute>
-            <DashboardMedico />
-          </ProtectedRoute>
-        }
-      />
+        {/* 📌 Dashboard */}
+        <Route path="/dashboard-paziente" element={<DashboardPaziente />} />
+        <Route path="/dashboard-medico" element={<DashboardMedico />} />
+        <Route path="/admin" element={<AdminDashboard />} />
 
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
+        {/* 📌 Prenotazione visite */}
+        <Route path="/paziente/prenota/visita" element={<SelezionaVisita />} />
+        <Route path="/paziente/prenota/medico" element={<SelezionaMedico />} />
+        <Route path="/paziente/prenota/data" element={<SelezionaData />} />
+        <Route path="/paziente/prenota/orario" element={<SelezionaOrario />} />
+        <Route path="/paziente/prenota/riepilogo" element={<RiepilogoPrenotazione />} />
+        <Route path="/paziente/prenota/confermata" element={<PrenotazioneConfermata />} />
 
+        {/* 📌 Altre pagine paziente */}
+        <Route path="/paziente/appuntamenti" element={<Appuntamenti />} />
+       
+      </Route>
     </Routes>
   );
 }

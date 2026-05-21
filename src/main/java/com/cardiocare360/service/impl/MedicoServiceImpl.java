@@ -7,6 +7,8 @@ import com.cardiocare360.repository.MedicoRepository;
 import com.cardiocare360.service.MedicoService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MedicoServiceImpl implements MedicoService {
 
@@ -48,6 +50,16 @@ public class MedicoServiceImpl implements MedicoService {
         medicoRepository.save(medico);
 
         return convertToResponse(medico);
+    }
+
+    @Override
+    public List<MedicoResponse> getMediciBySpecializzazione(String specializzazione) {
+
+        List<Medico> medici = medicoRepository.findBySpecializzazioneIgnoreCase(specializzazione);
+
+        return medici.stream()
+                .map(this::convertToResponse)
+                .toList();
     }
 
     private MedicoResponse convertToResponse(Medico medico) {
