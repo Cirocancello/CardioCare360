@@ -38,25 +38,30 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((req, res, excep) ->
-                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+                .authenticationEntryPoint((req, res, exc) ->
+                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Non autorizzato")
                 )
             )
+
             .authorizeHttpRequests(auth -> auth
 
-                // Preflight
+                // Preflight CORS
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // Autenticazione pubblica
+                // Login / Registrazione
                 .requestMatchers("/auth/**").permitAll()
 
-                // Disponibilità e notifiche pubbliche
+                // Endpoint pubblici
                 .requestMatchers("/disponibilita/slot/**").permitAll()
                 .requestMatchers("/disponibilita/date/**").permitAll()
                 .requestMatchers("/api/notifiche/**").permitAll()
 
-                // Medici per visita
+                // Medici → accessibile a paziente, medico, admin
+                .requestMatchers(HttpMethod.GET, "/medici/**")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+
                 .requestMatchers("/medici/visita/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
@@ -64,13 +69,38 @@ public class SecurityConfig {
                 .requestMatchers("/messaggi/**")
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
-                // Appuntamenti → SOLO PAZIENTE
-                .requestMatchers("/appuntamenti/**")
+                // -------------------------
+                // APPUNTAMENTI (regole precise)
+                // -------------------------
+
+                // Paziente → lista appuntamenti
+                .requestMatchers(HttpMethod.GET, "/appuntamenti/paziente")
+                    .hasAuthority("PAZIENTE")
+
+                // Medico → lista appuntamenti
+                .requestMatchers(HttpMethod.GET, "/appuntamenti/medico")
+                    .hasAuthority("MEDICO")
+
+                // Singolo appuntamento → accessibile a entrambi
+                .requestMatchers(HttpMethod.GET, "/appuntamenti/*")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO")
+
+                // Creazione appuntamento → solo paziente
+                .requestMatchers(HttpMethod.POST, "/appuntamenti/**")
+                    .hasAuthority("PAZIENTE")
+
+                // Modifica stato → paziente o medico
+                .requestMatchers(HttpMethod.PUT, "/appuntamenti/**")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO")
+
+                // Eliminazione → solo paziente
+                .requestMatchers(HttpMethod.DELETE, "/appuntamenti/**")
                     .hasAuthority("PAZIENTE")
 
                 // Tutto il resto richiede autenticazione
                 .anyRequest().authenticated()
             )
+
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

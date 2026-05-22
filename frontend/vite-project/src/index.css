@@ -34,6 +34,11 @@ body {
   color: var(--gray-900);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* 🔥 AGGIUNTA IMPORTANTE */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Root container */
@@ -41,6 +46,10 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
+  /* 🔥 QUESTA È LA RIGA CHE SBLOCCA LA GRIGLIA */
+  width: 100%;
+  max-width: 100% !important;
 }
 
 /* Typography */

@@ -44,6 +44,10 @@ public class Appuntamento {
     @Column(columnDefinition = "TEXT")
     private String note;
 
+    // ⭐ NUOVO CAMPO: tipo di visita
+    @Column(name = "tipo_visita")
+    private String tipoVisita;
+
     // ⭐ Relazione con Notifica (necessaria!)
     @OneToMany(mappedBy = "appuntamento", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("appuntamento")
@@ -72,6 +76,9 @@ public class Appuntamento {
 
     public String getNote() { return note; }
     public void setNote(String note) { this.note = note; }
+
+    public String getTipoVisita() { return tipoVisita; }
+    public void setTipoVisita(String tipoVisita) { this.tipoVisita = tipoVisita; }
 
     public List<Notifica> getNotifiche() { return notifiche; }
     public void setNotifiche(List<Notifica> notifiche) { this.notifiche = notifiche; }

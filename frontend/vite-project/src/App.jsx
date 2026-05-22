@@ -21,9 +21,11 @@ import SelezionaOrario from "./pages/paziente/SelezionaOrario";
 import RiepilogoPrenotazione from "./pages/paziente/RiepilogoPrenotazione";
 import PrenotazioneConfermata from "./pages/paziente/PrenotazioneConfermata";
 
-// 📌 Altre pagine paziente
+// 📌 Flusso appuntamenti paziente
 import Appuntamenti from "./pages/paziente/Appuntamenti";
-import PrenotazioneVisite from "./pages/paziente/PrenotazioneVisite";
+import DettaglioAppuntamento from "./pages/paziente/DettaglioAppuntamento";
+import ModificaAppuntamento from "./pages/paziente/ModificaAppuntamento";
+import ConfermaAnnullamento from "./pages/paziente/ConfermaAnnullamento";
 
 // 🧩 Layout e protezione
 import DashboardLayout from "./Layouts/DashboardLayout";
@@ -63,9 +65,14 @@ function App() {
         <Route path="/paziente/prenota/riepilogo" element={<RiepilogoPrenotazione />} />
         <Route path="/paziente/prenota/confermata" element={<PrenotazioneConfermata />} />
 
-        {/* 📌 Altre pagine paziente */}
-        <Route path="/paziente/appuntamenti" element={<Appuntamenti />} />
-       
+        {/* 📌 Flusso appuntamenti paziente */}
+        <Route path="paziente/appuntamenti" element={<Appuntamenti />} />
+        <Route path="paziente/appuntamenti/:id" element={<DettaglioAppuntamento />} />
+        <Route path="paziente/appuntamenti/:id/modifica" element={<ModificaAppuntamento />} />
+        <Route path="paziente/appuntamenti/:id/annulla" element={<ConfermaAnnullamento />} />
+        
+
+
       </Route>
     </Routes>
   );

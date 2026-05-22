@@ -38,6 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        // 🔹 Recupera header Authorization
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -45,6 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        // 🔹 Estrai token e email
         String token = authHeader.substring(7);
         String email = jwtUtil.extractEmail(token);
 
@@ -52,19 +54,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
             var userDetails = customUserDetailsService.loadUserByUsername(email);
 
-            System.out.println(">>> TOKEN: " + token);
-            System.out.println(">>> EMAIL ESTRATTA: " + email);
-            System.out.println(">>> USERDETAILS: " + userDetails.getUsername());
-            System.out.println(">>> AUTHORITIES: " + userDetails.getAuthorities());
-            System.out.println(">>> TOKEN VALIDO? " + jwtUtil.validateToken(token, userDetails));
-
             if (jwtUtil.validateToken(token, userDetails)) {
+
+                // 🔥 Usa le AUTHORITIES del TOKEN (ROLE_PAZIENTE)
+                var authorities = jwtUtil.extractAuthorities(token);
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
-                                userDetails.getAuthorities()
+                                authorities
                         );
 
                 authToken.setDetails(
@@ -72,6 +71,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                System.out.println(">>> [JWT] Utente autenticato: " + email +
+                        " | Ruoli: " + authorities);
+            } else {
+                System.out.println(">>> [JWT] Token non valido per utente: " + email);
             }
         }
 

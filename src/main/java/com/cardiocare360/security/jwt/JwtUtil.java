@@ -3,11 +3,12 @@ package com.cardiocare360.security.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Date;
+import java.util.*;
 
 @Component
 public class JwtUtil {
@@ -22,12 +23,15 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    // ⭐ GENERA TOKEN SENZA ROLE_
     public String generateToken(String email, String ruolo) {
-        System.out.println(">>> SECRET LETTA DA SPRING: " + secret);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("ruolo", ruolo);
+        claims.put("authorities", List.of(ruolo)); // 🔥 niente ROLE_
 
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(email)
-                .claim("ruolo", ruolo)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -35,23 +39,24 @@ public class JwtUtil {
     }
 
     public String extractEmail(String token) {
-        System.out.println(">>> SECRET USATA PER VALIDARE: " + secret);
-
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return getAllClaims(token).getSubject();
     }
 
     public String extractRuolo(String token) {
-        return (String) Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("ruolo");
+        return (String) getAllClaims(token).get("ruolo");
+    }
+
+    // ⭐ ESTRAE AUTHORITIES SENZA ROLE_
+    public List<SimpleGrantedAuthority> extractAuthorities(String token) {
+        Object raw = getAllClaims(token).get("authorities");
+
+        if (raw instanceof List<?> list) {
+            return list.stream()
+                    .map(a -> new SimpleGrantedAuthority(a.toString()))
+                    .toList();
+        }
+
+        return List.of();
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
@@ -65,13 +70,14 @@ public class JwtUtil {
     }
 
     private boolean isTokenExpired(String token) {
-        Date expirationDate = Jwts.parserBuilder()
+        return getAllClaims(token).getExpiration().before(new Date());
+    }
+
+    private Claims getAllClaims(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
-
-        return expirationDate.before(new Date());
+                .getBody();
     }
 }

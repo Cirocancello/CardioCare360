@@ -1,8 +1,95 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import "../../styles/paziente/Appuntamenti.css";
+
 export default function Appuntamenti() {
+  const [appuntamenti, setAppuntamenti] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    // 🔹 Recupera gli appuntamenti del paziente
+    fetch("http://localhost:8080/appuntamenti/paziente", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Errore nel caricamento appuntamenti");
+        return res.json();
+      })
+      .then(async data => {
+        if (Array.isArray(data)) {
+          // 🔹 Arricchisci ogni appuntamento con i dati del medico
+          const enriched = await Promise.all(
+            data.map(async app => {
+              if (!app.idMedico) {
+                // Se manca l'idMedico, evita la fetch
+                return { ...app, medico: null };
+              }
+
+              try {
+                const resMedico = await fetch(`http://localhost:8080/medici/${app.idMedico}`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                const medico = resMedico.ok ? await resMedico.json() : null;
+                return { ...app, medico };
+              } catch (err) {
+                console.error("Errore fetch medico:", err);
+                return { ...app, medico: null };
+              }
+            })
+          );
+          setAppuntamenti(enriched);
+        } else {
+          setAppuntamenti([]);
+        }
+      })
+      .catch(err => console.error("Errore caricamento appuntamenti:", err));
+  }, []);
+
   return (
     <div className="page-container">
-      <h1>Appuntamenti</h1>
-      <p>Qui verranno mostrati gli appuntamenti prenotati dal paziente.</p>
+      <h1 className="page-title">I tuoi appuntamenti</h1>
+
+      <div className="appointments-grid">
+        {Array.isArray(appuntamenti) && appuntamenti.length > 0 ? (
+          appuntamenti.map(app => (
+            <div key={app.id} className="appointment-card">
+              <div className="appointment-header">
+                <h3>{app.dataAppuntamento} – {app.oraAppuntamento}</h3>
+                <span className={`status ${app.stato?.toLowerCase() || "sconosciuto"}`}>
+                  {app.stato || "Sconosciuto"}
+                </span>
+              </div>
+
+              <div className="appointment-body">
+                <p>
+                  <strong>Medico:</strong>{" "}
+                  {app.medico
+                    ? app.medico.nomeCompleto
+                    : app.idMedico
+                    ? `Medico #${app.idMedico}`
+                    : "Non disponibile"}
+                </p>
+                <p><strong>Tipo visita:</strong> {app.tipoVisita || "Non specificato"}</p>
+              </div>
+
+              <div className="appointment-actions">
+                <Link to={`/paziente/appuntamenti/${app.id}`} className="btn-primary">
+                  Dettagli
+                </Link>
+                <Link to={`/paziente/appuntamenti/${app.id}/modifica`} className="btn-secondary">
+                  Modifica
+                </Link>
+                <Link to={`/paziente/appuntamenti/${app.id}/annulla`} className="btn-danger">
+                  Annulla
+                </Link>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>Nessun appuntamento trovato.</p>
+        )}
+      </div>
     </div>
   );
 }

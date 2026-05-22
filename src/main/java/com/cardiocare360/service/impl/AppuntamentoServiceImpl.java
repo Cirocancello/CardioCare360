@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,45 +44,31 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
     @Override
     public AppuntamentoDTO creaAppuntamento(AppuntamentoDTO dto, Long idPaziente) {
 
-        // 🔍 Validazione DTO
-        if (dto == null) {
-            throw new RuntimeException("Dati appuntamento mancanti");
-        }
-        if (dto.getDataAppuntamento() == null) {
-            throw new RuntimeException("La data dell'appuntamento è obbligatoria");
-        }
-        if (dto.getOraAppuntamento() == null) {
-            throw new RuntimeException("L'orario dell'appuntamento è obbligatorio");
-        }
-        if (dto.getIdMedico() == null) {
-            throw new RuntimeException("ID medico mancante");
-        }
+        if (dto == null) throw new RuntimeException("Dati appuntamento mancanti");
+        if (dto.getDataAppuntamento() == null) throw new RuntimeException("La data è obbligatoria");
+        if (dto.getOraAppuntamento() == null) throw new RuntimeException("L'orario è obbligatorio");
+        if (dto.getIdMedico() == null) throw new RuntimeException("ID medico mancante");
 
-        // 🔍 Recupero entità
         Paziente paziente = pazienteRepository.findById(idPaziente)
                 .orElseThrow(() -> new RuntimeException("Paziente non trovato"));
 
         Medico medico = medicoRepository.findById(dto.getIdMedico())
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
-        // 🔍 Controllo data futura
         if (dto.getDataAppuntamento().isBefore(LocalDate.now())) {
-            throw new RuntimeException("La data dell'appuntamento deve essere futura");
+            throw new RuntimeException("La data deve essere futura");
         }
 
-        // 🔍 Controllo conflitti medico
         if (appuntamentoRepository.existsByMedicoIdAndDataAppuntamentoAndOraAppuntamento(
                 medico.getId(), dto.getDataAppuntamento(), dto.getOraAppuntamento())) {
             throw new RuntimeException("Il medico ha già un appuntamento in questo orario");
         }
 
-        // 🔍 Controllo conflitti paziente
         if (appuntamentoRepository.existsByPazienteIdAndDataAppuntamentoAndOraAppuntamento(
                 paziente.getId(), dto.getDataAppuntamento(), dto.getOraAppuntamento())) {
-            throw new RuntimeException("Il paziente ha già un appuntamento in questo orario");
+            throw new RuntimeException("Hai già un appuntamento in questo orario");
         }
 
-        // 🔧 Creazione appuntamento
         Appuntamento app = new Appuntamento();
         app.setPaziente(paziente);
         app.setMedico(medico);
@@ -130,7 +117,7 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
         boolean isMedico = app.getMedico().getId().equals(idUtente);
 
         if (!isPaziente && !isMedico) {
-            throw new RuntimeException("Non hai i permessi per modificare questo appuntamento");
+            throw new RuntimeException("Non hai i permessi");
         }
 
         StatoAppuntamento statoEnum = StatoAppuntamento.valueOf(nuovoStato.toUpperCase());
@@ -161,7 +148,7 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
     }
 
     // ---------------------------------------------------------
-    // METODI AGGIUNTIVI PER IL CONTROLLER
+    // METODI AGGIUNTIVI
     // ---------------------------------------------------------
     @Override
     public Long getIdUtenteByEmail(String email) {
@@ -182,27 +169,72 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
     // ---------------------------------------------------------
     private AppuntamentoDTO convertToDTO(Appuntamento app) {
         AppuntamentoDTO dto = new AppuntamentoDTO();
+
         dto.setId(app.getId());
         dto.setIdPaziente(app.getPaziente().getId());
         dto.setIdMedico(app.getMedico().getId());
+        dto.setNomeMedico(app.getMedico().getNome());
+        dto.setTipoVisita(app.getTipoVisita());
+        dto.setCognomeMedico(app.getMedico().getCognome());
+        dto.setSpecializzazioneMedico(app.getMedico().getSpecializzazione());
         dto.setDataAppuntamento(app.getDataAppuntamento());
         dto.setOraAppuntamento(app.getOraAppuntamento());
         dto.setStato(app.getStato().name());
         dto.setNote(app.getNote());
+
         return dto;
     }
-    
- // ---------------------------------------------------------
- // ORARI OCCUPATI DEL MEDICO
- // ---------------------------------------------------------
- @Override
- public List<String> getOrariOccupati(Long idMedico, LocalDate data) {
-     return appuntamentoRepository
-             .findByMedicoIdAndDataAppuntamento(idMedico, data)
-             .stream()
-             .map(Appuntamento::getOraAppuntamento)
-             .map(ora -> ora.toString())
-             .toList();
- }
 
+    // ---------------------------------------------------------
+    // ORARI OCCUPATI
+    // ---------------------------------------------------------
+    @Override
+    public List<String> getOrariOccupati(Long idMedico, LocalDate data) {
+        return appuntamentoRepository
+                .findByMedicoIdAndDataAppuntamento(idMedico, data)
+                .stream()
+                .map(a -> a.getOraAppuntamento().toString())
+                .toList();
+    }
+
+    // ---------------------------------------------------------
+    // GET SINGOLO APPUNTAMENTO
+    // ---------------------------------------------------------
+    @Override
+    public AppuntamentoDTO getAppuntamentoById(Long id, Long idUtente) {
+
+        Appuntamento app = appuntamentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appuntamento non trovato"));
+
+        boolean isPaziente = Objects.equals(app.getPaziente().getId(), idUtente);
+        boolean isMedico = Objects.equals(app.getMedico().getId(), idUtente);
+
+        if (!isPaziente && !isMedico) {
+            throw new RuntimeException("Accesso non autorizzato");
+        }
+
+        return convertToDTO(app);
+    }
+
+    // ---------------------------------------------------------
+    // AGGIORNA APPUNTAMENTO (data, ora, note)
+    // ---------------------------------------------------------
+    @Override
+    public AppuntamentoDTO aggiornaAppuntamento(Long id, AppuntamentoDTO dto, Long idUtente) {
+
+        Appuntamento app = appuntamentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appuntamento non trovato"));
+
+        if (!app.getPaziente().getId().equals(idUtente)) {
+            throw new RuntimeException("Non autorizzato");
+        }
+
+        app.setDataAppuntamento(dto.getDataAppuntamento());
+        app.setOraAppuntamento(dto.getOraAppuntamento());
+        app.setNote(dto.getNote());
+
+        appuntamentoRepository.save(app);
+
+        return convertToDTO(app);
+    }
 }

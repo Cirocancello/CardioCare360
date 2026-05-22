@@ -38,9 +38,9 @@ public class Utente implements UserDetails {
     @Column(name = "data_registrazione")
     private LocalDateTime dataRegistrazione = LocalDateTime.now();
 
-    // ⭐ Relazione con Notifica (mancava!)
+    // ⭐ Relazione con Notifica
     @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("utente") // evita loop Notifica → Utente → Notifica
+    @JsonIgnoreProperties("utente")
     private List<Notifica> notifiche;
 
     public enum Ruolo {
@@ -86,7 +86,8 @@ public class Utente implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + this.ruolo.name()));
+        // 🔥 VERSIONE CORRETTA: niente ROLE_
+        return List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(this.ruolo.name()));
     }
 
     @Override

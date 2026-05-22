@@ -4,7 +4,6 @@ import com.cardiocare360.model.entity.Utente;
 import com.cardiocare360.repository.UtenteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,17 +19,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        System.out.println(">>> CustomUserDetailsService: sto caricando utente con email = " + email);
-
         Utente utente = utenteRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato: " + email));
 
-        // ⭐ Nessun prefisso ROLE_ → combacia con hasAnyAuthority
-        return new User(
+        String ruolo = utente.getRuolo().name(); // PAZIENTE, MEDICO, ADMIN
+
+        return new org.springframework.security.core.userdetails.User(
                 utente.getEmail(),
                 utente.getPassword(),
-                List.of(new SimpleGrantedAuthority(utente.getRuolo().name()))
+                List.of(new SimpleGrantedAuthority(ruolo)) // 🔥 SENZA ROLE_
         );
     }
 }

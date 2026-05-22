@@ -133,5 +133,34 @@ public class AppuntamentoController {
      List<String> orari = appuntamentoService.getOrariOccupati(idMedico, LocalDate.parse(data));
      return ResponseEntity.ok(orari);
  }
+ 
+//---------------------------------------------------------
+//GET SINGOLO APPUNTAMENTO (paziente o medico)
+//---------------------------------------------------------
+@GetMapping("/{id}")
+public ResponseEntity<AppuntamentoDTO> getAppuntamentoById(
+      @PathVariable Long id,
+      Principal principal) {
+
+  String email = principal.getName();
+  Long idUtente = appuntamentoService.getIdUtenteByEmail(email);
+
+  AppuntamentoDTO dto = appuntamentoService.getAppuntamentoById(id, idUtente);
+
+  return ResponseEntity.ok(dto);
+}
+
+@PutMapping("/{id}")
+public ResponseEntity<AppuntamentoDTO> aggiornaAppuntamento(
+        @PathVariable Long id,
+        @RequestBody AppuntamentoDTO dto,
+        Principal principal) {
+
+    String email = principal.getName();
+    Long idUtente = appuntamentoService.getIdUtenteByEmail(email);
+
+    AppuntamentoDTO updated = appuntamentoService.aggiornaAppuntamento(id, dto, idUtente);
+    return ResponseEntity.ok(updated);
+}
 
 }

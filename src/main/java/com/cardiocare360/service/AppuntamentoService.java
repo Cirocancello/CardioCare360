@@ -24,4 +24,10 @@ public interface AppuntamentoService {
 
     // 🔥 NUOVO METODO — orari occupati del medico
     List<String> getOrariOccupati(Long idMedico, LocalDate data);
+    
+    public AppuntamentoDTO getAppuntamentoById(Long id, Long idUtente);
+    
+    AppuntamentoDTO aggiornaAppuntamento(Long id, AppuntamentoDTO dto, Long idUtente);
+
+
 }
