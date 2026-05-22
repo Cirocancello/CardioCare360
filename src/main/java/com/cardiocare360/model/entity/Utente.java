@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "utente")
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonIgnoreProperties({"notifiche"}) // 🔥 evita ricorsioni Notifica → Utente → Notifica
+@JsonIgnoreProperties({"notifiche"}) 
 public class Utente implements UserDetails {
 
     @Id
@@ -38,7 +38,6 @@ public class Utente implements UserDetails {
     @Column(name = "data_registrazione")
     private LocalDateTime dataRegistrazione = LocalDateTime.now();
 
-    // ⭐ Relazione con Notifica
     @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("utente")
     private List<Notifica> notifiche;
@@ -51,10 +50,7 @@ public class Utente implements UserDetails {
 
     public Utente() {}
 
-    // -------------------------
     // Getter e Setter
-    // -------------------------
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -80,20 +76,14 @@ public class Utente implements UserDetails {
     public List<Notifica> getNotifiche() { return notifiche; }
     public void setNotifiche(List<Notifica> notifiche) { this.notifiche = notifiche; }
 
-    // -------------------------
     // SPRING SECURITY
-    // -------------------------
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 🔥 VERSIONE CORRETTA: niente ROLE_
         return List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(this.ruolo.name()));
     }
 
     @Override
-    public String getUsername() {
-        return this.email;
-    }
+    public String getUsername() { return this.email; }
 
     @Override
     public boolean isAccountNonExpired() { return true; }

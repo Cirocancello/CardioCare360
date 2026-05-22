@@ -7,8 +7,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "paziente")
-@PrimaryKeyJoinColumn(name = "id")
-@JsonIgnoreProperties({"notifiche"}) 
+@PrimaryKeyJoinColumn(name = "id") // usa la stessa PK di Utente
+@JsonIgnoreProperties({"notifiche"})
 public class Paziente extends Utente {
 
     @Column(name = "codice_fiscale", nullable = false, unique = true, length = 16)
@@ -32,7 +32,6 @@ public class Paziente extends Utente {
 
     public Paziente() {}
 
-    // Getter e Setter
     public String getCodiceFiscale() { return codiceFiscale; }
     public void setCodiceFiscale(String codiceFiscale) { this.codiceFiscale = codiceFiscale; }
 

@@ -6,8 +6,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "medico")
-@PrimaryKeyJoinColumn(name = "id")
-@JsonIgnoreProperties({"notifiche"}) // 🔥 evita loop Medico → Notifica → Medico
+@PrimaryKeyJoinColumn(name = "id") // usa la stessa PK di Utente
+@JsonIgnoreProperties({"notifiche"})
 public class Medico extends Utente {
 
     @Column(nullable = false, length = 100)
@@ -16,7 +16,6 @@ public class Medico extends Utente {
     @Column(name = "numero_licenza", nullable = false, unique = true, length = 50)
     private String numeroLicenza;
 
-    // ⭐ Relazione con Notifica (necessaria!)
     @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("medico")
     private List<Notifica> notifiche;

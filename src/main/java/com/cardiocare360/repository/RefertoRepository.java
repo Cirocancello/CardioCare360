@@ -2,17 +2,14 @@ package com.cardiocare360.repository;
 
 import com.cardiocare360.model.entity.Referto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+@Repository
 public interface RefertoRepository extends JpaRepository<Referto, Long> {
 
-    List<Referto> findByPaziente_Id(Long pazienteId);
+    // Recupera il referto associato a un esame
+    Referto findByEsame_Id(Long esameId);
 
-    List<Referto> findByMedico_Id(Long medicoId);
-
-    List<Referto> findByPaziente_IdOrderByDataCreazioneDesc(Long pazienteId);
-
-    List<Referto> findByDataCreazioneBetween(LocalDateTime start, LocalDateTime end);
+    // Controlla se esiste un referto per un esame
+    boolean existsByEsame_Id(Long esameId);
 }

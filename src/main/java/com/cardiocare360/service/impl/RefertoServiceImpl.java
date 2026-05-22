@@ -1,10 +1,11 @@
 package com.cardiocare360.service.impl;
 
+import com.cardiocare360.model.entity.Esame;
 import com.cardiocare360.model.entity.Medico;
-import com.cardiocare360.model.entity.Paziente;
 import com.cardiocare360.model.entity.Referto;
+import com.cardiocare360.model.response.RefertoDTO;
+import com.cardiocare360.repository.EsameRepository;
 import com.cardiocare360.repository.MedicoRepository;
-import com.cardiocare360.repository.PazienteRepository;
 import com.cardiocare360.repository.RefertoRepository;
 import com.cardiocare360.service.RefertoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,101 +15,95 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
 @Service
 public class RefertoServiceImpl implements RefertoService {
 
     @Autowired
-    private PazienteRepository pazienteRepository;
+    private RefertoRepository refertoRepository;
+
+    @Autowired
+    private EsameRepository esameRepository;
 
     @Autowired
     private MedicoRepository medicoRepository;
 
-    @Autowired
-    private RefertoRepository refertoRepository;
-
-    // Percorso reale e funzionante
     private final String BASE_PATH = "C:/cardiocare360/uploads/referti/";
 
-    		
-
     @Override
-    public Referto creaReferto(Long pazienteId,
-                               Long medicoId,
-                               String titolo,
-                               String descrizione,
-                               String diagnosi,
-                               MultipartFile file) {
+    public RefertoDTO uploadReferto(Long esameId,
+                                    Long medicoId,
+                                    String noteMedico,
+                                    MultipartFile file) {
 
-        Paziente paziente = pazienteRepository.findById(pazienteId)
-                .orElseThrow(() -> new RuntimeException("Paziente non trovato"));
+        Esame esame = esameRepository.findById(esameId)
+                .orElseThrow(() -> new RuntimeException("Esame non trovato"));
 
         Medico medico = medicoRepository.findById(medicoId)
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
-        Referto referto = new Referto();
-        referto.setPaziente(paziente);
-        referto.setMedico(medico);
-        referto.setTitolo(titolo);
-        referto.setDescrizione(descrizione);
-        referto.setDiagnosi(diagnosi);
-
-        // Salvataggio file
-        String filePath = salvaFile(file);
-        referto.setFilePath(filePath);
-
-        return refertoRepository.save(referto);
-    }
-
-    private String salvaFile(MultipartFile file) {
-        try {
-            File directory = new File(BASE_PATH);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-
-            String filePath = BASE_PATH + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            File dest = new File(filePath);
-
-            // DEBUG: percorso reale
-            System.out.println("Salvataggio in: " + dest.getAbsolutePath());
-
-            file.transferTo(dest);
-
-            return filePath;
-
-        } catch (IOException e) {
-            e.printStackTrace(); // MOSTRA L'ERRORE REALE
-            throw new RuntimeException("Errore durante il salvataggio del file: " + e.getMessage());
+        // Se esiste già un referto per questo esame, lo aggiorniamo
+        Referto referto = refertoRepository.findByEsame_Id(esameId);
+        if (referto == null) {
+            referto = new Referto();
+            referto.setEsame(esame);
         }
+
+        referto.setMedico(medico);
+        referto.setNoteMedico(noteMedico);
+        referto.setFilePath(salvaFile(file));
+
+        // Aggiorna stato esame
+        esame.setStato(Esame.StatoEsame.REFERTATO);
+        esameRepository.save(esame);
+
+        Referto saved = refertoRepository.save(referto);
+        return convertToRefertoDTO(saved);
     }
 
-
     @Override
-    public Referto getRefertoById(Long id) {
-        return refertoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Referto non trovato"));
-    }
-
-    @Override
-    public List<Referto> getRefertiPaziente(Long pazienteId) {
-        return refertoRepository.findByPaziente_Id(pazienteId);
-    }
-
-    @Override
-    public List<Referto> getRefertiMedico(Long medicoId) {
-        return refertoRepository.findByMedico_Id(medicoId);
+    public RefertoDTO getRefertoByEsame(Long esameId) {
+        Referto referto = refertoRepository.findByEsame_Id(esameId);
+        if (referto == null) throw new RuntimeException("Referto non trovato");
+        return convertToRefertoDTO(referto);
     }
 
     @Override
     public byte[] downloadFile(Long refertoId) {
-        Referto referto = getRefertoById(refertoId);
+        Referto referto = refertoRepository.findById(refertoId)
+                .orElseThrow(() -> new RuntimeException("Referto non trovato"));
 
         try {
             return Files.readAllBytes(new File(referto.getFilePath()).toPath());
         } catch (IOException e) {
             throw new RuntimeException("Errore durante il download del file");
         }
+    }
+
+    private String salvaFile(MultipartFile file) {
+        try {
+            File directory = new File(BASE_PATH);
+            if (!directory.exists()) directory.mkdirs();
+
+            String filePath = BASE_PATH + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            file.transferTo(new File(filePath));
+            return filePath;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Errore durante il salvataggio del file: " + e.getMessage());
+        }
+    }
+
+    private RefertoDTO convertToRefertoDTO(Referto referto) {
+        RefertoDTO dto = new RefertoDTO();
+        dto.setId(referto.getId());
+        dto.setEsameId(referto.getEsame().getId());
+        dto.setMedicoId(referto.getMedico().getId());
+        dto.setNomeMedico(referto.getMedico().getNome());
+        dto.setCognomeMedico(referto.getMedico().getCognome());
+        dto.setNoteMedico(referto.getNoteMedico());
+        dto.setFilePath(referto.getFilePath());
+        dto.setDataCreazione(referto.getDataCreazione()); // 🔥 CORRETTO
+        return dto;
     }
 }

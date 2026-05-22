@@ -18,7 +18,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // 🔥 Registrazione utente
+    // 🔥 Registrazione utente (ADMIN → crea PAZIENTE o MEDICO)
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         System.out.println(">>> [AUTH] Richiesta registrazione ricevuta per: " + request.getEmail());
@@ -29,7 +29,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
 
         } catch (IllegalArgumentException e) {
-            // Errori previsti → email o CF duplicati
+            // Errori previsti → email duplicata, CF duplicato, ruolo mancante
             System.err.println(">>> [AUTH] Errore di validazione: " + e.getMessage());
             return ResponseEntity.status(409).body(e.getMessage()); // 409 CONFLICT
 
@@ -53,8 +53,8 @@ public class AuthController {
             return ResponseEntity.status(401).build(); // ⭐ restituisce 401 se credenziali errate
         }
     }
-    
- // 🔥 Recupero password
+
+    // 🔥 Recupero password
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
 
@@ -65,12 +65,11 @@ public class AuthController {
             return ResponseEntity.status(400).body("EMAIL_NON_VALIDA");
         }
 
-        // Qui puoi fare un controllo reale sul DB
+        // Qui potresti controllare se l'email esiste nel DB
         // boolean exists = utenteRepository.existsByEmail(email);
         // if (!exists) return ResponseEntity.status(404).body("EMAIL_NON_TROVATA");
 
         System.out.println(">>> [AUTH] Email di recupero inviata a: " + email);
         return ResponseEntity.ok("EMAIL_INVIATA");
     }
-
 }

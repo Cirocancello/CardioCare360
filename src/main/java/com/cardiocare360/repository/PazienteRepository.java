@@ -2,7 +2,6 @@ package com.cardiocare360.repository;
 
 import com.cardiocare360.model.entity.Paziente;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 
 public interface PazienteRepository extends JpaRepository<Paziente, Long> {
@@ -11,8 +10,8 @@ public interface PazienteRepository extends JpaRepository<Paziente, Long> {
 
     Optional<Paziente> findByEmail(String email);
 
-    // 🔥 Controllo duplicato codice fiscale
     boolean existsByCodiceFiscale(String codiceFiscale);
 
-    
+    // ✅ Con ereditarietà, l'ID del paziente è l'ID dell'utente
+    Optional<Paziente> findById(Long id);
 }

@@ -1,24 +1,16 @@
 package com.cardiocare360.service;
 
-import com.cardiocare360.model.entity.Referto;
+import com.cardiocare360.model.response.RefertoDTO;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface RefertoService {
 
-    Referto creaReferto(Long pazienteId,
-                        Long medicoId,
-                        String titolo,
-                        String descrizione,
-                        String diagnosi,
-                        MultipartFile file);
+    RefertoDTO uploadReferto(Long esameId,
+                             Long medicoId,
+                             String noteMedico,
+                             MultipartFile file);
 
-    Referto getRefertoById(Long id);
-
-    List<Referto> getRefertiPaziente(Long pazienteId);
-
-    List<Referto> getRefertiMedico(Long medicoId);
+    RefertoDTO getRefertoByEsame(Long esameId);
 
     byte[] downloadFile(Long refertoId);
 }
