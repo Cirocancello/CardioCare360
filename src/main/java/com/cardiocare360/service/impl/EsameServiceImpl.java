@@ -3,11 +3,15 @@ package com.cardiocare360.service.impl;
 import com.cardiocare360.model.entity.Esame;
 import com.cardiocare360.model.entity.Medico;
 import com.cardiocare360.model.entity.Paziente;
+import com.cardiocare360.model.entity.Referto;
 import com.cardiocare360.model.response.EsameDTO;
+import com.cardiocare360.model.response.RefertoDTO;
 import com.cardiocare360.repository.EsameRepository;
 import com.cardiocare360.repository.MedicoRepository;
 import com.cardiocare360.repository.PazienteRepository;
+import com.cardiocare360.repository.RefertoRepository;
 import com.cardiocare360.service.EsameService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,9 @@ public class EsameServiceImpl implements EsameService {
 
     @Autowired
     private MedicoRepository medicoRepository;
+
+    @Autowired
+    private RefertoRepository refertoRepository;
 
     @Override
     public EsameDTO creaEsame(EsameDTO dto) {
@@ -90,6 +97,40 @@ public class EsameServiceImpl implements EsameService {
         esameRepository.deleteById(idEsame);
     }
 
+    // ⭐ Recupero referto dell’esame (ultimo referto)
+    @Override
+    public RefertoDTO getRefertoByEsame(Long idEsame) {
+
+        List<Referto> referti = refertoRepository.findByEsame_Id(idEsame);
+
+        if (referti.isEmpty()) {
+            throw new RuntimeException("Referto non presente per questo esame");
+        }
+
+        // Prendi l’ultimo referto
+        Referto referto = referti.get(referti.size() - 1);
+
+        RefertoDTO dto = new RefertoDTO();
+        dto.setId(referto.getId());
+        dto.setEsameId(idEsame);
+
+        dto.setMedicoId(referto.getMedico().getId());
+        dto.setNomeMedico(referto.getMedico().getNome());
+        dto.setCognomeMedico(referto.getMedico().getCognome());
+
+        dto.setNoteMedico(referto.getNoteMedico());
+        dto.setFilePath(referto.getFilePath());
+        dto.setDataCreazione(referto.getDataCreazione());
+
+        // 🔥 NUOVI CAMPI DEL REFERTO
+        dto.setTitolo(referto.getTitolo());
+        dto.setDescrizione(referto.getDescrizione());
+        dto.setDiagnosi(referto.getDiagnosi());
+        dto.setDataReferto(referto.getDataReferto());
+
+        return dto;
+    }
+
     private EsameDTO convertToDTO(Esame esame) {
         EsameDTO dto = new EsameDTO();
 
@@ -107,7 +148,10 @@ public class EsameServiceImpl implements EsameService {
         dto.setStato(esame.getStato().name());
         dto.setNote(esame.getNote());
 
-        dto.setRefertoPresente(esame.getReferto() != null);
+        // 🔥 Esame ha referti? (1 → N)
+        dto.setRefertoPresente(
+                esame.getReferti() != null && !esame.getReferti().isEmpty()
+        );
 
         return dto;
     }

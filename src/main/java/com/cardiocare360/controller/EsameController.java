@@ -1,6 +1,7 @@
 package com.cardiocare360.controller;
 
 import com.cardiocare360.model.response.EsameDTO;
+import com.cardiocare360.model.response.RefertoDTO;
 import com.cardiocare360.service.EsameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,11 @@ public class EsameController {
     private EsameService esameService;
 
     // Prenotazione esame
-    @PostMapping
-    public EsameDTO creaEsame(@RequestBody EsameDTO dto) {
+    @PostMapping("/prenota")
+    public EsameDTO prenotaEsame(@RequestBody EsameDTO dto) {
         return esameService.creaEsame(dto);
     }
+
 
     // Lista esami del paziente
     @GetMapping("/paziente/{idPaziente}")
@@ -53,4 +55,11 @@ public class EsameController {
     public void eliminaEsame(@PathVariable Long idEsame) {
         esameService.eliminaEsame(idEsame);
     }
+    
+    @GetMapping("/{idEsame}/referto")
+    public RefertoDTO getReferto(@PathVariable Long idEsame) {
+        return esameService.getRefertoByEsame(idEsame);
+    }
+
+
 }

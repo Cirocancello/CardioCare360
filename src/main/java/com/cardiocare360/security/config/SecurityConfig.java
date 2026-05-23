@@ -70,7 +70,19 @@ public class SecurityConfig {
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
                 // -------------------------
-                // APPUNTAMENTI (regole precise)
+                // REFERTI (AGGIUNTO)
+                // -------------------------
+
+                // Upload referto → solo medico
+                .requestMatchers(HttpMethod.POST, "/referti/upload")
+                    .hasAnyAuthority("MEDICO")
+
+                // Download e visualizzazione referto → medico e paziente
+                .requestMatchers(HttpMethod.GET, "/referti/**")
+                    .hasAnyAuthority("MEDICO", "PAZIENTE")
+
+                // -------------------------
+                // APPUNTAMENTI
                 // -------------------------
 
                 // Paziente → lista appuntamenti

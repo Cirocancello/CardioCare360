@@ -11,31 +11,42 @@ public class Referto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relazione 1–1 con Esame
-    @OneToOne(optional = false)
-    @JoinColumn(name = "esame_id", nullable = false, unique = true)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "esame_id", nullable = false)
     private Esame esame;
 
-    // Medico che ha redatto il referto
     @ManyToOne(optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
-    // Note del medico
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "paziente_id", nullable = false)
+    private Paziente paziente;
+
+    @Column(nullable = false)
+    private String titolo;
+
+    @Column(columnDefinition = "TEXT")
+    private String descrizione;
+
+    @Column(columnDefinition = "TEXT")
+    private String diagnosi;
+
     @Column(name = "note_medico", columnDefinition = "TEXT")
     private String noteMedico;
 
-    // Percorso del file PDF salvato nel filesystem
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
-    // Data di creazione del referto (campo ESISTENTE nel DB)
     @Column(name = "data_creazione", nullable = false)
     private LocalDateTime dataCreazione = LocalDateTime.now();
 
+    @Column(name = "data_referto")
+    private LocalDateTime dataReferto;
+
     public Referto() {}
 
-    // Getter e Setter
+    // GETTER & SETTER
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -45,6 +56,18 @@ public class Referto {
     public Medico getMedico() { return medico; }
     public void setMedico(Medico medico) { this.medico = medico; }
 
+    public Paziente getPaziente() { return paziente; }
+    public void setPaziente(Paziente paziente) { this.paziente = paziente; }
+
+    public String getTitolo() { return titolo; }
+    public void setTitolo(String titolo) { this.titolo = titolo; }
+
+    public String getDescrizione() { return descrizione; }
+    public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
+
+    public String getDiagnosi() { return diagnosi; }
+    public void setDiagnosi(String diagnosi) { this.diagnosi = diagnosi; }
+
     public String getNoteMedico() { return noteMedico; }
     public void setNoteMedico(String noteMedico) { this.noteMedico = noteMedico; }
 
@@ -53,4 +76,7 @@ public class Referto {
 
     public LocalDateTime getDataCreazione() { return dataCreazione; }
     public void setDataCreazione(LocalDateTime dataCreazione) { this.dataCreazione = dataCreazione; }
+
+    public LocalDateTime getDataReferto() { return dataReferto; }
+    public void setDataReferto(LocalDateTime dataReferto) { this.dataReferto = dataReferto; }
 }

@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "esame")
-@JsonIgnoreProperties({"referto"})
+@JsonIgnoreProperties({"referti"})
 public class Esame {
 
     public enum StatoEsame {
@@ -20,11 +21,11 @@ public class Esame {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
     private Paziente paziente;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
@@ -44,8 +45,9 @@ public class Esame {
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    @OneToOne(mappedBy = "esame", cascade = CascadeType.ALL)
-    private Referto referto;
+    // Relazione corretta: un esame può avere più referti
+    @OneToMany(mappedBy = "esame")
+    private List<Referto> referti;
 
     public Esame() {}
 
@@ -74,6 +76,6 @@ public class Esame {
     public String getNote() { return note; }
     public void setNote(String note) { this.note = note; }
 
-    public Referto getReferto() { return referto; }
-    public void setReferto(Referto referto) { this.referto = referto; }
+    public List<Referto> getReferti() { return referti; }
+    public void setReferti(List<Referto> referti) { this.referti = referti; }
 }
