@@ -27,9 +27,10 @@ export default function Login() {
       return;
     }
 
-    // Salva token e idUtente
+    // 🔥 Salva tutto ciò che serve
     localStorage.setItem("token", data.token);
     localStorage.setItem("idUtente", data.idUtente);
+    localStorage.setItem("user", JSON.stringify(data)); // <— AGGIUNTO
 
     // Redirect in base al ruolo
     if (data.ruolo === "PAZIENTE") {
