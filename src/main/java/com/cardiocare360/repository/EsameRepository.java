@@ -4,6 +4,8 @@ import com.cardiocare360.model.entity.Esame;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -20,4 +22,7 @@ public interface EsameRepository extends JpaRepository<Esame, Long> {
 
     // Controllo esame specifico del medico
     boolean existsByIdAndMedicoId(Long idEsame, Long idMedico);
+
+    // 🔥 Controllo se uno slot (data + ora) è già occupato
+    boolean existsByDataEsameAndOraEsame(LocalDate dataEsame, LocalTime oraEsame);
 }

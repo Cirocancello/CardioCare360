@@ -1,5 +1,6 @@
 package com.cardiocare360.service;
 
+import com.cardiocare360.model.response.DisponibilitaEsameResponse;
 import com.cardiocare360.model.response.EsameDTO;
 import com.cardiocare360.model.response.RefertoDTO;
 import java.util.List;
@@ -20,4 +21,7 @@ public interface EsameService {
 
     // ⭐ Metodo mancante per ottenere il referto
     RefertoDTO getRefertoByEsame(Long idEsame);
+    
+    // 🔥 Nuovo metodo per calcolare la prossima disponibilità
+    DisponibilitaEsameResponse calcolaProssimaDisponibilita(String tipoEsame);
 }

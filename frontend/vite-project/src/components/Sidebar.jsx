@@ -1,6 +1,15 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { FaHome, FaCalendarAlt, FaFileMedical, FaPills, FaBell, FaComments, FaUser, FaStethoscope } from "react-icons/fa";
+import { 
+  FaHome, 
+  FaCalendarAlt, 
+  FaFileMedical, 
+  FaPills, 
+  FaBell, 
+  FaComments, 
+  FaUser, 
+  FaStethoscope 
+} from "react-icons/fa";
 import "../styles/components/sidebar.css";
 
 export default function Sidebar() {
@@ -20,13 +29,20 @@ export default function Sidebar() {
           <span>Appuntamenti</span>
         </NavLink>
 
-        {/* 🔥 CORRETTO: ora punta al primo step del flusso prenotazione */}
+        {/* 🔥 Prenotazione visite */}
         <NavLink to="/paziente/prenota/visita" className="sidebar-link">
           <FaStethoscope className="sidebar-icon" />
           <span>Visite</span>
         </NavLink>
 
-        <NavLink to="/paziente/referti" className="sidebar-link">
+        {/* 🔥 Prenotazione esami */}
+        <NavLink to="/paziente/prenota/esame" className="sidebar-link">
+          <FaFileMedical className="sidebar-icon" />
+          <span>Prenota Esame</span>
+        </NavLink>
+
+        {/* 🔥 Referti = EsamiList (unificati) */}
+        <NavLink to="/paziente/esami" className="sidebar-link">
           <FaFileMedical className="sidebar-icon" />
           <span>Referti</span>
         </NavLink>

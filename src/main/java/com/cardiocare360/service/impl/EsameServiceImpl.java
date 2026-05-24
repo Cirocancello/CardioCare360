@@ -4,6 +4,7 @@ import com.cardiocare360.model.entity.Esame;
 import com.cardiocare360.model.entity.Medico;
 import com.cardiocare360.model.entity.Paziente;
 import com.cardiocare360.model.entity.Referto;
+import com.cardiocare360.model.response.DisponibilitaEsameResponse;
 import com.cardiocare360.model.response.EsameDTO;
 import com.cardiocare360.model.response.RefertoDTO;
 import com.cardiocare360.repository.EsameRepository;
@@ -15,6 +16,8 @@ import com.cardiocare360.service.EsameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -155,4 +158,46 @@ public class EsameServiceImpl implements EsameService {
 
         return dto;
     }
+    
+    @Override
+    public DisponibilitaEsameResponse calcolaProssimaDisponibilita(String tipoEsame) {
+
+        // 1. Durata esame (in minuti)
+        int durata = switch (tipoEsame.toUpperCase()) {
+            case "ECG" -> 15;
+            case "HOLTER" -> 30;
+            case "ECOCARDIOGRAMMA" -> 40;
+            default -> 20;
+        };
+
+        // 2. Orari disponibili (esempio: 9:00 - 18:00)
+        LocalTime start = LocalTime.of(9, 0);
+        LocalTime end = LocalTime.of(18, 0);
+
+        // 3. Data di partenza = oggi
+        LocalDate data = LocalDate.now();
+
+        while (true) {
+            LocalTime orario = start;
+
+            while (!orario.plusMinutes(durata).isAfter(end)) {
+
+                boolean occupato = esameRepository.existsByDataEsameAndOraEsame(
+                        data,
+                        orario                );
+
+                if (!occupato) {
+                    return new DisponibilitaEsameResponse(
+                            data.toString(),
+                            orario.toString()
+                    );
+                }
+
+                orario = orario.plusMinutes(durata);
+            }
+
+            data = data.plusDays(1);
+        }
+    }
+
 }

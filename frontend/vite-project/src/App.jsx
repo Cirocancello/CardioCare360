@@ -27,6 +27,12 @@ import DettaglioAppuntamento from "./pages/paziente/DettaglioAppuntamento";
 import ModificaAppuntamento from "./pages/paziente/ModificaAppuntamento";
 import ConfermaAnnullamento from "./pages/paziente/ConfermaAnnullamento";
 
+// 📌 Flusso esami/referti paziente
+import EsamiList from "./pages/paziente/EsamiList";
+import EsameDettaglio from "./pages/paziente/EsameDettaglio";
+import PrenotaEsame from "./pages/paziente/PrenotaEsame";
+import PrenotazioneEsameConfermata from "./pages/paziente/PrenotazioneEsameConfermata";   // ✅ IMPORT MANCANTE AGGIUNTO
+
 // 🧩 Layout e protezione
 import DashboardLayout from "./Layouts/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -66,12 +72,20 @@ function App() {
         <Route path="/paziente/prenota/confermata" element={<PrenotazioneConfermata />} />
 
         {/* 📌 Flusso appuntamenti paziente */}
-        <Route path="paziente/appuntamenti" element={<Appuntamenti />} />
-        <Route path="paziente/appuntamenti/:id" element={<DettaglioAppuntamento />} />
-        <Route path="paziente/appuntamenti/:id/modifica" element={<ModificaAppuntamento />} />
-        <Route path="paziente/appuntamenti/:id/annulla" element={<ConfermaAnnullamento />} />
-        
+        <Route path="/paziente/appuntamenti" element={<Appuntamenti />} />
+        <Route path="/paziente/appuntamenti/:id" element={<DettaglioAppuntamento />} />
+        <Route path="/paziente/appuntamenti/:id/modifica" element={<ModificaAppuntamento />} />
+        <Route path="/paziente/appuntamenti/:id/annulla" element={<ConfermaAnnullamento />} />
 
+        {/* 📌 Flusso esami/referti paziente */}
+        <Route path="/paziente/esami" element={<EsamiList />} />
+        <Route path="/paziente/esami/:id" element={<EsameDettaglio />} />
+
+        {/* 🔥 Prenotazione esami */}
+        <Route path="/paziente/prenota/esame" element={<PrenotaEsame />} />
+
+        {/* 🔥 Conferma prenotazione esame */}
+        <Route path="/paziente/prenota-esame/confermata" element={<PrenotazioneEsameConfermata />} />
 
       </Route>
     </Routes>

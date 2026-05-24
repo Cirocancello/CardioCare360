@@ -44,11 +44,33 @@ export default function DashboardPaziente() {
       <h2 className="section-title">Azioni rapide</h2>
 
       <div className="quick-actions">
-        <a href="/paziente/appuntamenti" className="quick-card">Appuntamenti</a>
-        <a href="/paziente/prenota/visita" className="quick-card">Visite</a>
-        <a href="/paziente/terapie" className="quick-card">Terapie</a>
-        <a href="/paziente/referti" className="quick-card">Referti</a>
-        <a href="/paziente/messaggi" className="quick-card">Messaggi</a>
+
+        <a href="/paziente/appuntamenti" className="quick-card">
+          Appuntamenti
+        </a>
+
+        <a href="/paziente/prenota/visita" className="quick-card">
+          Visite
+        </a>
+
+        {/* 🔥 CORRETTO: ora porta alla pagina di prenotazione esami */}
+        <a href="/paziente/prenota/esame" className="quick-card">
+          Esami
+        </a>
+
+        {/* 🔥 Referti rimane separato e corretto */}
+        <a href="/paziente/esami" className="quick-card">
+          Referti
+        </a>
+
+        <a href="/paziente/terapie" className="quick-card">
+          Terapie
+        </a>
+
+        <a href="/paziente/messaggi" className="quick-card">
+          Messaggi
+        </a>
+
       </div>
 
     </div>

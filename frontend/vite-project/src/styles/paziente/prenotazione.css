@@ -1,11 +1,19 @@
-/* Contenitore principale */
+/* ---------------------------------------------------
+   🔹 CONTENITORE PRINCIPALE
+--------------------------------------------------- */
 .prenotazione-container {
   max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 40px auto;
+  padding: 30px;
+  font-family: "Inter", sans-serif;
+  background-color: #f9fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Layout verticale degli slot */
+/* ---------------------------------------------------
+   🔹 LAYOUT SLOT ORARI
+--------------------------------------------------- */
 .steps-column {
   display: flex;
   flex-direction: column;
@@ -13,14 +21,16 @@
   margin-top: 25px;
 }
 
-/* Card slot */
+/* ---------------------------------------------------
+   🔹 CARD SLOT
+--------------------------------------------------- */
 .step-card {
   padding: 15px;
   background-color: #f5f5f5;
   border-radius: 8px;
   text-align: center;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
   border: 2px solid transparent;
   font-weight: 500;
 }
@@ -29,14 +39,13 @@
   background-color: #e8e8e8;
 }
 
-/* Slot selezionato */
 .step-card.selected {
   background-color: #007bff;
   color: white;
   border-color: #0056b3;
 }
 
-/* Slot occupato (non cliccabile) */
+/* Slot occupato */
 .disabled-slot {
   background-color: #cccccc !important;
   color: #666 !important;
@@ -46,16 +55,29 @@
   border-color: #b3b3b3 !important;
 }
 
-/* Pulsante primario */
-.btn-primary {
-  padding: 12px 20px;
-  background-color: #007bff;
-  color: white;
+/* ---------------------------------------------------
+   🔹 PULSANTI
+--------------------------------------------------- */
+.btn-primary,
+.btn-secondary {
+  padding: 12px 24px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
-  transition: 0.2s ease;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Primario */
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
@@ -63,22 +85,73 @@
   cursor: not-allowed;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background-color: #0056b3;
-}
-
-/* Pulsante secondario (Indietro) — ora identico come stile */
+/* Secondario */
 .btn-secondary {
-  padding: 12px 20px;
   background-color: #6c757d;
   color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: 0.2s ease;
 }
 
 .btn-secondary:hover {
   background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Allineamento pulsanti */
+.buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+/* ---------------------------------------------------
+   🔹 PAGINA DI CONFERMA PRENOTAZIONE ESAME
+--------------------------------------------------- */
+.conferma-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.conferma-box {
+  background: #fff;
+  padding: 30px;
+  width: 450px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.titolo-conferma {
+  font-size: 26px;
+  margin-bottom: 10px;
+  color: #1a73e8;
+}
+
+.icona-conferma {
+  font-size: 48px;
+  margin: 10px 0;
+}
+
+.testo-conferma {
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+
+.riepilogo-box {
+  text-align: left;
+  background: #f7f9fc;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.riepilogo-box h3 {
+  margin-bottom: 10px;
+}
+
+.azioni-conferma {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

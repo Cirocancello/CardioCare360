@@ -1,9 +1,11 @@
 package com.cardiocare360.controller;
 
+import com.cardiocare360.model.response.DisponibilitaEsameResponse;
 import com.cardiocare360.model.response.EsameDTO;
 import com.cardiocare360.model.response.RefertoDTO;
 import com.cardiocare360.service.EsameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,5 +63,12 @@ public class EsameController {
         return esameService.getRefertoByEsame(idEsame);
     }
 
+    @GetMapping("/disponibilita/prossima")
+    public ResponseEntity<DisponibilitaEsameResponse> getProssimaDisponibilita(
+            @RequestParam String tipo
+    ) {
+        DisponibilitaEsameResponse disponibilita = esameService.calcolaProssimaDisponibilita(tipo);
+        return ResponseEntity.ok(disponibilita);
+    }
 
 }
