@@ -8,11 +8,15 @@ const PrenotaEsame = () => {
     const [loadingDisponibilita, setLoadingDisponibilita] = useState(false);
 
     const [note, setNote] = useState("");
-    const [medicoSelezionato] = useState(30); 
-    const user = JSON.parse(localStorage.getItem("user"));
 
+    // 🔥 NUOVI STATI PER MEDICO DINAMICO
+    const [medici, setMedici] = useState([]);
+    const [medicoSelezionato, setMedicoSelezionato] = useState("");
+
+    const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
 
+    // 🔹 Fetch disponibilità
     const fetchDisponibilita = async (tipo) => {
         try {
             setLoadingDisponibilita(true);
@@ -36,16 +40,44 @@ const PrenotaEsame = () => {
         }
     };
 
+    // 🔹 Fetch medici dinamici
+    const fetchMedici = async (tipo) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/medici/esami?tipo=${tipo}`,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
+
+            const data = await response.json();
+            setMedici(data);
+
+        } catch (error) {
+            console.error("Errore nel caricamento medici", error);
+        }
+    };
+
+    // 🔹 Quando cambia il tipo esame → aggiorna disponibilità + medici
     useEffect(() => {
         if (tipoEsame !== "") {
             fetchDisponibilita(tipoEsame);
+            fetchMedici(tipoEsame);
         }
     }, [tipoEsame]);
 
+    // 🔹 Prenotazione esame
     const prenotaEsame = async () => {
 
         if (!user || !user.idPaziente) {
             alert("Errore: utente non trovato. Effettua nuovamente il login.");
+            return;
+        }
+
+        if (!medicoSelezionato) {
+            alert("Seleziona un medico.");
             return;
         }
 
@@ -70,7 +102,6 @@ const PrenotaEsame = () => {
         const result = await response.json();
         console.log("Esame prenotato:", result);
 
-        // 🔥 NAVIGAZIONE ALLA PAGINA DI CONFERMA
         navigate("/paziente/prenota-esame/confermata", {
             state: { esame: result }
         });
@@ -81,6 +112,7 @@ const PrenotaEsame = () => {
 
             <h2>Prenota Esame</h2>
 
+            {/* Tipo esame */}
             <div className="form-group">
                 <label>Tipo di esame</label>
                 <select
@@ -93,6 +125,24 @@ const PrenotaEsame = () => {
                     <option value="ECOCARDIOGRAMMA">Ecocardiogramma</option>
                 </select>
             </div>
+
+            {/* Medico dinamico */}
+            {medici.length > 0 && (
+                <div className="form-group">
+                    <label>Medico</label>
+                    <select
+                        value={medicoSelezionato}
+                        onChange={(e) => setMedicoSelezionato(e.target.value)}
+                    >
+                        <option value="">Seleziona medico</option>
+                        {medici.map(m => (
+                            <option key={m.id} value={m.id}>
+                                {m.nomeCompleto}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
 
             {loadingDisponibilita && <p>Calcolo disponibilità...</p>}
 
@@ -114,7 +164,7 @@ const PrenotaEsame = () => {
             </div>
 
             <button
-                disabled={!disponibilita}
+                disabled={!disponibilita || !medicoSelezionato}
                 onClick={prenotaEsame}
                 className="btn-primary"
             >
