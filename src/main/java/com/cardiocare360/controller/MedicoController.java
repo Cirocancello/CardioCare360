@@ -33,4 +33,9 @@ public class MedicoController {
         return medicoService.getMediciBySpecializzazione(specializzazione);
     }
 
+    // 🔥 NUOVO ENDPOINT: medici per tipo di esame
+    @GetMapping("/esami")
+    public List<MedicoResponse> getMediciPerTipoEsame(@RequestParam String tipo) {
+        return medicoService.getMediciPerTipoEsame(tipo);
+    }
 }

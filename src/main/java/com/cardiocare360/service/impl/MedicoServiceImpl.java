@@ -54,6 +54,26 @@ public class MedicoServiceImpl implements MedicoService {
 
     @Override
     public List<MedicoResponse> getMediciBySpecializzazione(String specializzazione) {
+        List<Medico> medici = medicoRepository.findBySpecializzazioneIgnoreCase(specializzazione);
+
+        return medici.stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    // 🔥 NUOVO METODO: medico dinamico per tipo esame
+    @Override
+    public List<MedicoResponse> getMediciPerTipoEsame(String tipoEsame) {
+
+        // Mappiamo il tipo esame alla specializzazione corretta
+        String specializzazione = switch (tipoEsame.toUpperCase()) {
+            case "ECG", "HOLTER", "ECOCARDIOGRAMMA" -> "Cardiologia";
+            default -> null;
+        };
+
+        if (specializzazione == null) {
+            return List.of();
+        }
 
         List<Medico> medici = medicoRepository.findBySpecializzazioneIgnoreCase(specializzazione);
 

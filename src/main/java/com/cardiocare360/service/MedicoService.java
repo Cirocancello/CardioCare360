@@ -11,6 +11,8 @@ public interface MedicoService {
 
     MedicoResponse updateMedico(Long id, MedicoUpdateDTO updateDTO);
     
-    public List<MedicoResponse> getMediciBySpecializzazione(String specializzazione);
+    List<MedicoResponse> getMediciBySpecializzazione(String specializzazione);
 
+    // 🔥 Nuovo metodo per medico dinamico nel flusso esami
+    List<MedicoResponse> getMediciPerTipoEsame(String tipoEsame);
 }
