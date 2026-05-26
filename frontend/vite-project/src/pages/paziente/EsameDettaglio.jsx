@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/api";
 
 import "../../styles/paziente/esami.css";
 
@@ -10,26 +10,16 @@ export default function DettaglioEsame() {
 
   const [esame, setEsame] = useState(null);
   const [referto, setReferto] = useState(null);
-
-  const token = localStorage.getItem("token");
+  const [pdfUrl, setPdfUrl] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1️⃣ Recupero dati esame
-        const resEsame = await axios.get(`http://localhost:8080/esami/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const resEsame = await api.get(`/esami/${id}`);
         setEsame(resEsame.data);
 
-        // 2️⃣ Se l’esame è refertato → recupero referto
         if (resEsame.data.stato === "REFERTATO") {
-          const resReferto = await axios.get(
-            `http://localhost:8080/esami/${id}/referto`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          const resReferto = await api.get(`/referti/esame/${id}`);
           setReferto(resReferto.data);
         }
       } catch (error) {
@@ -38,7 +28,44 @@ export default function DettaglioEsame() {
     };
 
     fetchData();
-  }, [id, token]);
+  }, [id]);
+
+  const apriPdf = async () => {
+    try {
+      const res = await api.get(`/referti/preview/${id}`, {
+        responseType: "arraybuffer",
+      });
+
+      const bytes = new Uint8Array(res.data);
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(blob);
+      setPdfUrl(fileURL);
+    } catch (err) {
+      console.error("Errore apertura PDF:", err);
+    }
+  };
+
+  const scaricaPdf = async () => {
+    try {
+      const res = await api.get(`/referti/download/${referto.id}`, {
+        responseType: "arraybuffer",
+      });
+
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = `referto_${referto.id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(fileURL);
+    } catch (err) {
+      console.error("Errore download PDF:", err);
+    }
+  };
 
   if (!esame) return <p>Caricamento...</p>;
 
@@ -46,10 +73,8 @@ export default function DettaglioEsame() {
     <div className="esami-container">
       <h2 className="esami-title">Dettaglio Esame</h2>
 
-      {/* === DATI ESAME === */}
       <div className="info-card-esame">
         <h3>Dati Esame</h3>
-
         <p><strong>Tipo Esame:</strong> {esame.tipoEsame}</p>
         <p><strong>Data:</strong> {esame.dataEsame}</p>
         <p><strong>Ora:</strong> {esame.oraEsame}</p>
@@ -69,63 +94,39 @@ export default function DettaglioEsame() {
           </span>
         </p>
 
-        <p>
-          <strong>Note Paziente:</strong>{" "}
-          {esame.notePaziente || "Nessuna nota"}
-        </p>
-        <p>
-          <strong>Note Medico:</strong>{" "}
-          {esame.noteMedico || "Nessuna nota"}
-        </p>
+        <p><strong>Note Paziente:</strong> {esame.notePaziente || "Nessuna nota"}</p>
+        <p><strong>Note Medico:</strong> {esame.noteMedico || "Nessuna nota"}</p>
       </div>
 
-      {/* === DATI REFERTO (solo se presente) === */}
       {referto && (
         <div className="info-card-esame">
           <h3>Referto</h3>
-
-          <p><strong>Titolo:</strong> {referto.titolo || "—"}</p>
-          <p><strong>Descrizione:</strong> {referto.descrizione || "—"}</p>
-          <p><strong>Diagnosi:</strong> {referto.diagnosi1 || "—"}</p>
           <p><strong>Note Medico:</strong> {referto.noteMedico || "—"}</p>
-          <p><strong>Data Referto:</strong> {referto.dataReferto || "—"}</p>
+          <p><strong>Medico:</strong> {referto.nomeMedico} {referto.cognomeMedico}</p>
 
-          <p>
-            <strong>Medico:</strong>{" "}
-            {referto.nomeMedico} {referto.cognomeMedico}
-          </p>
+          <div className="azioni-referto">
+            <button className="btn-view-pdf" onClick={apriPdf}>
+              Visualizza PDF
+            </button>
 
-          {referto.filePath && (
-            <>
-              <a
-                href={`http://localhost:8080/files/${referto.filePath}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-              >
-                Scarica PDF Referto
-              </a>
+            {/* 🔥 QUI LA CORREZIONE */}
+            <button className="btn-download-pdf" onClick={scaricaPdf}>
+              Scarica PDF
+            </button>
+          </div>
 
-              {/* Anteprima PDF */}
-              <div className="pdf-preview">
-                <iframe
-                  src={`http://localhost:8080/files/${referto.filePath}`}
-                  title="Anteprima Referto"
-                  width="100%"
-                  height="600px"
-                  style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    marginTop: "15px",
-                  }}
-                ></iframe>
-              </div>
-            </>
+          {pdfUrl && (
+            <iframe
+              src={pdfUrl}
+              width="100%"
+              height="600px"
+              style={{ border: "none", marginTop: "20px" }}
+              title="Anteprima Referto"
+            ></iframe>
           )}
         </div>
       )}
 
-      {/* === AZIONI === */}
       <div className="azioni-esame">
         <button
           className="btn-primary"

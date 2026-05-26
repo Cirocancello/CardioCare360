@@ -1,23 +1,20 @@
 package com.cardiocare360.service.impl;
 
+import com.cardiocare360.model.entity.Referto;
 import com.cardiocare360.model.entity.Esame;
 import com.cardiocare360.model.entity.Medico;
-import com.cardiocare360.model.entity.Paziente;
-import com.cardiocare360.model.entity.Referto;
-import com.cardiocare360.model.response.RefertoDTO;
+import com.cardiocare360.repository.RefertoRepository;
 import com.cardiocare360.repository.EsameRepository;
 import com.cardiocare360.repository.MedicoRepository;
-import com.cardiocare360.repository.RefertoRepository;
 import com.cardiocare360.service.RefertoService;
+import com.cardiocare360.model.response.RefertoDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,101 +30,142 @@ public class RefertoServiceImpl implements RefertoService {
     @Autowired
     private MedicoRepository medicoRepository;
 
-    private final String BASE_PATH = "C:/cardiocare360/uploads/referti/";
-
+    // 🔥 UPLOAD REFERTO
     @Override
-    @Transactional
-    public RefertoDTO uploadReferto(Long esameId,
-                                    Long medicoId,
-                                    String noteMedico,
-                                    MultipartFile file) {
+    public RefertoDTO uploadReferto(Long esameId, Long medicoId, String noteMedico, MultipartFile file) {
+        try {
+            System.out.println("=== UPLOAD REFERTO ===");
 
-        Esame esame = esameRepository.getReferenceById(esameId);
-        Medico medico = medicoRepository.getReferenceById(medicoId);
-        Paziente paziente = esame.getPaziente(); // 🔥 OBBLIGATORIO
+            if (file.isEmpty()) {
+                throw new RuntimeException("Il file è vuoto");
+            }
 
-        // CREA SEMPRE UN NUOVO REFERTO
-        Referto referto = new Referto();
-        referto.setEsame(esame);
-        referto.setMedico(medico);
-        referto.setPaziente(paziente); // 🔥 OBBLIGATORIO
+            if (!"application/pdf".equalsIgnoreCase(file.getContentType())) {
+                throw new RuntimeException("Il file caricato non è un PDF valido");
+            }
 
-        // Campi obbligatori della tabella
-        referto.setTitolo("Referto esame " + esame.getTipoEsame());
-        referto.setDescrizione("Descrizione non disponibile");
-        referto.setDiagnosi("Diagnosi non disponibile");
-        referto.setDataReferto(LocalDateTime.now());
+            // 1️⃣ Recupera entità
+            Esame esame = esameRepository.findById(esameId)
+                    .orElseThrow(() -> new RuntimeException("Esame non trovato"));
 
-        referto.setNoteMedico(noteMedico);
-        referto.setFilePath(salvaFile(file));
+            Medico medico = medicoRepository.findById(medicoId)
+                    .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
-        // Aggiorna stato esame
-        esame.setStato(Esame.StatoEsame.REFERTATO);
+            // 2️⃣ Percorso sicuro
+            String uploadDir = System.getProperty("user.dir") + "/uploads/referti/";
+            Path uploadPath = Paths.get(uploadDir);
+            Files.createDirectories(uploadPath);
 
-        // Salva SOLO il referto
-        Referto saved = refertoRepository.save(referto);
+            // 3️⃣ Salvataggio file
+            String fileName = "referto_" + esameId + ".pdf";
+            Path filePath = uploadPath.resolve(fileName);
 
-        return convertToRefertoDTO(saved);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println("File salvato in: " + filePath.toAbsolutePath());
+
+            // 4️⃣ Crea referto
+            Referto referto = new Referto();
+            referto.setEsame(esame);
+            referto.setMedico(medico);
+            referto.setPaziente(esame.getPaziente());
+            referto.setTitolo("Referto Esame " + esame.getTipoEsame());
+            referto.setDescrizione("Documento PDF del referto caricato dal medico");
+            referto.setDiagnosi("In attesa di diagnosi");
+            referto.setNoteMedico(noteMedico);
+            referto.setFilePath(filePath.toString());
+            referto.setDataCreazione(LocalDateTime.now());
+            referto.setDataReferto(LocalDateTime.now());
+
+            refertoRepository.save(referto);
+
+            // 5️⃣ Aggiorna stato esame (CORRETTO)
+            esame.setStato(Esame.StatoEsame.REFERTATO);
+            esameRepository.save(esame);
+
+            // 6️⃣ Ritorna DTO
+            return new RefertoDTO(
+                    referto.getId(),
+                    esame.getId(),
+                    medico.getId(),
+                    referto.getTitolo(),
+                    referto.getDescrizione(),
+                    referto.getDiagnosi(),
+                    referto.getNoteMedico(),
+                    referto.getFilePath(),
+                    referto.getDataCreazione()
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Errore durante il salvataggio del referto: " + e.getMessage(), e);
+        }
     }
 
+    // 🔍 Recupera ultimo referto per esame
     @Override
     public RefertoDTO getRefertoByEsame(Long esameId) {
-
         List<Referto> referti = refertoRepository.findByEsame_Id(esameId);
 
         if (referti.isEmpty()) {
-            throw new RuntimeException("Nessun referto trovato per questo esame");
+            throw new RuntimeException("Referto non trovato per questo esame");
         }
 
-        // Prendi l'ultimo referto (il più recente)
-        Referto ultimo = referti.get(referti.size() - 1);
+        // Prende l’ultimo referto
+        Referto referto = referti.get(referti.size() - 1);
 
-        return convertToRefertoDTO(ultimo);
+        return new RefertoDTO(
+                referto.getId(),
+                referto.getEsame().getId(),
+                referto.getMedico().getId(),
+                referto.getTitolo(),
+                referto.getDescrizione(),
+                referto.getDiagnosi(),
+                referto.getNoteMedico(),
+                referto.getFilePath(),
+                referto.getDataCreazione()
+        );
     }
 
+    // 🔥 DOWNLOAD PDF
     @Override
     public byte[] downloadFile(Long refertoId) {
         Referto referto = refertoRepository.findById(refertoId)
                 .orElseThrow(() -> new RuntimeException("Referto non trovato"));
 
         try {
-            return Files.readAllBytes(new File(referto.getFilePath()).toPath());
+            Path path = Paths.get(referto.getFilePath());
+            System.out.println("Download path: " + path);
+            System.out.println("File esiste? " + Files.exists(path));
+
+            return Files.readAllBytes(path);
+
         } catch (IOException e) {
-            throw new RuntimeException("Errore durante il download del file");
+            throw new RuntimeException("Errore nel download del file PDF", e);
         }
     }
 
-    private String salvaFile(MultipartFile file) {
+    // 🔍 PREVIEW PDF (usa SEMPRE l’ultimo referto)
+    @Override
+    public byte[] previewFile(Long esameId) {
         try {
-            File directory = new File(BASE_PATH);
-            if (!directory.exists()) directory.mkdirs();
+            Referto referto = refertoRepository.findByEsame_Id(esameId)
+                    .stream()
+                    .reduce((first, second) -> second) // prende l’ultimo
+                    .orElseThrow(() -> new RuntimeException("Referto non trovato per questo esame"));
 
-            String filePath = BASE_PATH + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            file.transferTo(new File(filePath));
-            return filePath;
+            Path path = Paths.get(referto.getFilePath());
+            System.out.println("Preview path: " + path);
+            System.out.println("File esiste? " + Files.exists(path));
+
+            return Files.readAllBytes(path);
 
         } catch (IOException e) {
-            throw new RuntimeException("Errore durante il salvataggio del file: " + e.getMessage());
+            throw new RuntimeException("Errore nella preview del file PDF", e);
         }
     }
 
-    private RefertoDTO convertToRefertoDTO(Referto referto) {
-        RefertoDTO dto = new RefertoDTO();
-        dto.setId(referto.getId());
-        dto.setEsameId(referto.getEsame().getId());
-        dto.setMedicoId(referto.getMedico().getId());
-        dto.setNomeMedico(referto.getMedico().getNome());
-        dto.setCognomeMedico(referto.getMedico().getCognome());
-        dto.setNoteMedico(referto.getNoteMedico());
-        dto.setFilePath(referto.getFilePath());
-        dto.setDataCreazione(referto.getDataCreazione());
-
-        // Campi aggiuntivi
-        dto.setTitolo(referto.getTitolo());
-        dto.setDescrizione(referto.getDescrizione());
-        dto.setDiagnosi(referto.getDiagnosi());
-        dto.setDataReferto(referto.getDataReferto());
-
-        return dto;
+    @Override
+    public RefertoDTO generaPdfReferto(Long esameId) {
+        throw new UnsupportedOperationException("generaPdfReferto non implementato");
     }
 }

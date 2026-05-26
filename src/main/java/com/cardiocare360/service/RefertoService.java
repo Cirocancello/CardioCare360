@@ -13,4 +13,8 @@ public interface RefertoService {
     RefertoDTO getRefertoByEsame(Long esameId);
 
     byte[] downloadFile(Long refertoId);
+
+    byte[] previewFile(Long esameId);   // 👈 AGGIUNGERE QUESTA
+
+    RefertoDTO generaPdfReferto(Long esameId);
 }

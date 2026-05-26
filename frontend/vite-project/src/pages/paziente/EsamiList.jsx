@@ -6,6 +6,8 @@ import "../../styles/paziente/esami.css";
 
 const EsamiList = () => {
   const [esami, setEsami] = useState([]);
+  const [referti, setReferti] = useState({}); // 🔥 referti per ogni esame
+
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -22,7 +24,27 @@ const EsamiList = () => {
             },
           }
         );
+
         setEsami(response.data);
+
+        // 🔥 Per ogni esame, prova a recuperare il referto
+        response.data.forEach(async (esame) => {
+          try {
+            const refertoRes = await axios.get(
+              `http://localhost:8080/referti/esame/${esame.id}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            setReferti((prev) => ({
+              ...prev,
+              [esame.id]: refertoRes.data, // salva referto associato
+            }));
+          } catch (err) {
+            // Nessun referto → ignora
+          }
+        });
       } catch (error) {
         console.error("Errore nel recupero degli esami:", error);
       }
@@ -49,6 +71,7 @@ const EsamiList = () => {
               <th>Data</th>
               <th>Ora</th>
               <th>Stato</th>
+              <th>Referto</th> {/* 🔥 nuova colonna */}
               <th>Azioni</th>
             </tr>
           </thead>
@@ -71,6 +94,25 @@ const EsamiList = () => {
                     {esame.stato}
                   </span>
                 </td>
+
+                {/* 🔥 Se il referto esiste → pulsante download */}
+                <td>
+                  {referti[esame.id] ? (
+                    <button
+                      className="btn-success"
+                      onClick={() =>
+                        window.open(
+                          `http://localhost:8080/referti/download/${referti[esame.id].id}`
+                        )
+                      }
+                    >
+                      Scarica PDF
+                    </button>
+                  ) : (
+                    <span className="badge bg-secondary">Non disponibile</span>
+                  )}
+                </td>
+
                 <td>
                   <button
                     className="btn-primary"

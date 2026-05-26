@@ -38,7 +38,6 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((req, res, exc) ->
                     res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Non autorizzato")
@@ -46,7 +45,6 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests(auth -> auth
-
                 // Preflight CORS
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
@@ -70,42 +68,32 @@ public class SecurityConfig {
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
                 // -------------------------
-                // REFERTI (AGGIUNTO)
+                // REFERTI
                 // -------------------------
-
-                // Upload referto → solo medico
                 .requestMatchers(HttpMethod.POST, "/referti/upload")
-                    .hasAnyAuthority("MEDICO")
+                    .hasAuthority("MEDICO")
 
-                // Download e visualizzazione referto → medico e paziente
                 .requestMatchers(HttpMethod.GET, "/referti/**")
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
                 // -------------------------
                 // APPUNTAMENTI
                 // -------------------------
-
-                // Paziente → lista appuntamenti
                 .requestMatchers(HttpMethod.GET, "/appuntamenti/paziente")
                     .hasAuthority("PAZIENTE")
 
-                // Medico → lista appuntamenti
                 .requestMatchers(HttpMethod.GET, "/appuntamenti/medico")
                     .hasAuthority("MEDICO")
 
-                // Singolo appuntamento → accessibile a entrambi
                 .requestMatchers(HttpMethod.GET, "/appuntamenti/*")
                     .hasAnyAuthority("PAZIENTE", "MEDICO")
 
-                // Creazione appuntamento → solo paziente
                 .requestMatchers(HttpMethod.POST, "/appuntamenti/**")
                     .hasAuthority("PAZIENTE")
 
-                // Modifica stato → paziente o medico
                 .requestMatchers(HttpMethod.PUT, "/appuntamenti/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO")
 
-                // Eliminazione → solo paziente
                 .requestMatchers(HttpMethod.DELETE, "/appuntamenti/**")
                     .hasAuthority("PAZIENTE")
 
@@ -113,6 +101,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
+            // 🔥 Aggiunta fondamentale: provider e filtro JWT
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

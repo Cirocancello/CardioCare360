@@ -17,7 +17,7 @@ public class RefertoController {
     @Autowired
     private RefertoService refertoService;
 
-    // Upload referto per un esame
+    // 📌 1. Upload referto PDF
     @PostMapping("/upload")
     public ResponseEntity<RefertoDTO> uploadReferto(
             @RequestParam Long esameId,
@@ -29,21 +29,46 @@ public class RefertoController {
         return ResponseEntity.ok(dto);
     }
 
-    // Recupera referto tramite esame
+    // 📌 2. Generazione automatica PDF (non implementato)
+    @PostMapping("/genera/{esameId}")
+    public ResponseEntity<RefertoDTO> generaReferto(@PathVariable Long esameId) {
+        RefertoDTO dto = refertoService.generaPdfReferto(esameId);
+        return ResponseEntity.ok(dto);
+    }
+
+    // 📌 3. Recupera referto tramite esame
     @GetMapping("/esame/{esameId}")
     public ResponseEntity<RefertoDTO> getRefertoByEsame(@PathVariable Long esameId) {
         RefertoDTO dto = refertoService.getRefertoByEsame(esameId);
         return ResponseEntity.ok(dto);
     }
 
-    // Download PDF referto
+   
+
+    // 📌 5. DOWNLOAD PDF (scarica il file)
     @GetMapping("/download/{refertoId}")
     public ResponseEntity<byte[]> downloadReferto(@PathVariable Long refertoId) {
         byte[] fileBytes = refertoService.downloadFile(refertoId);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=referto.pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=referto_" + refertoId + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileBytes);
     }
+    
+    @GetMapping("/preview/{esameId}")
+    public ResponseEntity<byte[]> previewReferto(@PathVariable Long esameId) {
+
+        // Recupero referto tramite esame
+        RefertoDTO referto = refertoService.getRefertoByEsame(esameId);
+        Long refertoId = referto.getId();
+
+        byte[] fileBytes = refertoService.downloadFile(refertoId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=referto_" + refertoId + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(fileBytes);
+    }
+
 }

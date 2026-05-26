@@ -45,8 +45,8 @@ public class Esame {
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    // Relazione corretta: un esame può avere più referti
-    @OneToMany(mappedBy = "esame")
+    // ✔ Relazione corretta: un esame può avere più referti
+    @OneToMany(mappedBy = "esame", cascade = CascadeType.ALL)
     private List<Referto> referti;
 
     public Esame() {}

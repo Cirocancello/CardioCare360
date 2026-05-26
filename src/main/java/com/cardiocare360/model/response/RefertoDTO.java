@@ -20,6 +20,25 @@ public class RefertoDTO {
     private String diagnosi;
     private LocalDateTime dataReferto;
 
+    // ✅ COSTRUTTORE VUOTO NECESSARIO
+    public RefertoDTO() {}
+
+    // 🔥 COSTRUTTORE OPZIONALE (puoi tenerlo)
+    public RefertoDTO(Long id, Long esameId, Long medicoId,
+                      String titolo, String descrizione, String diagnosi,
+                      String noteMedico, String filePath,
+                      LocalDateTime dataCreazione) {
+
+        this.id = id;
+        this.esameId = esameId;
+        this.medicoId = medicoId;
+        this.titolo = titolo;
+        this.descrizione = descrizione;
+        this.diagnosi = diagnosi;
+        this.noteMedico = noteMedico;
+        this.filePath = filePath;
+        this.dataCreazione = dataCreazione;
+    }
 
     // Getter e Setter
     public Long getId() { return id; }
@@ -45,7 +64,7 @@ public class RefertoDTO {
 
     public LocalDateTime getDataCreazione() { return dataCreazione; }
     public void setDataCreazione(LocalDateTime dataCreazione) { this.dataCreazione = dataCreazione; }
-    
+
     public String getTitolo() { return titolo; }
     public void setTitolo(String titolo) { this.titolo = titolo; }
 
@@ -57,5 +76,4 @@ public class RefertoDTO {
 
     public LocalDateTime getDataReferto() { return dataReferto; }
     public void setDataReferto(LocalDateTime dataReferto) { this.dataReferto = dataReferto; }
-
 }
