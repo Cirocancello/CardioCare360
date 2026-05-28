@@ -1,15 +1,58 @@
 package com.cardiocare360.service;
 
+import com.cardiocare360.model.entity.Conversazione;
 import com.cardiocare360.model.entity.Messaggio;
+import com.cardiocare360.repository.MessaggioRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
-public interface MessaggioService {
+@Service
+public class MessaggioService {
 
-    Messaggio inviaMessaggio(Long mittenteId, Long destinatarioId, Long appuntamentoId, String contenuto);
+    private final MessaggioRepository messaggioRepository;
+    private final ConversazioneService conversazioneService;
 
-    List<Messaggio> getConversazione(Long utente1Id, Long utente2Id);
+    public MessaggioService(MessaggioRepository messaggioRepository,
+                            ConversazioneService conversazioneService) {
+        this.messaggioRepository = messaggioRepository;
+        this.conversazioneService = conversazioneService;
+    }
 
-    List<Messaggio> getMessaggiNonLetti(Long utenteId);
+    // 🔹 Invia un messaggio in una conversazione
+    public Messaggio inviaMessaggio(Long conversazioneId, Messaggio.Mittente mittente, String testo) {
 
-    void segnaComeLetto(Long messaggioId);
+        Conversazione conversazione = conversazioneService.getConversazione(conversazioneId);
+
+        Messaggio msg = new Messaggio();
+        msg.setConversazione(conversazione);
+        msg.setMittente(mittente);
+        msg.setTesto(testo);
+        msg.setTimestamp(LocalDateTime.now());
+        msg.setLetto(false);
+
+        Messaggio salvato = messaggioRepository.save(msg);
+
+        // 🔹 Aggiorna ultimo messaggio nella conversazione
+        conversazioneService.aggiornaUltimoMessaggio(conversazioneId, testo);
+
+        return salvato;
+    }
+
+    // 🔹 Recupera tutti i messaggi di una conversazione
+    public List<Messaggio> getMessaggiConversazione(Long conversazioneId) {
+        return messaggioRepository.findByConversazioneIdOrderByTimestampAsc(conversazioneId);
+    }
+
+    // 🔹 Segna tutti i messaggi come letti
+    public void segnaComeLetti(Long conversazioneId) {
+        List<Messaggio> nonLetti = messaggioRepository.findByConversazioneIdAndLettoFalse(conversazioneId);
+
+        for (Messaggio m : nonLetti) {
+            m.setLetto(true);
+        }
+
+        messaggioRepository.saveAll(nonLetti);
+    }
 }

@@ -1,56 +1,62 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messaggio")
+@JsonIgnoreProperties({"conversazione"})
 public class Messaggio {
+
+    public enum Mittente {
+        PAZIENTE,
+        MEDICO
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 🔹 Conversazione a cui appartiene il messaggio
     @ManyToOne(optional = false)
-    @JoinColumn(name = "mittente_id", nullable = false)
-    private Utente mittente;
+    @JoinColumn(name = "conversazione_id", nullable = false)
+    private Conversazione conversazione;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "destinatario_id", nullable = false)
-    private Utente destinatario;
+    // 🔹 Chi ha inviato il messaggio
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Mittente mittente;
 
-    @ManyToOne
-    @JoinColumn(name = "appuntamento_id")
-    private Appuntamento appuntamento; // opzionale
+    // 🔹 Testo del messaggio
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String testo;
 
-    @Column(nullable = false, length = 1000)
-    private String contenuto;
+    // 🔹 Timestamp invio
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
 
-    @Column(name = "data_invio", nullable = false)
-    private LocalDateTime dataInvio = LocalDateTime.now();
-
+    // 🔹 Stato lettura
     @Column(nullable = false)
     private boolean letto = false;
 
     public Messaggio() {}
 
+    // Getter & Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Utente getMittente() { return mittente; }
-    public void setMittente(Utente mittente) { this.mittente = mittente; }
+    public Conversazione getConversazione() { return conversazione; }
+    public void setConversazione(Conversazione conversazione) { this.conversazione = conversazione; }
 
-    public Utente getDestinatario() { return destinatario; }
-    public void setDestinatario(Utente destinatario) { this.destinatario = destinatario; }
+    public Mittente getMittente() { return mittente; }
+    public void setMittente(Mittente mittente) { this.mittente = mittente; }
 
-    public Appuntamento getAppuntamento() { return appuntamento; }
-    public void setAppuntamento(Appuntamento appuntamento) { this.appuntamento = appuntamento; }
+    public String getTesto() { return testo; }
+    public void setTesto(String testo) { this.testo = testo; }
 
-    public String getContenuto() { return contenuto; }
-    public void setContenuto(String contenuto) { this.contenuto = contenuto; }
-
-    public LocalDateTime getDataInvio() { return dataInvio; }
-    public void setDataInvio(LocalDateTime dataInvio) { this.dataInvio = dataInvio; }
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 
     public boolean isLetto() { return letto; }
     public void setLetto(boolean letto) { this.letto = letto; }

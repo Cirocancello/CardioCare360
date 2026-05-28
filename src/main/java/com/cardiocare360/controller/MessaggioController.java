@@ -1,16 +1,14 @@
 package com.cardiocare360.controller;
 
 import com.cardiocare360.model.entity.Messaggio;
-import com.cardiocare360.model.request.MessaggioRequestDTO;
-import com.cardiocare360.model.response.MessaggioDTO;
 import com.cardiocare360.service.MessaggioService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/messaggi")
+@RequestMapping("/api/messaggi")
 public class MessaggioController {
 
     private final MessaggioService messaggioService;
@@ -19,52 +17,27 @@ public class MessaggioController {
         this.messaggioService = messaggioService;
     }
 
+    // 🔹 Invia un messaggio
     @PostMapping("/invia")
-    public MessaggioDTO inviaMessaggio(@RequestBody MessaggioRequestDTO request) {
+    public ResponseEntity<Messaggio> inviaMessaggio(
+            @RequestParam Long conversazioneId,
+            @RequestParam Messaggio.Mittente mittente,
+            @RequestParam String testo) {
 
-        Messaggio messaggio = messaggioService.inviaMessaggio(
-                request.getMittenteId(),
-                request.getDestinatarioId(),
-                request.getAppuntamentoId(),
-                request.getContenuto()
-        );
-
-        return toDTO(messaggio);
+        Messaggio msg = messaggioService.inviaMessaggio(conversazioneId, mittente, testo);
+        return ResponseEntity.ok(msg);
     }
 
-    @GetMapping("/conversazione/{utente1Id}/{utente2Id}")
-    public List<MessaggioDTO> getConversazione(@PathVariable Long utente1Id,
-                                               @PathVariable Long utente2Id) {
-
-        return messaggioService.getConversazione(utente1Id, utente2Id)
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    // 🔹 Recupera tutti i messaggi di una conversazione
+    @GetMapping("/{conversazioneId}")
+    public ResponseEntity<List<Messaggio>> getMessaggi(@PathVariable Long conversazioneId) {
+        return ResponseEntity.ok(messaggioService.getMessaggiConversazione(conversazioneId));
     }
 
-    @GetMapping("/non-letti/{utenteId}")
-    public List<MessaggioDTO> getMessaggiNonLetti(@PathVariable Long utenteId) {
-
-        return messaggioService.getMessaggiNonLetti(utenteId)
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    @PutMapping("/segna-letto/{messaggioId}")
-    public void segnaComeLetto(@PathVariable Long messaggioId) {
-        messaggioService.segnaComeLetto(messaggioId);
-    }
-
-    private MessaggioDTO toDTO(Messaggio m) {
-        MessaggioDTO dto = new MessaggioDTO();
-        dto.setId(m.getId());
-        dto.setMittenteId(m.getMittente().getId());
-        dto.setDestinatarioId(m.getDestinatario().getId());
-        dto.setAppuntamentoId(m.getAppuntamento() != null ? m.getAppuntamento().getId() : null);
-        dto.setContenuto(m.getContenuto());
-        dto.setDataInvio(m.getDataInvio());
-        dto.setLetto(m.isLetto());
-        return dto;
+    // 🔹 Segna tutti i messaggi come letti
+    @PutMapping("/segna-letti/{conversazioneId}")
+    public ResponseEntity<Void> segnaComeLetti(@PathVariable Long conversazioneId) {
+        messaggioService.segnaComeLetti(conversazioneId);
+        return ResponseEntity.ok().build();
     }
 }
