@@ -3,12 +3,14 @@ package com.cardiocare360.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
+
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "paziente")
-@PrimaryKeyJoinColumn(name = "id") // usa la stessa PK di Utente
-@JsonIgnoreProperties({"notifiche"})
+@PrimaryKeyJoinColumn(name = "id")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@DynamicUpdate
 public class Paziente extends Utente {
 
     @Column(name = "codice_fiscale", nullable = false, unique = true, length = 16)
@@ -26,10 +28,6 @@ public class Paziente extends Utente {
     @Column(length = 255)
     private String indirizzo;
 
-    @OneToMany(mappedBy = "paziente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("paziente")
-    private List<Notifica> notifiche;
-
     public Paziente() {}
 
     public String getCodiceFiscale() { return codiceFiscale; }
@@ -46,7 +44,4 @@ public class Paziente extends Utente {
 
     public String getIndirizzo() { return indirizzo; }
     public void setIndirizzo(String indirizzo) { this.indirizzo = indirizzo; }
-
-    public List<Notifica> getNotifiche() { return notifiche; }
-    public void setNotifiche(List<Notifica> notifiche) { this.notifiche = notifiche; }
 }

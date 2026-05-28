@@ -45,25 +45,36 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests(auth -> auth
-                // Preflight CORS
+
+                // -------------------------
+                // CORS preflight
+                // -------------------------
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // Login / Registrazione
+                // -------------------------
+                // LOGIN / REGISTRAZIONE
+                // -------------------------
                 .requestMatchers("/auth/**").permitAll()
 
-                // Endpoint pubblici
+                // -------------------------
+                // ENDPOINT PUBBLICI
+                // -------------------------
                 .requestMatchers("/disponibilita/slot/**").permitAll()
                 .requestMatchers("/disponibilita/date/**").permitAll()
                 .requestMatchers("/api/notifiche/**").permitAll()
 
-                // Medici → accessibile a paziente, medico, admin
+                // -------------------------
+                // MEDICI
+                // -------------------------
                 .requestMatchers(HttpMethod.GET, "/medici/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
                 .requestMatchers("/medici/visita/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
-                // Messaggi
+                // -------------------------
+                // MESSAGGI
+                // -------------------------
                 .requestMatchers("/messaggi/**")
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
@@ -97,11 +108,21 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/appuntamenti/**")
                     .hasAuthority("PAZIENTE")
 
-                // Tutto il resto richiede autenticazione
+                // -------------------------
+                // PARAMETRI CLINICI
+                // -------------------------
+                .requestMatchers(HttpMethod.POST, "/api/pazienti/*/parametri/**")
+                    .hasAuthority("PAZIENTE")
+
+                .requestMatchers(HttpMethod.GET, "/api/pazienti/*/parametri/**")
+                    .hasAuthority("PAZIENTE")
+
+                // -------------------------
+                // TUTTO IL RESTO
+                // -------------------------
                 .anyRequest().authenticated()
             )
 
-            // 🔥 Aggiunta fondamentale: provider e filtro JWT
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

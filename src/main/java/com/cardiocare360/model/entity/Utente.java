@@ -6,13 +6,15 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "utente")
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonIgnoreProperties({"notifiche"}) 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@DynamicUpdate
 public class Utente implements UserDetails {
 
     @Id
