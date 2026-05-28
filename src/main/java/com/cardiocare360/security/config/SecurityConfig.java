@@ -116,6 +116,21 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.GET, "/api/pazienti/*/parametri/**")
                     .hasAuthority("PAZIENTE")
+                    
+                 //-------------------------   
+                 // TERAPIE Paziente
+                 //-------------------------   
+                 .requestMatchers(HttpMethod.GET, "/api/terapie/paziente/*")
+                 .hasAuthority("PAZIENTE")
+
+                 //-------------------------   
+                 // TERAPIE Paziente
+                 //-------------------------   
+                 .requestMatchers(HttpMethod.GET, "/api/terapie/medico/*")
+                 .hasAuthority("MEDICO")
+
+                 .requestMatchers(HttpMethod.POST, "/api/terapie")
+                 .hasAuthority("MEDICO")
 
                 // -------------------------
                 // TUTTO IL RESTO

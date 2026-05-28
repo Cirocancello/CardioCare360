@@ -9,13 +9,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/terapie")
-@CrossOrigin(origins = "*")
 public class TerapiaController {
 
     @Autowired
     private TerapiaService terapiaService;
 
-    // Creazione terapia
+    // -------------------------
+    // MEDICO
+    // -------------------------
+
+    // Creazione terapia (solo medico)
     @PostMapping
     public Terapia creaTerapia(@RequestParam Long pazienteId,
                                @RequestParam Long medicoId,
@@ -27,22 +30,20 @@ public class TerapiaController {
                                @RequestParam(required = false) String dataFine) {
 
         return terapiaService.creaTerapia(
-                pazienteId,
-                medicoId,
-                farmacoId,
-                appuntamentoId,
-                dosaggio,
-                note,
-                dataInizio,
-                dataFine
+                pazienteId, medicoId, farmacoId, appuntamentoId,
+                dosaggio, note, dataInizio, dataFine
         );
     }
 
-    // Recupero terapia singola
-    @GetMapping("/{id}")
-    public Terapia getTerapiaById(@PathVariable Long id) {
-        return terapiaService.getTerapiaById(id);
+    // Lista terapie del medico
+    @GetMapping("/medico/{medicoId}")
+    public List<Terapia> getTerapieMedico(@PathVariable Long medicoId) {
+        return terapiaService.getTerapieMedico(medicoId);
     }
+
+    // -------------------------
+    // PAZIENTE
+    // -------------------------
 
     // Lista terapie del paziente
     @GetMapping("/paziente/{pazienteId}")
@@ -50,9 +51,9 @@ public class TerapiaController {
         return terapiaService.getTerapiePaziente(pazienteId);
     }
 
-    // Lista terapie del medico
-    @GetMapping("/medico/{medicoId}")
-    public List<Terapia> getTerapieMedico(@PathVariable Long medicoId) {
-        return terapiaService.getTerapieMedico(medicoId);
+    // Terapia singola
+    @GetMapping("/{id}")
+    public Terapia getTerapiaById(@PathVariable Long id) {
+        return terapiaService.getTerapiaById(id);
     }
 }
