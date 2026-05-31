@@ -1,0 +1,69 @@
+.parametri-page {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.parametri-container {
+  width: 100%;
+  max-width: 850px;
+  background-color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.parametri-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 25px;
+}
+
+.parametri-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.parametri-label {
+  font-weight: 600;
+  color: #0056b3;
+  margin-bottom: 6px;
+}
+
+.parametri-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.parametri-input:focus {
+  border-color: #0056b3;
+}
+
+.parametri-button {
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: flex-end;
+  margin-top: 20px;
+}
+
+.parametri-button:hover {
+  background-color: #003d80;
+}

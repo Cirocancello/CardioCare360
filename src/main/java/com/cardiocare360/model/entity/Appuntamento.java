@@ -14,7 +14,8 @@ public class Appuntamento {
     public enum StatoAppuntamento {
         PRENOTATO,
         COMPLETATO,
-        ANNULLATO
+        ANNULLATO,
+        CONFERMATO
     }
 
     @Id

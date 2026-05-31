@@ -1,0 +1,69 @@
+.conv-page {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.conv-container {
+  width: 100%;
+  max-width: 850px;
+}
+
+.conv-title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.conv-empty {
+  text-align: center;
+  color: #777;
+  font-size: 1rem;
+}
+
+.conv-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 20px 25px;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.conv-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.conv-doctor {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0056b3;
+  margin-bottom: 8px;
+}
+
+.conv-lastmsg {
+  color: #444;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+.conv-date {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.conv-badge {
+  background-color: #d32f2f;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 10px;
+}

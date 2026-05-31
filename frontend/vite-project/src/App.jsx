@@ -31,11 +31,25 @@ import ConfermaAnnullamento from "./pages/paziente/ConfermaAnnullamento";
 import EsamiList from "./pages/paziente/EsamiList";
 import EsameDettaglio from "./pages/paziente/EsameDettaglio";
 import PrenotaEsame from "./pages/paziente/PrenotaEsame";
-import PrenotazioneEsameConfermata from "./pages/paziente/PrenotazioneEsameConfermata";   // ✅ IMPORT MANCANTE AGGIUNTO
+import PrenotazioneEsameConfermata from "./pages/paziente/PrenotazioneEsameConfermata";
+
+// 📌 Parametri vitali (IMPORT MANCANTI)
+import InserisciParametri from "./pages/paziente/InserisciParametri";
+import StoricoParametri from "./pages/paziente/StoricoParametri";
+
+// 📌 Terapie (IMPORT MANCANTE)
+import ListaTerapie from "./pages/paziente/ListaTerapie";
+
+// 📌 Conversazioni (IMPORT MANCANTE)
+import ListaConversazioni from "./pages/paziente/ListaConversazioni";
+import DettaglioConversazione from "./pages/paziente/DettaglioConversazione";
 
 // 🧩 Layout e protezione
 import DashboardLayout from "./Layouts/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+// Profilo Paziente
+import ProfiloPaziente from "./pages/paziente/ProfiloPaziente";
 
 function App() {
   return (
@@ -86,6 +100,20 @@ function App() {
 
         {/* 🔥 Conferma prenotazione esame */}
         <Route path="/paziente/prenota-esame/confermata" element={<PrenotazioneEsameConfermata />} />
+
+        {/* 🩺 Parametri vitali */}
+        <Route path="/paziente/parametri/inserisci" element={<InserisciParametri />} />
+        <Route path="/paziente/storico-parametri" element={<StoricoParametri />} />
+
+        {/* 💊 Terapie */}
+        <Route path="/paziente/terapie" element={<ListaTerapie />} />
+
+        {/* 💬 Conversazioni */}
+        <Route path="/paziente/conversazioni" element={<ListaConversazioni />} />
+        <Route path="/paziente/conversazioni/:id" element={<DettaglioConversazione />} />
+
+        {/* Profilo Paziente*/}
+        <Route path="/paziente/profilo" element={<ProfiloPaziente />} />
 
       </Route>
     </Routes>

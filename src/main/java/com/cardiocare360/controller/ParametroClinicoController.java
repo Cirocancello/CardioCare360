@@ -22,22 +22,22 @@ public class ParametroClinicoController {
     private ParametroClinicoRepository parametroRepo;
 
     // -------------------------
-    // POST → Inserimento parametro
+    // POST → Inserimento parametri vitali multipli
     // -------------------------
     @PostMapping
-    public ResponseEntity<?> inserisciParametro(
+    public ResponseEntity<List<ParametroClinico>> inserisciParametro(
             @PathVariable Long pazienteId,
             @RequestBody ParametroClinicoRequest request) {
 
-        ParametroClinico parametro = parametroService.inserisciParametro(pazienteId, request);
-        return ResponseEntity.ok(parametro);
+        List<ParametroClinico> parametri = parametroService.inserisciParametro(pazienteId, request);
+        return ResponseEntity.ok(parametri);
     }
 
     // -------------------------
     // GET → Lista parametri del paziente (ordinati per data)
     // -------------------------
     @GetMapping
-    public ResponseEntity<?> getParametri(@PathVariable Long pazienteId) {
+    public ResponseEntity<List<ParametroClinico>> getParametri(@PathVariable Long pazienteId) {
 
         List<ParametroClinico> parametri =
                 parametroRepo.findByPazienteIdOrderByDataRilevazioneDesc(pazienteId);

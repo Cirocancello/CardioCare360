@@ -10,8 +10,11 @@ export default function DashboardPaziente() {
     fetch(`http://localhost:8080/paziente/${idPaziente}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
-      .then((data) => setPaziente(data))
+      .then((res) => res.json())      
+      .then((data) => {
+      console.log("Dati paziente:", data); // 👈 log corretto
+      setPaziente(data);
+    })
       .catch((err) => console.error("Errore caricamento paziente:", err));
   }, []);
 
@@ -20,8 +23,27 @@ export default function DashboardPaziente() {
   return (
     <div className="dashboard-paziente-container">
 
+      {/* 🔥 Pulsante Logout */}
+      <div className="dashboard-logout-container">
+        <button
+          className="dashboard-logout-btn"
+          onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("ruolo");
+            localStorage.removeItem("idUtente");
+            localStorage.removeItem("idPaziente");
+            window.location.href = "/login";
+          }}
+        >
+          Logout
+        </button>
+      </div>
+
       <h1 className="dashboard-title">
-        Benvenuto, {paziente.nome} {paziente.cognome}
+      <h1 className="dashboard-title">
+        Benvenuto{paziente?.nomeCompleto ? `, ${paziente.nomeCompleto}` : ""}
+      </h1>
+
       </h1>
 
       <div className="dashboard-info">
@@ -45,31 +67,16 @@ export default function DashboardPaziente() {
 
       <div className="quick-actions">
 
-        <a href="/paziente/appuntamenti" className="quick-card">
-          Appuntamenti
-        </a>
+        <a href="/paziente/appuntamenti" className="quick-card">Appuntamenti</a>
+        <a href="/paziente/prenota/visita" className="quick-card">Visite</a>
+        <a href="/paziente/prenota/esame" className="quick-card">Esami</a>
+        <a href="/paziente/esami" className="quick-card">Referti</a>
 
-        <a href="/paziente/prenota/visita" className="quick-card">
-          Visite
-        </a>
+        <a href="/paziente/parametri/inserisci" className="quick-card">Parametri Vitali</a>
+        <a href="/paziente/storico-parametri" className="quick-card">Storico Parametri</a>
 
-        {/* 🔥 CORRETTO: ora porta alla pagina di prenotazione esami */}
-        <a href="/paziente/prenota/esame" className="quick-card">
-          Esami
-        </a>
-
-        {/* 🔥 Referti rimane separato e corretto */}
-        <a href="/paziente/esami" className="quick-card">
-          Referti
-        </a>
-
-        <a href="/paziente/terapie" className="quick-card">
-          Terapie
-        </a>
-
-        <a href="/paziente/messaggi" className="quick-card">
-          Messaggi
-        </a>
+        <a href="/paziente/terapie" className="quick-card">Terapie</a>
+        <a href="/paziente/conversazioni" className="quick-card">Messaggi</a>
 
       </div>
 
