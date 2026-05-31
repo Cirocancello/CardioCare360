@@ -1,0 +1,107 @@
+/* =========================================
+   CardioCare360 - Footer
+   ========================================= */
+
+.home-footer {
+  background-color: #0F172A; /* blu notte */
+  color: #E5E7EB;
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Contenuto principale */
+.footer-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+/* Sezione sinistra (logo + sottotitolo) */
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Logo */
+.footer-logo {
+  width: 160px;
+  height: auto;
+}
+
+/* Sottotitolo */
+.footer-subtitle {
+  color: #60A5FA; /* blu acceso */
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Link laterali */
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links a {
+  color: #93C5FD; /* blu chiaro */
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #3B82F6; /* blu primario CardioCare360 */
+}
+
+/* Social icons */
+.footer-social {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 10px;
+}
+
+.footer-social a svg {
+  font-size: 22px;
+  color: #E5E7EB;
+  transition: color 0.2s ease;
+}
+
+.footer-social a:hover svg {
+  color: #3B82F6;
+}
+
+/* Copyright */
+.home-footer .footer-bottom p {
+  color: #3B82F6 !important; /* forza il colore */
+  font-size: 13px;
+  margin-top: 20px;
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .footer-links {
+    margin-top: 10px;
+  }
+
+  .footer-left {
+    align-items: center;
+  }
+}

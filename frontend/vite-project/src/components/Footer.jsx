@@ -1,17 +1,30 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/public/HomePage.css";
+import "../styles/components/footer.css"; 
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+
+// Import corretto del logo
+import logo from "../assets/logo-CardioCare360.png";
 
 function Footer() {
   return (
     <footer className="home-footer">
       <div className="footer-content">
+
+        {/* 🔵 Logo + sottotitolo */}
         <div className="footer-left">
-          <h3>CardioCare360</h3>
-          <p>Piattaforma digitale per la gestione della salute.</p>
+          <img 
+            src={logo} 
+            alt="CardioCare360" 
+            className="footer-logo"
+          />
+
+          <p className="footer-subtitle">
+            Piattaforma digitale per la gestione della salute.
+          </p>
         </div>
 
+        {/* 🔗 Link */}
         <div className="footer-links">
           <Link to="/services">Servizi</Link>
           <Link to="/contatti">Contatti</Link>
@@ -19,7 +32,7 @@ function Footer() {
         </div>
       </div>
 
-      {/* 🔗 Sezione Social */}
+      {/* 🌐 Social */}
       <div className="footer-social">
         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
           <FaFacebookF />
@@ -32,8 +45,11 @@ function Footer() {
         </a>
       </div>
 
+      {/* © Copyright */}
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} CardioCare360 — Tutti i diritti riservati.</p>
+        <p>
+          © {new Date().getFullYear()} CardioCare360 — Tutti i diritti riservati.
+        </p>
       </div>
     </footer>
   );

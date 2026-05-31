@@ -41,6 +41,27 @@
   gap: 25px;
 }
 
+/* 🔥 Logout in alto a destra */
+.dashboard-logout-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.dashboard-logout-btn {
+  background-color: #DC2626;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-logout-btn:hover {
+  background-color: #B91C1C;
+}
+
 /* Titolo principale */
 .dashboard-title {
   font-size: 30px;

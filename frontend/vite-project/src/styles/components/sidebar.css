@@ -1,7 +1,8 @@
+/* --- SIDEBAR --- */
 .sidebar {
   width: 220px;
   height: 100vh;
-  background-color: #DC2626 !important; /* Accent Red ufficiale */
+  background-color: #DC2626 !important;
   color: white;
   display: flex;
   flex-direction: column;
@@ -24,6 +25,7 @@
   gap: 18px;
 }
 
+/* --- LINK STANDARD --- */
 .sidebar-link {
   display: flex;
   align-items: center;
@@ -37,15 +39,48 @@
 }
 
 .sidebar-link:hover {
-  background-color: #1D4ED8; /* Primary Blue */
+  background-color: #1D4ED8;
 }
 
 .sidebar-link.active {
-  background-color: #1E3A8A; /* Dark Blue */
-  border-left: 4px solid #38BDF8; /* Secondary Blue */
+  background-color: #1E3A8A;
+  border-left: 4px solid #38BDF8;
   padding-left: 8px;
 }
 
 .sidebar-icon {
   font-size: 18px;
+}
+
+/* --- LOGOUT (identico agli altri) --- */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  background: none;
+  border: none;
+  font-size: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease, padding-left 0.2s ease;
+}
+
+/* Hover identico agli altri */
+.logout-btn:hover {
+  background-color: #1D4ED8;
+}
+
+/* Evita che diventi blu come active */
+.logout-btn:active,
+.logout-btn:focus {
+  background-color: #1D4ED8;
+  outline: none;
+}
+
+.logout-btn {
+  text-decoration: none;
 }
