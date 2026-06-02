@@ -12,6 +12,8 @@ public interface PazienteRepository extends JpaRepository<Paziente, Long> {
 
     boolean existsByCodiceFiscale(String codiceFiscale);
 
-    // ✅ Con ereditarietà, l'ID del paziente è l'ID dell'utente
+    // 🔥 lookup diretto per ereditarietà (id paziente = id utente)
     Optional<Paziente> findById(Long id);
+
+   
 }

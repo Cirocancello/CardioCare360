@@ -66,10 +66,10 @@ public class SecurityConfig {
                 // -------------------------
                 // MEDICI
                 // -------------------------
-                .requestMatchers(HttpMethod.GET, "/medici/**")
-                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/medico/**")
+                    .hasAnyAuthority("MEDICO", "ADMIN")
 
-                .requestMatchers("/medici/visita/**")
+                .requestMatchers("/medico/visita/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
                 // -------------------------
@@ -116,21 +116,18 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.GET, "/api/pazienti/*/parametri/**")
                     .hasAuthority("PAZIENTE")
-                    
-                 //-------------------------   
-                 // TERAPIE Paziente
-                 //-------------------------   
-                 .requestMatchers(HttpMethod.GET, "/api/terapie/paziente/*")
-                 .hasAuthority("PAZIENTE")
 
-                 //-------------------------   
-                 // TERAPIE Paziente
-                 //-------------------------   
-                 .requestMatchers(HttpMethod.GET, "/api/terapie/medico/*")
-                 .hasAuthority("MEDICO")
+                // -------------------------
+                // TERAPIE
+                // -------------------------
+                .requestMatchers(HttpMethod.GET, "/api/terapie/paziente/*")
+                    .hasAuthority("PAZIENTE")
 
-                 .requestMatchers(HttpMethod.POST, "/api/terapie")
-                 .hasAuthority("MEDICO")
+                .requestMatchers(HttpMethod.GET, "/api/terapie/medico/*")
+                    .hasAuthority("MEDICO")
+
+                .requestMatchers(HttpMethod.POST, "/api/terapie")
+                    .hasAuthority("MEDICO")
 
                 // -------------------------
                 // TUTTO IL RESTO

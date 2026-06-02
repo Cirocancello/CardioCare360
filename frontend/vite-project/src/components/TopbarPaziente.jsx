@@ -4,15 +4,14 @@ import "../styles/components/topbar.css";
 import logo from "../assets/logo-CardioCare360.png";
 import { Link } from "react-router-dom";
 
-
-export default function Topbar() {
+export default function TopbarPaziente({ nomePaziente }) {
   return (
     <div className="topbar">
 
       {/* Logo a sinistra */}
       <div className="topbar-brand">
         <Link to="/" className="topbar-logo">
-        <img src={logo} alt="CardioCare360" className="topbar-logo" />
+          <img src={logo} alt="CardioCare360" className="topbar-logo" />
         </Link>
       </div>
 
@@ -24,7 +23,9 @@ export default function Topbar() {
 
         <div className="topbar-user">
           <FaUserCircle className="topbar-avatar" />
-          <span className="topbar-username">Ciro</span>
+          <span className="topbar-username">
+            {nomePaziente ? nomePaziente : "Paziente"}
+          </span>
         </div>
       </div>
 

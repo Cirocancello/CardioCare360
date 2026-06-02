@@ -33,19 +33,18 @@ import EsameDettaglio from "./pages/paziente/EsameDettaglio";
 import PrenotaEsame from "./pages/paziente/PrenotaEsame";
 import PrenotazioneEsameConfermata from "./pages/paziente/PrenotazioneEsameConfermata";
 
-// 📌 Parametri vitali (IMPORT MANCANTI)
+// 📌 Parametri vitali
 import InserisciParametri from "./pages/paziente/InserisciParametri";
 import StoricoParametri from "./pages/paziente/StoricoParametri";
 
-// 📌 Terapie (IMPORT MANCANTE)
+// 📌 Terapie
 import ListaTerapie from "./pages/paziente/ListaTerapie";
 
-// 📌 Conversazioni (IMPORT MANCANTE)
+// 📌 Conversazioni
 import ListaConversazioni from "./pages/paziente/ListaConversazioni";
 import DettaglioConversazione from "./pages/paziente/DettaglioConversazione";
 
-// 🧩 Layout e protezione
-import DashboardLayout from "./Layouts/DashboardLayout";
+// 🧩 Protezione
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Profilo Paziente
@@ -65,57 +64,219 @@ function App() {
 
       {/* 🔒 Rotte protette */}
       <Route
+        path="/dashboard-paziente"
         element={
           <ProtectedRoute>
-            <DashboardLayout />
+            <DashboardPaziente />
           </ProtectedRoute>
         }
-      >
+      />
 
-        {/* 📌 Dashboard */}
-        <Route path="/dashboard-paziente" element={<DashboardPaziente />} />
-        <Route path="/dashboard-medico" element={<DashboardMedico />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+      <Route
+        path="/dashboard-medico"
+        element={
+          <ProtectedRoute>
+            <DashboardMedico />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* 📌 Prenotazione visite */}
-        <Route path="/paziente/prenota/visita" element={<SelezionaVisita />} />
-        <Route path="/paziente/prenota/medico" element={<SelezionaMedico />} />
-        <Route path="/paziente/prenota/data" element={<SelezionaData />} />
-        <Route path="/paziente/prenota/orario" element={<SelezionaOrario />} />
-        <Route path="/paziente/prenota/riepilogo" element={<RiepilogoPrenotazione />} />
-        <Route path="/paziente/prenota/confermata" element={<PrenotazioneConfermata />} />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* 📌 Flusso appuntamenti paziente */}
-        <Route path="/paziente/appuntamenti" element={<Appuntamenti />} />
-        <Route path="/paziente/appuntamenti/:id" element={<DettaglioAppuntamento />} />
-        <Route path="/paziente/appuntamenti/:id/modifica" element={<ModificaAppuntamento />} />
-        <Route path="/paziente/appuntamenti/:id/annulla" element={<ConfermaAnnullamento />} />
+      {/* 📌 Prenotazione visite */}
+      <Route
+        path="/paziente/prenota/visita"
+        element={
+          <ProtectedRoute>
+            <SelezionaVisita />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* 📌 Flusso esami/referti paziente */}
-        <Route path="/paziente/esami" element={<EsamiList />} />
-        <Route path="/paziente/esami/:id" element={<EsameDettaglio />} />
+      <Route
+        path="/paziente/prenota/medico"
+        element={
+          <ProtectedRoute>
+            <SelezionaMedico />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* 🔥 Prenotazione esami */}
-        <Route path="/paziente/prenota/esame" element={<PrenotaEsame />} />
+      <Route
+        path="/paziente/prenota/data"
+        element={
+          <ProtectedRoute>
+            <SelezionaData />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* 🔥 Conferma prenotazione esame */}
-        <Route path="/paziente/prenota-esame/confermata" element={<PrenotazioneEsameConfermata />} />
+      <Route
+        path="/paziente/prenota/orario"
+        element={
+          <ProtectedRoute>
+            <SelezionaOrario />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* 🩺 Parametri vitali */}
-        <Route path="/paziente/parametri/inserisci" element={<InserisciParametri />} />
-        <Route path="/paziente/storico-parametri" element={<StoricoParametri />} />
+      <Route
+        path="/paziente/prenota/riepilogo"
+        element={
+          <ProtectedRoute>
+            <RiepilogoPrenotazione />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* 💊 Terapie */}
-        <Route path="/paziente/terapie" element={<ListaTerapie />} />
+      <Route
+        path="/paziente/prenota/confermata"
+        element={
+          <ProtectedRoute>
+            <PrenotazioneConfermata />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* 💬 Conversazioni */}
-        <Route path="/paziente/conversazioni" element={<ListaConversazioni />} />
-        <Route path="/paziente/conversazioni/:id" element={<DettaglioConversazione />} />
+      {/* 📌 Appuntamenti */}
+      <Route
+        path="/paziente/appuntamenti"
+        element={
+          <ProtectedRoute>
+            <Appuntamenti />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* Profilo Paziente*/}
-        <Route path="/paziente/profilo" element={<ProfiloPaziente />} />
+      <Route
+        path="/paziente/appuntamenti/:id"
+        element={
+          <ProtectedRoute>
+            <DettaglioAppuntamento />
+          </ProtectedRoute>
+        }
+      />
 
-      </Route>
+      <Route
+        path="/paziente/appuntamenti/:id/modifica"
+        element={
+          <ProtectedRoute>
+            <ModificaAppuntamento />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/paziente/appuntamenti/:id/annulla"
+        element={
+          <ProtectedRoute>
+            <ConfermaAnnullamento />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Esami */}
+      <Route
+        path="/paziente/esami"
+        element={
+          <ProtectedRoute>
+            <EsamiList />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/paziente/esami/:id"
+        element={
+          <ProtectedRoute>
+            <EsameDettaglio />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/paziente/prenota/esame"
+        element={
+          <ProtectedRoute>
+            <PrenotaEsame />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/paziente/prenota-esame/confermata"
+        element={
+          <ProtectedRoute>
+            <PrenotazioneEsameConfermata />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 🩺 Parametri vitali */}
+      <Route
+        path="/paziente/parametri/inserisci"
+        element={
+          <ProtectedRoute>
+            <InserisciParametri />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/paziente/storico-parametri"
+        element={
+          <ProtectedRoute>
+            <StoricoParametri />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 💊 Terapie */}
+      <Route
+        path="/paziente/terapie"
+        element={
+          <ProtectedRoute>
+            <ListaTerapie />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 💬 Conversazioni */}
+      <Route
+        path="/paziente/conversazioni"
+        element={
+          <ProtectedRoute>
+            <ListaConversazioni />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/paziente/conversazioni/:id"
+        element={
+          <ProtectedRoute>
+            <DettaglioConversazione />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 👤 Profilo */}
+      <Route
+        path="/paziente/profilo"
+        element={
+          <ProtectedRoute>
+            <ProfiloPaziente />
+          </ProtectedRoute>
+        }
+      />
+
     </Routes>
   );
 }

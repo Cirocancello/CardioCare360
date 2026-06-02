@@ -12,7 +12,7 @@ import {
   FaHeartbeat,
   FaSignOutAlt
 } from "react-icons/fa";
-import "../styles/components/sidebar.css";
+import "../styles/components/sidebarmedico.css";
 
 export default function Sidebar() {
 

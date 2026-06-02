@@ -9,23 +9,19 @@ export async function login(email, password) {
       body: JSON.stringify({ email, password })
     });
 
+    // Se il backend risponde con errore, NON lanciare eccezione
     if (!response.ok) {
-      throw new Error("Credenziali errate");
+      const errorText = await response.text();
+      console.error("Errore login backend:", errorText);
+      return null;
     }
 
-    const data = await response.json();
-
-    // 🔥 Salvataggio dati nel localStorage
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("ruolo", data.ruolo);
-    localStorage.setItem("idUtente", data.idUtente);
-    localStorage.setItem("idPaziente", data.idPaziente);
-
-    return data;
+    // 🔥 Restituisce SOLO i dati, senza salvare nulla
+    return await response.json();
 
   } catch (error) {
     console.error("Errore nella funzione login:", error);
-    throw error;
+    return null;
   }
 }
 
@@ -73,11 +69,11 @@ export async function forgotPassword(email) {
       throw new Error(errorMessage);
     }
 
-    const message = await response.text();
-    return message; // ✅ Restituisce testo semplice
+    // Il backend restituisce testo semplice
+    return await response.text();
+
   } catch (error) {
     console.error("Errore nella funzione forgotPassword:", error);
     throw error;
   }
 }
-

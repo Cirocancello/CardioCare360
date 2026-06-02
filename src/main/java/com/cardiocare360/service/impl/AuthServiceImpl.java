@@ -28,15 +28,16 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    // ---------------------------------------------------------
+    // 🔥 REGISTRAZIONE
+    // ---------------------------------------------------------
     @Override
     public AuthResponse register(RegisterRequest request) {
 
-        // 🔥 Controllo email duplicata
         if (utenteRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("EMAIL_DUPLICATA");
         }
 
-        // 🔥 Controllo ruolo
         if (request.getRuolo() == null) {
             throw new IllegalArgumentException("RUOLO_OBBLIGATORIO");
         }
@@ -71,8 +72,9 @@ public class AuthServiceImpl implements AuthService {
                 return new AuthResponse(
                         token,
                         ruolo.name(),
-                        paziente.getId(),
-                        paziente.getId()
+                        paziente.getId(),   // idUtente
+                        paziente.getId(),   // idPaziente
+                        null                // idMedico
                 );
             }
 
@@ -95,8 +97,9 @@ public class AuthServiceImpl implements AuthService {
                 return new AuthResponse(
                         token,
                         ruolo.name(),
-                        medico.getId(),
-                        null
+                        medico.getId(),   // idUtente
+                        null,             // idPaziente
+                        medico.getId()    // idMedico
                 );
             }
 
@@ -117,6 +120,7 @@ public class AuthServiceImpl implements AuthService {
                         token,
                         ruolo.name(),
                         admin.getId(),
+                        null,
                         null
                 );
             }
@@ -125,6 +129,9 @@ public class AuthServiceImpl implements AuthService {
         throw new IllegalArgumentException("RUOLO_NON_VALIDO");
     }
 
+    // ---------------------------------------------------------
+    // 🔥 LOGIN
+    // ---------------------------------------------------------
     @Override
     public AuthResponse login(LoginRequest request) {
 
@@ -135,18 +142,46 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("CREDENZIALI_ERRATE");
         }
 
-        Paziente paziente = pazienteRepository.findById(utente.getId()).orElse(null);
-
         String token = jwtUtil.generateToken(
                 utente.getEmail(),
                 utente.getRuolo().name()
         );
 
+        // 🔥 PAZIENTE
+        if (utente.getRuolo() == Utente.Ruolo.PAZIENTE) {
+            Paziente paziente = pazienteRepository.findById(utente.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("PAZIENTE_NON_TROVATO"));
+
+            return new AuthResponse(
+                    token,
+                    utente.getRuolo().name(),
+                    utente.getId(),
+                    paziente.getId(),   // idPaziente
+                    null                // idMedico
+            );
+        }
+
+        // 🔥 MEDICO
+        if (utente.getRuolo() == Utente.Ruolo.MEDICO) {
+            Medico medico = medicoRepository.findById(utente.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("MEDICO_NON_TROVATO"));
+
+            return new AuthResponse(
+                    token,
+                    utente.getRuolo().name(),
+                    utente.getId(),
+                    null,               // idPaziente
+                    medico.getId()      // idMedico
+            );
+        }
+
+        // 🔥 ADMIN
         return new AuthResponse(
                 token,
                 utente.getRuolo().name(),
                 utente.getId(),
-                paziente != null ? paziente.getId() : null
+                null,
+                null
         );
     }
 }

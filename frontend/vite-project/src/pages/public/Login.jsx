@@ -7,40 +7,55 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
 export default function Login() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+
+  try {
+    console.log("TRY PARTITO");
 
     const data = await login(email, password);
+    console.log("RISPOSTA LOGIN:", data);
 
     if (!data) {
       alert("Credenziali non valide");
       return;
     }
 
-    if (!data.token) {
-      alert("Errore: il server non ha restituito un token");
+    // 🔥 Salva dati comuni
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("ruolo", data.ruolo);
+    localStorage.setItem("idUtente", data.idUtente);
+
+    // 🔥 Redirect e salvataggio specifico per ruolo
+    if (data.ruolo === "PAZIENTE") {
+      localStorage.setItem("idPaziente", data.idPaziente);
+      navigate("/dashboard-paziente");
       return;
     }
 
-    // 🔥 Salva tutto ciò che serve
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("idUtente", data.idUtente);
-    localStorage.setItem("user", JSON.stringify(data)); // <— AGGIUNTO
-
-    // Redirect in base al ruolo
-    if (data.ruolo === "PAZIENTE") {
-      navigate("/dashboard-paziente");
-    } else if (data.ruolo === "MEDICO") {
+    if (data.ruolo === "MEDICO") {
+      localStorage.setItem("idMedico", data.idMedico);
       navigate("/dashboard-medico");
-    } else {
-      navigate("/admin");
+      return;
     }
-  };
+
+    if (data.ruolo === "ADMIN") {
+      navigate("/admin");
+      return;
+    }
+
+    alert("Ruolo non riconosciuto");
+
+  } catch (err) {
+    console.error("Errore durante il login:", err);
+    alert("Errore di connessione al server");
+  }
+};
+
 
   return (
     <>
@@ -48,13 +63,10 @@ export default function Login() {
 
       <div className="user-page">
         <div className="user-card">
-
           <img src={logo} alt="CardioCare360" className="user-logo" />
-
           <h2 className="user-title">Accedi al tuo account</h2>
 
           <form onSubmit={handleSubmit}>
-
             <input
               type="email"
               placeholder="Email"
@@ -81,7 +93,6 @@ export default function Login() {
           <a href="/forgot-password" className="user-link">
             Password dimenticata?
           </a>
-
         </div>
       </div>
 
