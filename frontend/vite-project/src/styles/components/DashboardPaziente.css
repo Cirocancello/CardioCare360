@@ -1,0 +1,89 @@
+.layout-paziente {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: #f5f7fa;
+  overflow: hidden;
+}
+
+.dashboard-paziente-container {
+  flex: 1;
+  padding: 60px 100px 60px 260px; /* margini bilanciati */
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 45px;
+  color: #1a3c8b;
+}
+
+/* Card informazioni */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px 50px;
+  justify-items: center;
+  margin-top: 30px;
+}
+
+.info-card {
+  background: white;
+  padding: 25px 20px;
+  border-radius: 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: 0.25s;
+  width: 100%;
+  max-width: 320px;
+}
+
+.info-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  background-color: #eaf0ff;
+}
+
+/* Sezione azioni rapide */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 45px 55px;
+  justify-items: center;
+  margin-top: 50px;
+  width: 100%;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 35px 30px;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.25s;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 320px;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  background-color: #eaf0ff;
+}
+
+/* Card Logout */
+.logout-card {
+  color: #d9534f;
+  font-weight: 600;
+}
+
+.logout-card:hover {
+  background-color: #ffe5e5;
+  box-shadow: 0 6px 14px rgba(217,83,79,0.3);
+}
