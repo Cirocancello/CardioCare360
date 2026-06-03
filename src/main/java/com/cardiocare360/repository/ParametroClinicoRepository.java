@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface ParametroClinicoRepository extends JpaRepository<ParametroClinico, Long> {
 
+    // Parametri del paziente (ordinati per data decrescente)
     List<ParametroClinico> findByPazienteIdOrderByDataRilevazioneDesc(Long pazienteId);
-    
-    
+
+    // Metodo richiesto dal PazienteServiceImpl
+    List<ParametroClinico> findByPazienteId(Long pazienteId);
 }

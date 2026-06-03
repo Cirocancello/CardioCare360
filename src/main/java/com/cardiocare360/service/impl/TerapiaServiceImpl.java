@@ -73,11 +73,11 @@ public class TerapiaServiceImpl implements TerapiaService {
 
     @Override
     public List<Terapia> getTerapiePaziente(Long pazienteId) {
-        return terapiaRepository.findByPaziente_Id(pazienteId);
+        return terapiaRepository.findByPazienteId(pazienteId);
     }
 
     @Override
     public List<Terapia> getTerapieMedico(Long medicoId) {
-        return terapiaRepository.findByMedico_Id(medicoId);
+        return terapiaRepository.findByMedicoId(medicoId);
     }
 }

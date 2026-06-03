@@ -1,0 +1,63 @@
+.lista-pazienti-container {
+  flex: 1;
+  padding: 60px 100px 60px 260px;
+  background: #f5f7fa;
+  overflow-y: auto;
+}
+
+.lista-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  color: #1a3c8b;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 25px;
+  font-size: 16px;
+}
+
+.pazienti-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.pazienti-table th {
+  background: #1a3c8b;
+  color: white;
+  padding: 14px;
+  text-align: left;
+}
+
+.pazienti-table td {
+  padding: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.pazienti-table tr:hover {
+  background: #eef3ff;
+}
+
+.btn-dettaglio {
+  background: #1a3c8b;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-dettaglio:hover {
+  background: #163577;
+}

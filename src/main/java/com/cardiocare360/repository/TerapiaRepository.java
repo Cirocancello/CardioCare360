@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface TerapiaRepository extends JpaRepository<Terapia, Long> {
 
-    List<Terapia> findByPaziente_Id(Long pazienteId);
+    List<Terapia> findByPazienteId(Long pazienteId);
 
-    List<Terapia> findByMedico_Id(Long medicoId);
+    List<Terapia> findByMedicoId(Long medicoId);
 }

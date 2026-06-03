@@ -1,0 +1,56 @@
+.dettaglio-paziente-container {
+  flex: 1;
+  padding: 60px 100px 60px 260px;
+  background: #f5f7fa;
+  overflow-y: auto;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #1a3c8b;
+}
+
+.section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.section h2 {
+  color: #1a3c8b;
+  margin-bottom: 15px;
+}
+
+.section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.section th {
+  background: #1a3c8b;
+  color: white;
+  padding: 10px;
+}
+
+.section td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.btn-messaggio {
+  background: #1a3c8b;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-messaggio:hover {
+  background: #163577;
+}

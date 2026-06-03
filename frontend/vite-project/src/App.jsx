@@ -50,6 +50,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Profilo Paziente
 import ProfiloPaziente from "./pages/paziente/ProfiloPaziente";
 
+// 📌 Gestione Pazienti (Medico)
+import ListaPazienti from "./pages/medico/ListaPazienti";
+import DettaglioPaziente from "./pages/medico/DettaglioPaziente";
+
 function App() {
   return (
     <Routes>
@@ -81,6 +85,26 @@ function App() {
         }
       />
 
+      {/* 📌 Lista Pazienti */}
+      <Route
+        path="/medico/pazienti"
+        element={
+          <ProtectedRoute>
+            <ListaPazienti />
+          </ProtectedRoute>
+        }
+      />
+
+      { /* Dettaglio Paziente */}  
+      <Route
+        path="/medico/pazienti/:id"
+        element={
+          <ProtectedRoute>
+            <DettaglioPaziente />
+          </ProtectedRoute>
+        }
+/>
+  
       <Route
         path="/admin"
         element={
