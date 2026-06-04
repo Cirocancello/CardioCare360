@@ -1,0 +1,118 @@
+/* Layout principale */
+.layout-medico {
+  display: flex;
+  min-height: 100vh; /* Copre tutta l’altezza della finestra */
+  background-color: #f9fafc;
+}
+
+/* Sidebar e contenuto */
+.lista-visite-container {
+  flex: 1; /* Fa espandere il contenuto per riempire lo spazio */
+  padding: 25px 40px;
+  background-color: #f9fafc;
+  display: flex;
+  flex-direction: column;
+  margin-left: 250px; /* Spazio per la sidebar */
+}
+
+/* Titolo */
+.title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a2b49;
+  margin-bottom: 25px;
+}
+
+/* Tabella */
+.tabella-visite {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+}
+
+/* Intestazione */
+.tabella-visite thead {
+  background-color: #1a2b49;
+  color: #ffffff;
+}
+
+.tabella-visite th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+/* Righe */
+.tabella-visite tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+}
+
+.tabella-visite tbody tr:hover {
+  background-color: #f1f5ff;
+}
+
+/* Celle */
+.tabella-visite td {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Stato */
+.tabella-visite td:nth-child(5) {
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tabella-visite td:nth-child(5)[data-stato="PRENOTATO"] {
+  color: #ff9800;
+}
+
+.tabella-visite td:nth-child(5)[data-stato="CONFERMATO"] {
+  color: #2196f3;
+}
+
+.tabella-visite td:nth-child(5)[data-stato="COMPLETATO"] {
+  color: #4caf50;
+}
+
+/* Pulsante Dettagli */
+.btn-dettagli {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-dettagli:hover {
+  background-color: #218838;
+}
+
+/* Responsività */
+@media (max-width: 768px) {
+  .tabella-visite th,
+  .tabella-visite td {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .lista-visite-container {
+    margin-left: 0; /* Sidebar nascosta su mobile */
+    padding: 20px;
+  }
+}

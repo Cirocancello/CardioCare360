@@ -1,9 +1,7 @@
 package com.cardiocare360.model.response;
 
-
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class AppuntamentoDTO {
@@ -12,9 +10,14 @@ public class AppuntamentoDTO {
     private Long idPaziente;
     private Long idMedico;
 
+    // 🔹 Dati Medico
     private String nomeMedico;
     private String cognomeMedico;
     private String specializzazioneMedico;
+
+    // 🔹 Dati Paziente (aggiunti)
+    private String nomePaziente;
+    private String cognomePaziente;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataAppuntamento;
@@ -24,13 +27,14 @@ public class AppuntamentoDTO {
 
     private String stato;
     private String note;
-
-    // ⭐ AGGIUNGI QUESTO
     private String tipoVisita;
 
     public AppuntamentoDTO() {}
 
+    // -------------------------
     // Getter e Setter
+    // -------------------------
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -48,6 +52,12 @@ public class AppuntamentoDTO {
 
     public String getSpecializzazioneMedico() { return specializzazioneMedico; }
     public void setSpecializzazioneMedico(String specializzazioneMedico) { this.specializzazioneMedico = specializzazioneMedico; }
+
+    public String getNomePaziente() { return nomePaziente; }
+    public void setNomePaziente(String nomePaziente) { this.nomePaziente = nomePaziente; }
+
+    public String getCognomePaziente() { return cognomePaziente; }
+    public void setCognomePaziente(String cognomePaziente) { this.cognomePaziente = cognomePaziente; }
 
     public LocalDate getDataAppuntamento() { return dataAppuntamento; }
     public void setDataAppuntamento(LocalDate dataAppuntamento) { this.dataAppuntamento = dataAppuntamento; }

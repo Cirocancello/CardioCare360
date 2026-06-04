@@ -53,6 +53,8 @@ import ProfiloPaziente from "./pages/paziente/ProfiloPaziente";
 // 📌 Gestione Pazienti (Medico)
 import ListaPazienti from "./pages/medico/ListaPazienti";
 import DettaglioPaziente from "./pages/medico/DettaglioPaziente";
+import ListaVisiteMedico from "./pages/medico/ListaVisiteMedico";
+import DettaglioVisitaMedico from "./pages/medico/DettaglioVisitaMedico";
 
 function App() {
   return (
@@ -300,6 +302,27 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* 📌 Lista Visite Medico */}
+      <Route
+        path="/medico/visite"
+        element={
+          <ProtectedRoute>
+            <ListaVisiteMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Dettaglio Visita Medico */}
+      <Route
+        path="/medico/visite/:id"
+        element={
+          <ProtectedRoute>
+            <DettaglioVisitaMedico />
+          </ProtectedRoute>
+        }
+      />
+
 
     </Routes>
   );

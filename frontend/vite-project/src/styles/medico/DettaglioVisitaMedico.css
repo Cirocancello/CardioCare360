@@ -1,0 +1,83 @@
+/* Layout principale */
+.layout-medico {
+  display: flex;
+  min-height: 100vh; /* Copre tutta la finestra */
+  background-color: #f9fafc;
+}
+
+/* Contenitore principale */
+.dettaglio-visita-container {
+  flex: 1; /* Si espande come ListaVisite */
+  padding: 25px 40px;
+  background-color: #f9fafc;
+  display: flex;
+  flex-direction: column;
+  margin-left: 250px; /* Spazio per la sidebar */
+}
+
+/* Card dettagli visita */
+.card-visita {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 25px;
+  margin-top: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 900px; /* Per evitare che diventi troppo larga */
+}
+
+.card-visita p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Sezione azioni */
+.azioni-visita {
+  margin-top: 25px;
+  display: flex;
+  gap: 12px;
+}
+
+/* Pulsanti */
+.btn-indietro {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-indietro:hover {
+  background-color: #5a6268;
+}
+
+.btn-completa {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-completa:hover {
+  background-color: #218838;
+}
+
+/* Responsività */
+@media (max-width: 768px) {
+  .dettaglio-visita-container {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .card-visita {
+    padding: 20px;
+  }
+}

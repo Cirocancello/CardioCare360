@@ -76,6 +76,7 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
         app.setOraAppuntamento(dto.getOraAppuntamento());
         app.setStato(StatoAppuntamento.PRENOTATO);
         app.setNote(dto.getNote());
+        app.setTipoVisita(dto.getTipoVisita());
 
         appuntamentoRepository.save(app);
 
@@ -173,10 +174,18 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
         dto.setId(app.getId());
         dto.setIdPaziente(app.getPaziente().getId());
         dto.setIdMedico(app.getMedico().getId());
+
+        // ⭐ DATI MEDICO
         dto.setNomeMedico(app.getMedico().getNome());
-        dto.setTipoVisita(app.getTipoVisita());
         dto.setCognomeMedico(app.getMedico().getCognome());
         dto.setSpecializzazioneMedico(app.getMedico().getSpecializzazione());
+
+        // ⭐ DATI PAZIENTE (mancavano!)
+        dto.setNomePaziente(app.getPaziente().getNome());
+        dto.setCognomePaziente(app.getPaziente().getCognome());
+
+        // ⭐ ALTRI DATI
+        dto.setTipoVisita(app.getTipoVisita());
         dto.setDataAppuntamento(app.getDataAppuntamento());
         dto.setOraAppuntamento(app.getOraAppuntamento());
         dto.setStato(app.getStato().name());
