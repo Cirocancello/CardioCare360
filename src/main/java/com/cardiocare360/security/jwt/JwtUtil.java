@@ -3,7 +3,6 @@ package com.cardiocare360.security.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -23,21 +22,29 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    // ⭐ GENERA TOKEN SENZA ROLE_
-    public String generateToken(String email, String ruolo) {
+    // ⭐ GENERA TOKEN USANDO I RUOLI REALI DEL DB
+    public String generateToken(UserDetails userDetails) {
+
+        // 🔥 Recupera il ruolo reale (MEDICO, PAZIENTE, ADMIN)
+        String ruolo = userDetails.getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority();
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("ruolo", ruolo);
-        claims.put("authorities", List.of(ruolo)); // 🔥 niente ROLE_
+        claims.put("authorities", List.of(ruolo)); // niente ROLE_
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email)
+                .setSubject(userDetails.getUsername()) // email
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // ⭐ ESTRAZIONE DATI DAL TOKEN
     public String extractEmail(String token) {
         return getAllClaims(token).getSubject();
     }
@@ -46,19 +53,17 @@ public class JwtUtil {
         return (String) getAllClaims(token).get("ruolo");
     }
 
-    // ⭐ ESTRAE AUTHORITIES SENZA ROLE_
-    public List<SimpleGrantedAuthority> extractAuthorities(String token) {
+    public List<String> extractAuthorities(String token) {
         Object raw = getAllClaims(token).get("authorities");
 
         if (raw instanceof List<?> list) {
-            return list.stream()
-                    .map(a -> new SimpleGrantedAuthority(a.toString()))
-                    .toList();
+            return list.stream().map(Object::toString).toList();
         }
 
         return List.of();
     }
 
+    // ⭐ VALIDAZIONE TOKEN
     public boolean validateToken(String token, UserDetails userDetails) {
         try {
             String email = extractEmail(token);

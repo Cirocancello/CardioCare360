@@ -24,4 +24,7 @@ public interface EsameService {
     
     // 🔥 Nuovo metodo per calcolare la prossima disponibilità
     DisponibilitaEsameResponse calcolaProssimaDisponibilita(String tipoEsame);
+    
+    List<EsameDTO> getEsamiDaRefertare(Long idMedico);
+
 }

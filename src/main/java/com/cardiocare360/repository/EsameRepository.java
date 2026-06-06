@@ -25,4 +25,7 @@ public interface EsameRepository extends JpaRepository<Esame, Long> {
 
     // 🔥 Controllo se uno slot (data + ora) è già occupato
     boolean existsByDataEsameAndOraEsame(LocalDate dataEsame, LocalTime oraEsame);
+    
+    List<Esame> findByMedicoIdAndStato(Long idMedico, Esame.StatoEsame stato);
+
 }

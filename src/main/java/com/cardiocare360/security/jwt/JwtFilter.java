@@ -29,11 +29,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // 🔹 Escludi endpoint pubblici dal controllo JWT
+        // 🔹 Escludi endpoint pubblici
         if (path.startsWith("/auth")
                 || path.startsWith("/disponibilita/slot")
                 || path.startsWith("/disponibilita/date")
                 || path.startsWith("/api/notifiche")) {
+
             filterChain.doFilter(request, response);
             return;
         }
@@ -56,14 +57,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(token, userDetails)) {
 
-                // 🔥 Usa le AUTHORITIES del TOKEN (ROLE_PAZIENTE)
-                var authorities = jwtUtil.extractAuthorities(token);
-
+                // 🔥 Usa SEMPRE i ruoli del database, NON quelli del token
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
-                                authorities
+                                userDetails.getAuthorities()   // ✔ CORRETTO
                         );
 
                 authToken.setDetails(
@@ -73,7 +72,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
                 System.out.println(">>> [JWT] Utente autenticato: " + email +
-                        " | Ruoli: " + authorities);
+                        " | Ruoli: " + userDetails.getAuthorities());
             } else {
                 System.out.println(">>> [JWT] Token non valido per utente: " + email);
             }

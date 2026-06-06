@@ -36,11 +36,10 @@ public class RefertoServiceImpl implements RefertoService {
         try {
             System.out.println("=== UPLOAD REFERTO ===");
 
-            if (file.isEmpty()) {
-                throw new RuntimeException("Il file è vuoto");
-            }
-
-            if (!"application/pdf".equalsIgnoreCase(file.getContentType())) {
+            // 🔹 Controllo null e tipo file
+            if (file == null || file.isEmpty()) {
+                System.out.println(">>> [UPLOAD] Nessun file caricato, salvo solo note.");
+            } else if (!"application/pdf".equalsIgnoreCase(file.getContentType())) {
                 throw new RuntimeException("Il file caricato non è un PDF valido");
             }
 
@@ -56,13 +55,16 @@ public class RefertoServiceImpl implements RefertoService {
             Path uploadPath = Paths.get(uploadDir);
             Files.createDirectories(uploadPath);
 
-            // 3️⃣ Salvataggio file
-            String fileName = "referto_" + esameId + ".pdf";
-            Path filePath = uploadPath.resolve(fileName);
+            String filePathString = null;
 
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            System.out.println("File salvato in: " + filePath.toAbsolutePath());
+            // 3️⃣ Salvataggio file (solo se presente)
+            if (file != null && !file.isEmpty()) {
+                String fileName = "referto_" + esameId + ".pdf";
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                filePathString = filePath.toString();
+                System.out.println("File salvato in: " + filePath.toAbsolutePath());
+            }
 
             // 4️⃣ Crea referto
             Referto referto = new Referto();
@@ -73,13 +75,13 @@ public class RefertoServiceImpl implements RefertoService {
             referto.setDescrizione("Documento PDF del referto caricato dal medico");
             referto.setDiagnosi("In attesa di diagnosi");
             referto.setNoteMedico(noteMedico);
-            referto.setFilePath(filePath.toString());
+            referto.setFilePath(filePathString); // può essere null
             referto.setDataCreazione(LocalDateTime.now());
             referto.setDataReferto(LocalDateTime.now());
 
             refertoRepository.save(referto);
 
-            // 5️⃣ Aggiorna stato esame (CORRETTO)
+            // 5️⃣ Aggiorna stato esame
             esame.setStato(Esame.StatoEsame.REFERTATO);
             esameRepository.save(esame);
 
@@ -100,6 +102,7 @@ public class RefertoServiceImpl implements RefertoService {
             throw new RuntimeException("Errore durante il salvataggio del referto: " + e.getMessage(), e);
         }
     }
+
 
     // 🔍 Recupera ultimo referto per esame
     @Override

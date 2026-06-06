@@ -78,14 +78,23 @@ public class SecurityConfig {
                 .requestMatchers("/messaggi/**")
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
-                // -------------------------
-                // REFERTI
-                // -------------------------
-                .requestMatchers(HttpMethod.POST, "/referti/upload")
-                    .hasAuthority("MEDICO")
+                 // -------------------------
+                 // REFERTI
+                 // -------------------------
+                 .requestMatchers(HttpMethod.POST, "/referti/esame/**")
+                     .hasAuthority("MEDICO")
 
-                .requestMatchers(HttpMethod.GET, "/referti/**")
-                    .hasAnyAuthority("MEDICO", "PAZIENTE")
+                 .requestMatchers(HttpMethod.POST, "/referti/upload")
+                     .hasAuthority("MEDICO")
+
+                 .requestMatchers(HttpMethod.GET, "/referti/**")
+                     .hasAnyAuthority("MEDICO", "PAZIENTE")
+
+                 // -------------------------
+                 // ESAMI (aggiornamento stato)
+                 // -------------------------
+                 .requestMatchers(HttpMethod.PUT, "/esami/**")
+                     .hasAuthority("MEDICO")
 
                 // -------------------------
                 // APPUNTAMENTI

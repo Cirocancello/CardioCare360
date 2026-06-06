@@ -15,8 +15,11 @@ import com.cardiocare360.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +70,13 @@ public class AuthServiceImpl implements AuthService {
 
                 paziente = pazienteRepository.save(paziente);
 
-                String token = jwtUtil.generateToken(paziente.getEmail(), ruolo.name());
+                User userDetails = new User(
+                        paziente.getEmail(),
+                        paziente.getPassword(),
+                        List.of(new SimpleGrantedAuthority(ruolo.name()))
+                );
+
+                String token = jwtUtil.generateToken(userDetails);
 
                 return new AuthResponse(
                         token,
@@ -92,7 +101,13 @@ public class AuthServiceImpl implements AuthService {
 
                 medico = medicoRepository.save(medico);
 
-                String token = jwtUtil.generateToken(medico.getEmail(), ruolo.name());
+                User userDetails = new User(
+                        medico.getEmail(),
+                        medico.getPassword(),
+                        List.of(new SimpleGrantedAuthority(ruolo.name()))
+                );
+
+                String token = jwtUtil.generateToken(userDetails);
 
                 return new AuthResponse(
                         token,
@@ -114,7 +129,13 @@ public class AuthServiceImpl implements AuthService {
 
                 admin = utenteRepository.save(admin);
 
-                String token = jwtUtil.generateToken(admin.getEmail(), ruolo.name());
+                User userDetails = new User(
+                        admin.getEmail(),
+                        admin.getPassword(),
+                        List.of(new SimpleGrantedAuthority(ruolo.name()))
+                );
+
+                String token = jwtUtil.generateToken(userDetails);
 
                 return new AuthResponse(
                         token,
@@ -142,10 +163,13 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("CREDENZIALI_ERRATE");
         }
 
-        String token = jwtUtil.generateToken(
+        User userDetails = new User(
                 utente.getEmail(),
-                utente.getRuolo().name()
+                utente.getPassword(),
+                List.of(new SimpleGrantedAuthority(utente.getRuolo().name()))
         );
+
+        String token = jwtUtil.generateToken(userDetails);
 
         // 🔥 PAZIENTE
         if (utente.getRuolo() == Utente.Ruolo.PAZIENTE) {

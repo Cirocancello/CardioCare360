@@ -199,5 +199,15 @@ public class EsameServiceImpl implements EsameService {
             data = data.plusDays(1);
         }
     }
+    
+    @Override
+    public List<EsameDTO> getEsamiDaRefertare(Long idMedico) {
+        return esameRepository.findByMedicoIdAndStato(idMedico, Esame.StatoEsame.ESEGUITO)
+
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
 
 }

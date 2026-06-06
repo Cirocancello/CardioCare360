@@ -55,6 +55,8 @@ import ListaPazienti from "./pages/medico/ListaPazienti";
 import DettaglioPaziente from "./pages/medico/DettaglioPaziente";
 import ListaVisiteMedico from "./pages/medico/ListaVisiteMedico";
 import DettaglioVisitaMedico from "./pages/medico/DettaglioVisitaMedico";
+import ListaEsamiDaRefertare from "./pages/medico/ListaEsamiDaRefertare";
+import RefertaEsame from "./pages/medico/RefertaEsame";
 
 function App() {
   return (
@@ -319,6 +321,26 @@ function App() {
         element={
           <ProtectedRoute>
             <DettaglioVisitaMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Lista Esami da Refertare (Medico) */}
+      <Route
+        path="/medico/esami"
+        element={
+          <ProtectedRoute>
+            <ListaEsamiDaRefertare />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Referta Esame (Medico) */}
+      <Route
+        path="/medico/esami/referta/:idEsame"
+        element={
+          <ProtectedRoute>
+            <RefertaEsame />
           </ProtectedRoute>
         }
       />

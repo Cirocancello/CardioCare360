@@ -71,4 +71,15 @@ public class RefertoController {
                 .body(fileBytes);
     }
 
+    @PostMapping("/esame/{idEsame}")
+    public ResponseEntity<RefertoDTO> salvaReferto(
+            @PathVariable Long idEsame,
+            @RequestParam Long medicoId,
+            @RequestParam String noteMedico,
+            @RequestParam(required = false) MultipartFile file
+    ) {
+        RefertoDTO dto = refertoService.uploadReferto(idEsame, medicoId, noteMedico, file);
+        return ResponseEntity.ok(dto);
+    }
+
 }
