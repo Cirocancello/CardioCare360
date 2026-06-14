@@ -1,0 +1,79 @@
+/* Contenitore principale */
+.lista-visite-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;              /* occupa tutta l’altezza */
+  overflow-y: auto;           /* abilita lo scroll */
+  background-color: #f8f9fa;  /* colore coerente con le altre pagine */
+  padding-bottom: 40px;
+}
+
+/* Contenitore del form */
+.crea-terapia-container {
+  flex: 1;                    /* riempie lo spazio verticale */
+  padding: 40px 60px;         /* margini laterali più ampi */
+  width: 100%;                /* riempie tutta la larghezza */
+  box-sizing: border-box;
+}
+
+/* Titolo */
+.crea-terapia-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: #1a3d6d;
+  margin-bottom: 25px;
+}
+
+/* Form */
+.crea-terapia-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 900px;           /* opzionale: limita la larghezza massima */
+  margin: 0 auto;             /* centra il form orizzontalmente */
+}
+
+/* Campi */
+.crea-terapia-form input,
+.crea-terapia-form select,
+.crea-terapia-form textarea {
+  padding: 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #fff;
+}
+
+/* Pulsante */
+.btn-crea-terapia {
+  background-color: #1a3d6d;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.btn-crea-terapia:hover {
+  background-color: #244f8f;
+}
+
+/* Messaggi di stato */
+.success-message {
+  color: #1a3d6d;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.error-message {
+  color: #d9534f;
+  font-weight: 500;
+  margin-bottom: 10px;
+}

@@ -7,10 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
-
 import java.time.LocalDate;
-
+import java.util.List;
 
 @RestController
 @RequestMapping("/appuntamenti")
@@ -33,22 +31,11 @@ public class AppuntamentoController {
             @RequestBody AppuntamentoDTO dto,
             Principal principal) {
 
-        // 🔥 Controllo aggiuntivo per evitare DTO null o incompleti
-        if (dto == null || dto.getDataAppuntamento() == null) {
-            throw new RuntimeException("Campo dataAppuntamento mancante nel body");
+        if (dto == null || dto.getDataAppuntamento() == null || dto.getOraAppuntamento() == null || dto.getIdMedico() == null) {
+            throw new RuntimeException("Dati appuntamento incompleti");
         }
 
-        if (dto.getOraAppuntamento() == null) {
-            throw new RuntimeException("Campo oraAppuntamento mancante nel body");
-        }
-
-        if (dto.getIdMedico() == null) {
-            throw new RuntimeException("Campo idMedico mancante nel body");
-        }
-
-        // 🔐 Recupero email dal token
         String email = principal.getName();
-
         Long idPaziente = pazienteRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Paziente non trovato"))
                 .getId();
@@ -62,9 +49,7 @@ public class AppuntamentoController {
     // ---------------------------------------------------------
     @GetMapping("/paziente")
     public ResponseEntity<List<AppuntamentoDTO>> getAppuntamentiPaziente(Principal principal) {
-
         String email = principal.getName();
-
         Long idPaziente = pazienteRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Paziente non trovato"))
                 .getId();
@@ -74,16 +59,33 @@ public class AppuntamentoController {
     }
 
     // ---------------------------------------------------------
-    // GET APPUNTAMENTI DEL MEDICO (token → email → id)
+    // GET APPUNTAMENTI DEL MEDICO AUTENTICATO
     // ---------------------------------------------------------
     @GetMapping("/medico")
     public ResponseEntity<List<AppuntamentoDTO>> getAppuntamentiMedico(Principal principal) {
-
         String email = principal.getName();
-
         Long idMedico = appuntamentoService.getIdMedicoByEmail(email);
-
         List<AppuntamentoDTO> lista = appuntamentoService.getAppuntamentiMedico(idMedico);
+        return ResponseEntity.ok(lista);
+    }
+
+    // ---------------------------------------------------------
+    // GET APPUNTAMENTI DI UN MEDICO SPECIFICO (per ID)
+    // ---------------------------------------------------------
+    @GetMapping("/medico/{id}")
+    public ResponseEntity<List<AppuntamentoDTO>> getAppuntamentiMedicoById(@PathVariable Long id) {
+        List<AppuntamentoDTO> lista = appuntamentoService.getAppuntamentiMedico(id);
+        return ResponseEntity.ok(lista);
+    }
+
+    // ---------------------------------------------------------
+    // GET APPUNTAMENTI DISPONIBILI PER CREARE UNA TERAPIA
+    // ---------------------------------------------------------
+    @GetMapping("/medico/disponibili")
+    public ResponseEntity<List<AppuntamentoDTO>> getAppuntamentiDisponibili(Principal principal) {
+        String email = principal.getName();
+        Long idMedico = appuntamentoService.getIdMedicoByEmail(email);
+        List<AppuntamentoDTO> lista = appuntamentoService.getAppuntamentiDisponibili(idMedico);
         return ResponseEntity.ok(lista);
     }
 
@@ -97,9 +99,7 @@ public class AppuntamentoController {
             Principal principal) {
 
         String email = principal.getName();
-
         Long idUtente = appuntamentoService.getIdUtenteByEmail(email);
-
         AppuntamentoDTO updated = appuntamentoService.aggiornaStato(id, stato, idUtente);
         return ResponseEntity.ok(updated);
     }
@@ -108,59 +108,48 @@ public class AppuntamentoController {
     // ELIMINA APPUNTAMENTO (paziente)
     // ---------------------------------------------------------
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminaAppuntamento(
+    public ResponseEntity<Void> eliminaAppuntamento(@PathVariable Long id, Principal principal) {
+        String email = principal.getName();
+        Long idUtente = appuntamentoService.getIdUtenteByEmail(email);
+        boolean ok = appuntamentoService.eliminaAppuntamento(id, idUtente);
+        return ok ? ResponseEntity.ok().build() : ResponseEntity.status(403).build();
+    }
+
+    // ---------------------------------------------------------
+    // ORARI OCCUPATI DEL MEDICO
+    // ---------------------------------------------------------
+    @GetMapping("/occupati")
+    public ResponseEntity<List<String>> getOrariOccupati(
+            @RequestParam Long idMedico,
+            @RequestParam String data) {
+
+        List<String> orari = appuntamentoService.getOrariOccupati(idMedico, LocalDate.parse(data));
+        return ResponseEntity.ok(orari);
+    }
+
+    // ---------------------------------------------------------
+    // GET SINGOLO APPUNTAMENTO (paziente o medico)
+    // ---------------------------------------------------------
+    @GetMapping("/{id}")
+    public ResponseEntity<AppuntamentoDTO> getAppuntamentoById(@PathVariable Long id, Principal principal) {
+        String email = principal.getName();
+        Long idUtente = appuntamentoService.getIdUtenteByEmail(email);
+        AppuntamentoDTO dto = appuntamentoService.getAppuntamentoById(id, idUtente);
+        return ResponseEntity.ok(dto);
+    }
+
+    // ---------------------------------------------------------
+    // AGGIORNA APPUNTAMENTO (paziente)
+    // ---------------------------------------------------------
+    @PutMapping("/{id}")
+    public ResponseEntity<AppuntamentoDTO> aggiornaAppuntamento(
             @PathVariable Long id,
+            @RequestBody AppuntamentoDTO dto,
             Principal principal) {
 
         String email = principal.getName();
-
         Long idUtente = appuntamentoService.getIdUtenteByEmail(email);
-
-        boolean ok = appuntamentoService.eliminaAppuntamento(id, idUtente);
-
-        if (ok) return ResponseEntity.ok().build();
-        return ResponseEntity.status(403).build();
+        AppuntamentoDTO updated = appuntamentoService.aggiornaAppuntamento(id, dto, idUtente);
+        return ResponseEntity.ok(updated);
     }
-    
- // ---------------------------------------------------------
- // ORARI OCCUPATI DEL MEDICO
- // ---------------------------------------------------------
- @GetMapping("/occupati")
- public ResponseEntity<List<String>> getOrariOccupati(
-         @RequestParam Long idMedico,
-         @RequestParam String data) {
-
-     List<String> orari = appuntamentoService.getOrariOccupati(idMedico, LocalDate.parse(data));
-     return ResponseEntity.ok(orari);
- }
- 
-//---------------------------------------------------------
-//GET SINGOLO APPUNTAMENTO (paziente o medico)
-//---------------------------------------------------------
-@GetMapping("/{id}")
-public ResponseEntity<AppuntamentoDTO> getAppuntamentoById(
-      @PathVariable Long id,
-      Principal principal) {
-
-  String email = principal.getName();
-  Long idUtente = appuntamentoService.getIdUtenteByEmail(email);
-
-  AppuntamentoDTO dto = appuntamentoService.getAppuntamentoById(id, idUtente);
-
-  return ResponseEntity.ok(dto);
-}
-
-@PutMapping("/{id}")
-public ResponseEntity<AppuntamentoDTO> aggiornaAppuntamento(
-        @PathVariable Long id,
-        @RequestBody AppuntamentoDTO dto,
-        Principal principal) {
-
-    String email = principal.getName();
-    Long idUtente = appuntamentoService.getIdUtenteByEmail(email);
-
-    AppuntamentoDTO updated = appuntamentoService.aggiornaAppuntamento(id, dto, idUtente);
-    return ResponseEntity.ok(updated);
-}
-
 }

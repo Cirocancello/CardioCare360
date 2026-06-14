@@ -16,7 +16,7 @@ public interface AppuntamentoRepository extends JpaRepository<Appuntamento, Long
     @Query("SELECT a FROM Appuntamento a JOIN FETCH a.medico WHERE a.paziente.id = :idPaziente")
     List<Appuntamento> findByPazienteId(@Param("idPaziente") Long idPaziente);
 
-    // Appuntamenti del medico
+    // Appuntamenti del medico (senza filtri)
     List<Appuntamento> findByMedicoId(Long idMedico);
 
     // Appuntamenti del medico in una data
@@ -35,4 +35,18 @@ public interface AppuntamentoRepository extends JpaRepository<Appuntamento, Long
 
     // Controllo proprietà appuntamento (medico)
     Optional<Appuntamento> findByIdAndMedicoId(Long id, Long idMedico);
+
+    // 🔥 Appuntamenti NON ancora usati (anche se passati)
+    @Query("""
+        SELECT a
+        FROM Appuntamento a
+        WHERE a.medico.id = :medicoId
+          AND a.stato IN ('CONFERMATO', 'PRENOTATO', 'COMPLETATO')
+          AND a.id NOT IN (
+                SELECT t.appuntamento.id
+                FROM Terapia t
+          )
+        ORDER BY a.dataAppuntamento
+    """)
+    List<Appuntamento> findAppuntamentiNonUsati(@Param("medicoId") Long medicoId);
 }

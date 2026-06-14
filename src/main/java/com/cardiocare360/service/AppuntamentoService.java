@@ -17,17 +17,16 @@ public interface AppuntamentoService {
 
     boolean eliminaAppuntamento(Long idAppuntamento, Long idUtente);
 
-    // 🔥 Metodi aggiunti per il controller
     Long getIdUtenteByEmail(String email);
 
     Long getIdMedicoByEmail(String email);
 
-    // 🔥 NUOVO METODO — orari occupati del medico
     List<String> getOrariOccupati(Long idMedico, LocalDate data);
-    
-    public AppuntamentoDTO getAppuntamentoById(Long id, Long idUtente);
-    
+
+    AppuntamentoDTO getAppuntamentoById(Long id, Long idUtente);
+
     AppuntamentoDTO aggiornaAppuntamento(Long id, AppuntamentoDTO dto, Long idUtente);
 
-
+    // 🔥 Appuntamenti disponibili per creare una terapia
+    List<AppuntamentoDTO> getAppuntamentiDisponibili(Long idMedico);
 }

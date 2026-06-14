@@ -57,6 +57,9 @@ import ListaVisiteMedico from "./pages/medico/ListaVisiteMedico";
 import DettaglioVisitaMedico from "./pages/medico/DettaglioVisitaMedico";
 import ListaEsamiDaRefertare from "./pages/medico/ListaEsamiDaRefertare";
 import RefertaEsame from "./pages/medico/RefertaEsame";
+// 📌 Gestione Terapie (Medico)
+import ListaTerapieMedico from "./pages/medico/ListaTerapieMedico";
+import CreaTerapia from "./pages/medico/CreaTerapia";
 
 function App() {
   return (
@@ -345,6 +348,24 @@ function App() {
         }
       />
 
+      {/* 📌 Gestione Terapie (Medico) */}
+      <Route
+        path="/medico/terapie"
+        element={
+          <ProtectedRoute>
+            <ListaTerapieMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/medico/terapie/crea"
+        element={
+          <ProtectedRoute>
+            <CreaTerapia />
+          </ProtectedRoute>
+        }
+      />
 
     </Routes>
   );

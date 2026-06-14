@@ -29,11 +29,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // 🔹 Escludi endpoint pubblici
+        // 🔹 Endpoint pubblici o non protetti
         if (path.startsWith("/auth")
                 || path.startsWith("/disponibilita/slot")
                 || path.startsWith("/disponibilita/date")
-                || path.startsWith("/api/notifiche")) {
+                || path.startsWith("/notifiche")
+                || path.startsWith("/api/notifiche")
+                || path.startsWith("/api/appuntamenti")) {   // ⭐ FIX FONDAMENTALE
 
             filterChain.doFilter(request, response);
             return;
@@ -47,8 +49,17 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 🔹 Estrai token e email
-        String token = authHeader.substring(7);
+        // 🔹 Estrai token
+        String token = authHeader.substring(7).trim();
+
+        // 🔥 Token malformato
+        if (token.split("\\.").length != 3) {
+            System.out.println(">>> [JWT] Token malformato: " + token);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 🔹 Estrai email dal token
         String email = jwtUtil.extractEmail(token);
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -57,12 +68,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(token, userDetails)) {
 
-                // 🔥 Usa SEMPRE i ruoli del database, NON quelli del token
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
-                                userDetails.getAuthorities()   // ✔ CORRETTO
+                                userDetails.getAuthorities()
                         );
 
                 authToken.setDetails(

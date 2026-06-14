@@ -18,7 +18,6 @@ public class TerapiaController {
     // MEDICO
     // -------------------------
 
-    // Creazione terapia (solo medico)
     @PostMapping
     public Terapia creaTerapia(@RequestParam Long pazienteId,
                                @RequestParam Long medicoId,
@@ -35,23 +34,30 @@ public class TerapiaController {
         );
     }
 
-    // Lista terapie del medico
     @GetMapping("/medico/{medicoId}")
     public List<Terapia> getTerapieMedico(@PathVariable Long medicoId) {
         return terapiaService.getTerapieMedico(medicoId);
     }
 
     // -------------------------
+    // NUOVO ENDPOINT
+    // -------------------------
+
+    // 🔥 Restituisce gli ID degli appuntamenti che hanno già una terapia
+    @GetMapping("/usati")
+    public List<Long> getAppuntamentiUsati() {
+        return terapiaService.getAppuntamentiUsati();
+    }
+
+    // -------------------------
     // PAZIENTE
     // -------------------------
 
-    // Lista terapie del paziente
     @GetMapping("/paziente/{pazienteId}")
     public List<Terapia> getTerapiePaziente(@PathVariable Long pazienteId) {
         return terapiaService.getTerapiePaziente(pazienteId);
     }
 
-    // Terapia singola
     @GetMapping("/{id}")
     public Terapia getTerapiaById(@PathVariable Long id) {
         return terapiaService.getTerapiaById(id);

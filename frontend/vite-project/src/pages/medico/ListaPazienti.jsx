@@ -28,12 +28,11 @@ export default function ListaPazienti() {
     <div className="layout-medico">
       <SidebarMedico />
 
-      <div className="lista-pazienti-container">
+      <div className="lista-visite-container">
         <TopbarMedico />
 
-        <h1 className="lista-title">Lista Pazienti</h1>
+        <h1 className="title">Lista Pazienti</h1>
 
-        {/* Barra di ricerca */}
         <input
           type="text"
           placeholder="Cerca paziente..."
@@ -42,8 +41,7 @@ export default function ListaPazienti() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        {/* Tabella pazienti */}
-        <table className="pazienti-table">
+        <table className="tabella-visite">
           <thead>
             <tr>
               <th>Nome</th>
@@ -63,7 +61,7 @@ export default function ListaPazienti() {
                 <td>{p.telefono}</td>
                 <td>
                   <button
-                    className="btn-dettaglio"
+                    className="btn-dettagli"
                     onClick={() => navigate(`/medico/pazienti/${p.id}`)}
                   >
                     Dettaglio

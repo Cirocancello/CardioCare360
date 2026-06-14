@@ -25,7 +25,6 @@ public class JwtUtil {
     // ⭐ GENERA TOKEN USANDO I RUOLI REALI DEL DB
     public String generateToken(UserDetails userDetails) {
 
-        // 🔥 Recupera il ruolo reale (MEDICO, PAZIENTE, ADMIN)
         String ruolo = userDetails.getAuthorities()
                 .iterator()
                 .next()
@@ -33,28 +32,34 @@ public class JwtUtil {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("ruolo", ruolo);
-        claims.put("authorities", List.of(ruolo)); // niente ROLE_
+        claims.put("authorities", List.of(ruolo));
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername()) // email
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // ⭐ ESTRAZIONE DATI DAL TOKEN
+    // ⭐ ESTRAZIONE DATI DAL TOKEN (ROBUSTA)
     public String extractEmail(String token) {
-        return getAllClaims(token).getSubject();
+        Claims claims = safeGetClaims(token);
+        return claims != null ? claims.getSubject() : null;
     }
 
     public String extractRuolo(String token) {
-        return (String) getAllClaims(token).get("ruolo");
+        Claims claims = safeGetClaims(token);
+        return claims != null ? (String) claims.get("ruolo") : null;
     }
 
     public List<String> extractAuthorities(String token) {
-        Object raw = getAllClaims(token).get("authorities");
+        Claims claims = safeGetClaims(token);
+
+        if (claims == null) return List.of();
+
+        Object raw = claims.get("authorities");
 
         if (raw instanceof List<?> list) {
             return list.stream().map(Object::toString).toList();
@@ -63,26 +68,43 @@ public class JwtUtil {
         return List.of();
     }
 
-    // ⭐ VALIDAZIONE TOKEN
+    // ⭐ VALIDAZIONE TOKEN (ROBUSTA)
     public boolean validateToken(String token, UserDetails userDetails) {
         try {
-            String email = extractEmail(token);
-            return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
-        } catch (JwtException | IllegalArgumentException e) {
+            Claims claims = safeGetClaims(token);
+            if (claims == null) return false;
+
+            String email = claims.getSubject();
+            return email.equals(userDetails.getUsername()) && !isTokenExpired(claims);
+
+        } catch (Exception e) {
             System.out.println(">>> JWT NON VALIDO: " + e.getMessage());
             return false;
         }
     }
 
-    private boolean isTokenExpired(String token) {
-        return getAllClaims(token).getExpiration().before(new Date());
+    private boolean isTokenExpired(Claims claims) {
+        return claims.getExpiration().before(new Date());
     }
 
-    private Claims getAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    // ⭐ METODO SICURO PER OTTENERE I CLAIMS
+    private Claims safeGetClaims(String token) {
+        try {
+            // Controllo token malformato
+            if (token == null || token.split("\\.").length != 3) {
+                System.out.println(">>> [JWT] Token malformato: " + token);
+                return null;
+            }
+
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+        } catch (JwtException | IllegalArgumentException e) {
+            System.out.println(">>> [JWT] Errore parsing token: " + e.getMessage());
+            return null;
+        }
     }
 }

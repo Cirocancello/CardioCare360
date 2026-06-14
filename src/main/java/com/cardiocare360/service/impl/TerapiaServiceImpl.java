@@ -37,6 +37,11 @@ public class TerapiaServiceImpl implements TerapiaService {
                                String dataInizio,
                                String dataFine) {
 
+        // 🔥 BLOCCO ANTI-DUPLICATO: impedisce di creare due terapie per lo stesso appuntamento
+        if (terapiaRepository.existsByAppuntamento_Id(appuntamentoId)) {
+            throw new RuntimeException("Esiste già una terapia per questo appuntamento.");
+        }
+
         Paziente paziente = pazienteRepository.findById(pazienteId)
                 .orElseThrow(() -> new RuntimeException("Paziente non trovato"));
 
@@ -79,5 +84,17 @@ public class TerapiaServiceImpl implements TerapiaService {
     @Override
     public List<Terapia> getTerapieMedico(Long medicoId) {
         return terapiaRepository.findByMedicoId(medicoId);
+    }
+
+    // 🔥 Nuovo metodo: restituisce gli ID degli appuntamenti già usati
+    @Override
+    public List<Long> getAppuntamentiUsati() {
+        return terapiaRepository.findAllAppuntamentoIdsWithTerapia();
+    }
+
+    // 🔥 Nuovo metodo: controlla se un appuntamento ha già una terapia
+    @Override
+    public boolean appuntamentoHaTerapia(Long appuntamentoId) {
+        return terapiaRepository.existsByAppuntamento_Id(appuntamentoId);
     }
 }

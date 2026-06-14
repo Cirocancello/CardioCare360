@@ -61,81 +61,84 @@ public class SecurityConfig {
                 // -------------------------
                 .requestMatchers("/disponibilita/slot/**").permitAll()
                 .requestMatchers("/disponibilita/date/**").permitAll()
-                .requestMatchers("/api/notifiche/**").permitAll()
+                .requestMatchers("/notifiche/**").permitAll()
 
                 // -------------------------
                 // MEDICI
                 // -------------------------
-                .requestMatchers(HttpMethod.GET, "/medico/**")
+                .requestMatchers(HttpMethod.GET, "/medico/**", "/api/medico/**")
                     .hasAnyAuthority("MEDICO", "ADMIN")
 
-                .requestMatchers("/medico/visita/**")
+                .requestMatchers("/medico/visita/**", "/api/medico/visita/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
                 // -------------------------
                 // MESSAGGI
                 // -------------------------
-                .requestMatchers("/messaggi/**")
+                .requestMatchers("/messaggi/**", "/api/messaggi/**")
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
-                 // -------------------------
-                 // REFERTI
-                 // -------------------------
-                 .requestMatchers(HttpMethod.POST, "/referti/esame/**")
-                     .hasAuthority("MEDICO")
+                // -------------------------
+                // REFERTI
+                // -------------------------
+                .requestMatchers(HttpMethod.POST, "/referti/esame/**", "/api/referti/esame/**")
+                    .hasAuthority("MEDICO")
 
-                 .requestMatchers(HttpMethod.POST, "/referti/upload")
-                     .hasAuthority("MEDICO")
+                .requestMatchers(HttpMethod.POST, "/referti/upload", "/api/referti/upload")
+                    .hasAuthority("MEDICO")
 
-                 .requestMatchers(HttpMethod.GET, "/referti/**")
-                     .hasAnyAuthority("MEDICO", "PAZIENTE")
+                .requestMatchers(HttpMethod.GET, "/referti/**", "/api/referti/**")
+                    .hasAnyAuthority("MEDICO", "PAZIENTE")
 
-                 // -------------------------
-                 // ESAMI (aggiornamento stato)
-                 // -------------------------
-                 .requestMatchers(HttpMethod.PUT, "/esami/**")
-                     .hasAuthority("MEDICO")
+                // -------------------------
+                // ESAMI
+                // -------------------------
+                .requestMatchers(HttpMethod.PUT, "/esami/**", "/api/esami/**")
+                    .hasAuthority("MEDICO")
 
                 // -------------------------
                 // APPUNTAMENTI
                 // -------------------------
-                .requestMatchers(HttpMethod.GET, "/appuntamenti/paziente")
+                .requestMatchers(HttpMethod.GET, "/appuntamenti/paziente/**", "/api/appuntamenti/paziente/**")
                     .hasAuthority("PAZIENTE")
 
-                .requestMatchers(HttpMethod.GET, "/appuntamenti/medico")
+                .requestMatchers(HttpMethod.GET, "/appuntamenti/medico/**", "/api/appuntamenti/medico/**")
                     .hasAuthority("MEDICO")
 
-                .requestMatchers(HttpMethod.GET, "/appuntamenti/*")
+                .requestMatchers(HttpMethod.GET, "/appuntamenti/*", "/api/appuntamenti/*")
                     .hasAnyAuthority("PAZIENTE", "MEDICO")
 
-                .requestMatchers(HttpMethod.POST, "/appuntamenti/**")
-                    .hasAuthority("PAZIENTE")
+                // -------------------------
+                // FARMACI
+                // -------------------------
+                .requestMatchers(HttpMethod.GET, "/farmaci/**", "/api/farmaci/**")
+                    .hasAuthority("MEDICO")
 
-                .requestMatchers(HttpMethod.PUT, "/appuntamenti/**")
-                    .hasAnyAuthority("PAZIENTE", "MEDICO")
-
-                .requestMatchers(HttpMethod.DELETE, "/appuntamenti/**")
-                    .hasAuthority("PAZIENTE")
+                // -------------------------
+                // PAZIENTI
+                // -------------------------
+                .requestMatchers(HttpMethod.GET, "/paziente/**", "/api/paziente/**")
+                    .hasAuthority("MEDICO")
 
                 // -------------------------
                 // PARAMETRI CLINICI
                 // -------------------------
-                .requestMatchers(HttpMethod.POST, "/api/pazienti/*/parametri/**")
+                .requestMatchers(HttpMethod.POST, "/pazienti/*/parametri/**", "/api/pazienti/*/parametri/**")
                     .hasAuthority("PAZIENTE")
 
-                .requestMatchers(HttpMethod.GET, "/api/pazienti/*/parametri/**")
+                .requestMatchers(HttpMethod.GET, "/pazienti/*/parametri/**", "/api/pazienti/*/parametri/**")
                     .hasAuthority("PAZIENTE")
 
                 // -------------------------
                 // TERAPIE
                 // -------------------------
-                .requestMatchers(HttpMethod.GET, "/api/terapie/paziente/*")
+                .requestMatchers(HttpMethod.GET, "/terapie/paziente/*", "/api/terapie/paziente/*")
                     .hasAuthority("PAZIENTE")
 
-                .requestMatchers(HttpMethod.GET, "/api/terapie/medico/*")
+                .requestMatchers(HttpMethod.GET, "/terapie/medico/*", "/api/terapie/medico/*")
                     .hasAuthority("MEDICO")
 
-                .requestMatchers(HttpMethod.POST, "/api/terapie")
+                .requestMatchers(HttpMethod.POST, "/terapie", "/api/terapie")
                     .hasAuthority("MEDICO")
 
                 // -------------------------

@@ -175,16 +175,13 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
         dto.setIdPaziente(app.getPaziente().getId());
         dto.setIdMedico(app.getMedico().getId());
 
-        // ⭐ DATI MEDICO
         dto.setNomeMedico(app.getMedico().getNome());
         dto.setCognomeMedico(app.getMedico().getCognome());
         dto.setSpecializzazioneMedico(app.getMedico().getSpecializzazione());
 
-        // ⭐ DATI PAZIENTE (mancavano!)
         dto.setNomePaziente(app.getPaziente().getNome());
         dto.setCognomePaziente(app.getPaziente().getCognome());
 
-        // ⭐ ALTRI DATI
         dto.setTipoVisita(app.getTipoVisita());
         dto.setDataAppuntamento(app.getDataAppuntamento());
         dto.setOraAppuntamento(app.getOraAppuntamento());
@@ -226,7 +223,20 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
     }
 
     // ---------------------------------------------------------
-    // AGGIORNA APPUNTAMENTO (data, ora, note)
+    // GET APPUNTAMENTI DISPONIBILI PER TERAPIA
+    // ---------------------------------------------------------
+    @Override
+    public List<AppuntamentoDTO> getAppuntamentiDisponibili(Long idMedico) {
+        return appuntamentoRepository.findAppuntamentiNonUsati(idMedico)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
+    // ---------------------------------------------------------
+    // AGGIORNA APPUNTAMENTO
     // ---------------------------------------------------------
     @Override
     public AppuntamentoDTO aggiornaAppuntamento(Long id, AppuntamentoDTO dto, Long idUtente) {

@@ -5,32 +5,47 @@
   background-color: #f9fafc;
 }
 
-/* Contenitore identico a lista-visite-container */
+/* Contenitore pagina — identico a lista-visite-container */
 .lista-visite-container {
   flex: 1;
   padding: 25px 40px;
   background-color: #f9fafc;
   display: flex;
   flex-direction: column;
-  margin-left: 250px;
+  margin-left: 220px; /* sidebar */
+  box-sizing: border-box;
 }
 
-/* Titolo */
-.title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #1a2b49;
+/* Header */
+.lista-terapie-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 25px;
 }
 
-/* Barra di ricerca */
-.search-input {
-  padding: 10px 15px;
-  font-size: 1rem;
-  border: 1px solid #d1d5db;
+.lista-terapie-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a2b49;
+  margin: 0;
+}
+
+/* Bottone */
+.btn-crea-terapia {
+  background-color: #1a3c8b;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
   border-radius: 6px;
-  margin-bottom: 20px;
-  width: 300px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-crea-terapia:hover {
+  background-color: #163577;
 }
 
 /* Tabella */
@@ -60,20 +75,12 @@
   background-color: #f1f5ff;
 }
 
-/* Pulsante Dettagli */
-.btn-dettagli {
-  background-color: #1a3c8b;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: background-color 0.2s ease;
-}
-
-.btn-dettagli:hover {
-  background-color: #163577;
+/* Nessuna terapia */
+.no-terapie {
+  text-align: center;
+  padding: 40px;
+  font-weight: 600;
+  color: #6b7280;
 }
 
 /* Responsive */
@@ -81,15 +88,5 @@
   .lista-visite-container {
     margin-left: 0;
     padding: 20px;
-  }
-
-  .tabella-visite th,
-  .tabella-visite td {
-    padding: 10px;
-    font-size: 0.85rem;
-  }
-
-  .title {
-    font-size: 1.5rem;
   }
 }
