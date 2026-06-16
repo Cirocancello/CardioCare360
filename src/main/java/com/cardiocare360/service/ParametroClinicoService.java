@@ -1,19 +1,23 @@
 package com.cardiocare360.service;
 
-import com.cardiocare360.model.request.ParametroClinicoRequest;
-
 import com.cardiocare360.model.entity.ParametroClinico;
 import com.cardiocare360.model.entity.Paziente;
+import com.cardiocare360.model.request.ParametroClinicoRequest;
+import com.cardiocare360.model.response.ParametriRecentiDTO;
+import com.cardiocare360.model.response.ParametroClinicoStoricoDTO;
+import com.cardiocare360.repository.ParametroClinicoRepository;
+import com.cardiocare360.repository.PazienteRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Service
 @Transactional
@@ -22,6 +26,15 @@ public class ParametroClinicoService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private ParametroClinicoRepository parametroRepo;
+
+    @Autowired
+    private PazienteRepository pazienteRepo;
+
+    // ============================================================
+    // 1) INSERIMENTO PARAMETRI (PAZIENTE)
+    // ============================================================
     public List<ParametroClinico> inserisciParametro(Long pazienteId, ParametroClinicoRequest request) {
 
         Paziente paziente = entityManager.find(Paziente.class, pazienteId);
@@ -115,5 +128,107 @@ public class ParametroClinicoService {
         return parametri;
     }
 
+    // ============================================================
+    // 2) PARAMETRI RECENTI (MEDICO)
+    // ============================================================
+    public List<ParametriRecentiDTO> getParametriRecentiByMedico(Long idMedico) {
 
+        List<Paziente> pazienti = pazienteRepo.findByMedico_Id(idMedico);
+        List<ParametriRecentiDTO> lista = new ArrayList<>();
+
+        for (Paziente p : pazienti) {
+
+            ParametroClinico ultimo = parametroRepo
+                    .findTopByPazienteIdOrderByDataRilevazioneDesc(p.getId());
+
+            if (ultimo == null) {
+                lista.add(new ParametriRecentiDTO(
+                        p.getId(),
+                        p.getNome(),
+                        p.getCognome(),
+                        null,
+                        null, null, null, null, null, null,
+                        "NODATA"
+                ));
+                continue;
+            }
+
+            Integer sistolica = null;
+            Integer diastolica = null;
+            Integer battiti = null;
+            Integer glicemia = null;
+            Integer saturazione = null;
+            Double temperatura = null;
+
+            switch (ultimo.getTipo()) {
+                case "PRESSIONE" -> {
+                    String[] parts = ultimo.getValore().split("/");
+                    sistolica = Integer.parseInt(parts[0]);
+                    diastolica = Integer.parseInt(parts[1]);
+                }
+                case "BATTITI" -> battiti = Integer.parseInt(ultimo.getValore());
+                case "GLICEMIA" -> glicemia = Integer.parseInt(ultimo.getValore());
+                case "SATURAZIONE" -> saturazione = Integer.parseInt(ultimo.getValore());
+                case "TEMPERATURA" -> temperatura = Double.parseDouble(ultimo.getValore());
+            }
+
+            String stato = calcolaStato(sistolica, diastolica, battiti, glicemia, saturazione, temperatura);
+
+            lista.add(new ParametriRecentiDTO(
+                    p.getId(),
+                    p.getNome(),
+                    p.getCognome(),
+                    ultimo.getDataRilevazione().toString(),
+                    sistolica,
+                    diastolica,
+                    battiti,
+                    glicemia,
+                    saturazione,
+                    temperatura,
+                    stato
+            ));
+        }
+
+        return lista;
+    }
+
+    // ============================================================
+    // 3) CALCOLO STATO CLINICO
+    // ============================================================
+    private String calcolaStato(Integer sist, Integer dias, Integer battiti,
+                                Integer glicemia, Integer saturazione, Double temperatura) {
+
+        if (sist != null && sist > 160) return "DANGER";
+        if (dias != null && dias > 100) return "DANGER";
+        if (battiti != null && battiti > 120) return "DANGER";
+        if (glicemia != null && glicemia > 200) return "DANGER";
+        if (saturazione != null && saturazione < 90) return "DANGER";
+        if (temperatura != null && temperatura > 39) return "DANGER";
+
+        return "OK";
+    }
+
+    // ============================================================
+    // 4) STORICO PARAMETRI (MEDICO) — VERSIONE DTO
+    // ============================================================
+    public List<ParametroClinicoStoricoDTO> getStoricoParametriByPaziente(Long idPaziente) {
+
+        List<ParametroClinico> lista = parametroRepo
+                .findByPazienteIdOrderByDataRilevazioneDesc(idPaziente);
+
+        List<ParametroClinicoStoricoDTO> dtoList = new ArrayList<>();
+
+        for (ParametroClinico p : lista) {
+            dtoList.add(new ParametroClinicoStoricoDTO(
+                    p.getId(),
+                    p.getTipo(),
+                    p.getNome(),
+                    p.getValore(),
+                    p.getUnitaMisura(),
+                    p.getDataRilevazione().toString()
+            ));
+        }
+
+        return dtoList;
+    }
 }

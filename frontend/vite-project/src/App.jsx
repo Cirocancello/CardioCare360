@@ -33,7 +33,7 @@ import EsameDettaglio from "./pages/paziente/EsameDettaglio";
 import PrenotaEsame from "./pages/paziente/PrenotaEsame";
 import PrenotazioneEsameConfermata from "./pages/paziente/PrenotazioneEsameConfermata";
 
-// 📌 Parametri vitali
+// 📌 Parametri vitali (Paziente)
 import InserisciParametri from "./pages/paziente/InserisciParametri";
 import StoricoParametri from "./pages/paziente/StoricoParametri";
 
@@ -57,9 +57,14 @@ import ListaVisiteMedico from "./pages/medico/ListaVisiteMedico";
 import DettaglioVisitaMedico from "./pages/medico/DettaglioVisitaMedico";
 import ListaEsamiDaRefertare from "./pages/medico/ListaEsamiDaRefertare";
 import RefertaEsame from "./pages/medico/RefertaEsame";
+
 // 📌 Gestione Terapie (Medico)
 import ListaTerapieMedico from "./pages/medico/ListaTerapieMedico";
 import CreaTerapia from "./pages/medico/CreaTerapia";
+
+// 📌 Parametri Vitali Medico
+import ParametriVitaliMedico from "./pages/medico/ParametriVitaliMedico";
+import StoricoParametriMedico from "./pages/medico/StoricoParametriMedico";
 
 function App() {
   return (
@@ -73,7 +78,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      {/* 🔒 Rotte protette */}
+      {/* 🔒 Dashboard */}
       <Route
         path="/dashboard-paziente"
         element={
@@ -92,7 +97,7 @@ function App() {
         }
       />
 
-      {/* 📌 Lista Pazienti */}
+      {/* 📌 Gestione Pazienti (Medico) */}
       <Route
         path="/medico/pazienti"
         element={
@@ -102,7 +107,6 @@ function App() {
         }
       />
 
-      { /* Dettaglio Paziente */}  
       <Route
         path="/medico/pazienti/:id"
         element={
@@ -110,13 +114,71 @@ function App() {
             <DettaglioPaziente />
           </ProtectedRoute>
         }
-/>
-  
+      />
+
+      {/* 📌 Parametri Vitali Medico */}
       <Route
-        path="/admin"
+        path="/medico/parametri"
         element={
           <ProtectedRoute>
-            <AdminDashboard />
+            <ParametriVitaliMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Visite Medico */}
+      <Route
+        path="/medico/visite"
+        element={
+          <ProtectedRoute>
+            <ListaVisiteMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/medico/visite/:id"
+        element={
+          <ProtectedRoute>
+            <DettaglioVisitaMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Esami Medico */}
+      <Route
+        path="/medico/esami"
+        element={
+          <ProtectedRoute>
+            <ListaEsamiDaRefertare />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/medico/esami/referta/:idEsame"
+        element={
+          <ProtectedRoute>
+            <RefertaEsame />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Terapie Medico */}
+      <Route
+        path="/medico/terapie"
+        element={
+          <ProtectedRoute>
+            <ListaTerapieMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/medico/terapie/crea"
+        element={
+          <ProtectedRoute>
+            <CreaTerapia />
           </ProtectedRoute>
         }
       />
@@ -250,7 +312,7 @@ function App() {
         }
       />
 
-      {/* 🩺 Parametri vitali */}
+      {/* 🩺 Parametri vitali (Paziente) */}
       <Route
         path="/paziente/parametri/inserisci"
         element={
@@ -308,64 +370,25 @@ function App() {
         }
       />
 
-      {/* 📌 Lista Visite Medico */}
+      {/* 🛠 Admin */}
       <Route
-        path="/medico/visite"
+        path="/admin"
         element={
           <ProtectedRoute>
-            <ListaVisiteMedico />
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />
 
-      {/* 📌 Dettaglio Visita Medico */}
+  
       <Route
-        path="/medico/visite/:id"
+        path="/medico/parametri/storico/:idPaziente"
         element={
           <ProtectedRoute>
-            <DettaglioVisitaMedico />
+            <StoricoParametriMedico />
           </ProtectedRoute>
-        }
-      />
-
-      {/* 📌 Lista Esami da Refertare (Medico) */}
-      <Route
-        path="/medico/esami"
-        element={
-          <ProtectedRoute>
-            <ListaEsamiDaRefertare />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* 📌 Referta Esame (Medico) */}
-      <Route
-        path="/medico/esami/referta/:idEsame"
-        element={
-          <ProtectedRoute>
-            <RefertaEsame />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* 📌 Gestione Terapie (Medico) */}
-      <Route
-        path="/medico/terapie"
-        element={
-          <ProtectedRoute>
-            <ListaTerapieMedico />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/medico/terapie/crea"
-        element={
-          <ProtectedRoute>
-            <CreaTerapia />
-          </ProtectedRoute>
-        }
-      />
+      }
+/>
 
     </Routes>
   );

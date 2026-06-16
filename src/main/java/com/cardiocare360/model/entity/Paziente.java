@@ -8,7 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "paziente")
-@PrimaryKeyJoinColumn(name = "id")
+@PrimaryKeyJoinColumn(name = "id") // usa la stessa PK di Utente
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @DynamicUpdate
 public class Paziente extends Utente {
@@ -28,6 +28,12 @@ public class Paziente extends Utente {
     @Column(length = 255)
     private String indirizzo;
 
+    // ⭐ RELAZIONE CON IL MEDICO (fondamentale)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "medico_id")
+    @JsonIgnoreProperties({"pazienti"})
+    private Medico medico;
+
     public Paziente() {}
 
     public String getCodiceFiscale() { return codiceFiscale; }
@@ -44,4 +50,7 @@ public class Paziente extends Utente {
 
     public String getIndirizzo() { return indirizzo; }
     public void setIndirizzo(String indirizzo) { this.indirizzo = indirizzo; }
+
+    public Medico getMedico() { return medico; }
+    public void setMedico(Medico medico) { this.medico = medico; }
 }

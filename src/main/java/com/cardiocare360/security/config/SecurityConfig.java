@@ -71,6 +71,12 @@ public class SecurityConfig {
 
                 .requestMatchers("/medico/visita/**", "/api/medico/visita/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+                
+                 // -------------------------
+                 // MEDICI (PLURALE, API NUOVE)
+                 // -------------------------
+                 .requestMatchers("/medici/**", "/api/medici/**")
+                     .hasAnyAuthority("MEDICO", "ADMIN")
 
                 // -------------------------
                 // MESSAGGI

@@ -1,0 +1,100 @@
+/* Layout principale */
+.layout-medico {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafc;
+}
+
+/* Contenitore pagina — identico alle altre sezioni medico */
+.lista-parametri-container {
+  flex: 1;
+  padding: 25px 40px;
+  background-color: #f9fafc;
+  display: flex;
+  flex-direction: column;
+  margin-left: 220px; /* sidebar */
+  box-sizing: border-box;
+}
+
+/* Header */
+.lista-parametri-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.lista-parametri-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a2b49;
+  margin: 0;
+}
+
+/* Tabella storico */
+.tabella-parametri {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+}
+
+.tabella-parametri thead {
+  background-color: #1a2b49;
+  color: #ffffff;
+}
+
+.tabella-parametri th,
+.tabella-parametri td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.tabella-parametri tbody tr:hover {
+  background-color: #f1f5ff;
+}
+
+/* Badge stato */
+.badge-ok {
+  background-color: #28a745 !important;
+  color: #fff;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.badge-alert {
+  background-color: #dc3545 !important;
+  color: #fff;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.badge-nodata {
+  background-color: #6c757d !important;
+  color: #fff;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* Nessun parametro */
+.no-parametri {
+  text-align: center;
+  padding: 40px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lista-parametri-container {
+    margin-left: 0;
+    padding: 20px;
+  }
+}

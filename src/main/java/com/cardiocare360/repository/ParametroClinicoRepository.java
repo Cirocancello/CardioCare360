@@ -7,9 +7,18 @@ import java.util.List;
 
 public interface ParametroClinicoRepository extends JpaRepository<ParametroClinico, Long> {
 
-    // Parametri del paziente (ordinati per data decrescente)
+    // 🔹 Storico parametri del paziente (ordinati per data decrescente)
     List<ParametroClinico> findByPazienteIdOrderByDataRilevazioneDesc(Long pazienteId);
 
-    // Metodo richiesto dal PazienteServiceImpl
+    // 🔹 Tutti i parametri del paziente (senza ordinamento)
     List<ParametroClinico> findByPazienteId(Long pazienteId);
+
+    // 🔹 Ultimo parametro registrato (per dashboard medico)
+    ParametroClinico findTopByPazienteIdOrderByDataRilevazioneDesc(Long pazienteId);
+
+    // ❌ RIMOSSO: metodo sbagliato, nome campo errato e firma non valida
+    // List<ParametroClinico> findByPazienteIdOrderByDataRegistrazioneDesc(Long idPaziente, Long idMedico);
+
+    // 🔹 (Opzionale) Se vuoi filtrare anche per medico:
+    // List<ParametroClinico> findByPazienteIdAndMedicoIdOrderByDataRilevazioneDesc(Long pazienteId, Long medicoId);
 }
