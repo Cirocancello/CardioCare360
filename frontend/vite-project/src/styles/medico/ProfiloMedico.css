@@ -1,0 +1,153 @@
+/* Layout principale */
+.layout-medico {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafc;
+}
+
+/* Contenitore pagina — identico alle altre pagine medico */
+.profilo-medico-container {
+  flex: 1;
+  padding: 25px 40px;
+  background-color: #f9fafc;
+  display: flex;
+  flex-direction: column;
+  margin-left: 220px; /* spazio sidebar */
+  box-sizing: border-box;
+}
+
+/* Titolo pagina */
+.profilo-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a2b49;
+  padding: 20px;
+  margin: 0 0 25px 0;
+  text-align: center;
+}
+
+/* Card contenitore */
+.profilo-card {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto; /* ✅ CENTRA LA CARD */
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Riga campo */
+.profilo-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.profilo-row label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.profilo-row input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+
+.profilo-row input:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.profilo-row input:focus {
+  border-color: #1d4ed8;
+  outline: none;
+}
+
+/* Pulsanti */
+.profilo-buttons {
+  margin-top: 25px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-modifica,
+.btn-salva,
+.btn-annulla,
+.btn-password {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-modifica {
+  background: #1d4ed8;
+  color: white;
+}
+
+.btn-modifica:hover {
+  background: #153ead;
+  transform: scale(1.03);
+}
+
+.btn-salva {
+  background: #28a745;
+  color: white;
+}
+
+.btn-salva:hover {
+  background: #1e7e34;
+  transform: scale(1.03);
+}
+
+.btn-annulla {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-annulla:hover {
+  background: #b52a36;
+  transform: scale(1.03);
+}
+
+.btn-password {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-password:hover {
+  background: #565e64;
+  transform: scale(1.03);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profilo-medico-container {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .profilo-card {
+    padding: 20px;
+  }
+
+  .profilo-title {
+    font-size: 24px;
+  }
+
+  .profilo-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

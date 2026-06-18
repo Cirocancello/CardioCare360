@@ -1,13 +1,22 @@
-/* ================================
-   LISTA CONVERSAZIONI MEDICO
-   ================================ */
-
-.lista-conversazioni-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
+/* Layout principale */
+.layout-medico {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafc;
 }
 
+/* Contenitore pagina — identico alle altre pagine medico */
+.lista-conversazioni-container {
+  flex: 1;
+  padding: 25px 40px;
+  background-color: #f9fafc;
+  display: flex;
+  flex-direction: column;
+  margin-left: 220px; /* spazio sidebar */
+  box-sizing: border-box;
+}
+
+/* Card conversazione */
 .conversazione-card {
   background: #ffffff;
   border-radius: 10px;
@@ -24,6 +33,7 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
+/* Header */
 .conversazione-header {
   display: flex;
   justify-content: space-between;
@@ -58,6 +68,11 @@
 
 /* Responsive */
 @media (max-width: 576px) {
+  .lista-conversazioni-container {
+    margin-left: 0;
+    padding: 20px;
+  }
+
   .conversazione-card {
     padding: 12px 15px;
   }

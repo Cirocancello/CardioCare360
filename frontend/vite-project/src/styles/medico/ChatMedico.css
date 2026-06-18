@@ -1,11 +1,32 @@
-/* Container generale */
+/* ================================
+   LAYOUT MEDICO (wrapper esterno)
+   ================================ */
+
+.chat-medico-container {
+  flex: 1;
+  padding: 25px 40px;
+  background-color: #f9fafc;
+  display: flex;
+  flex-direction: column;
+  margin-left: 220px; /* spazio sidebar */
+  box-sizing: border-box;
+  height: 100vh;
+}
+
+/* ================================
+   CHAT INTERNA
+   ================================ */
+
+/* Container generale della chat */
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 80px);
-  background: #f5f7fa;
+  background: #ffffff;
   border-radius: 10px;
   padding: 15px;
+  height: calc(100vh - 160px); 
+  /* 160px = topbar + padding pagina */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 /* Header */

@@ -65,8 +65,14 @@ import CreaTerapia from "./pages/medico/CreaTerapia";
 // 📌 Parametri Vitali Medico
 import ParametriVitaliMedico from "./pages/medico/ParametriVitaliMedico";
 import StoricoParametriMedico from "./pages/medico/StoricoParametriMedico";
+
+// 📌 Conversazioni medico paziente
 import ListaConversazioniMedico from "./pages/medico/ListaConversazioniMedico";
 import ChatMedico from "./pages/medico/ChatMedico";
+
+// 📌 Profilo medico
+import ProfiloMedico from "./pages/medico/ProfiloMedico";
+import CambiaPasswordMedico from "./pages/medico/CambiaPasswordMedico";
 
 function App() {
   return (
@@ -402,6 +408,12 @@ function App() {
         element={<ChatMedico />}
       />
 
+      <Route
+        path="/medico/profilo"
+        element={<ProfiloMedico />}
+      />
+
+      <Route path="/medico/cambia-password" element={<CambiaPasswordMedico />} />
 
     </Routes>
   );

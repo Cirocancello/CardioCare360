@@ -15,4 +15,7 @@ public interface MedicoService {
 
     // 🔥 Nuovo metodo per medico dinamico nel flusso esami
     List<MedicoResponse> getMediciPerTipoEsame(String tipoEsame);
+    
+    boolean cambiaPassword(Long id, String passwordAttuale, String nuovaPassword);
+
 }

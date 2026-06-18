@@ -1,10 +1,14 @@
 package com.cardiocare360.service.impl;
 
 import com.cardiocare360.model.entity.Medico;
+import com.cardiocare360.model.entity.Utente;
 import com.cardiocare360.model.request.MedicoUpdateDTO;
 import com.cardiocare360.model.response.MedicoResponse;
 import com.cardiocare360.repository.MedicoRepository;
+import com.cardiocare360.repository.UtenteRepository;
 import com.cardiocare360.service.MedicoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,16 +17,22 @@ import java.util.List;
 public class MedicoServiceImpl implements MedicoService {
 
     private final MedicoRepository medicoRepository;
+    private final UtenteRepository utenteRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MedicoServiceImpl(MedicoRepository medicoRepository) {
+    @Autowired
+    public MedicoServiceImpl(MedicoRepository medicoRepository,
+                             UtenteRepository utenteRepository,
+                             PasswordEncoder passwordEncoder) {
         this.medicoRepository = medicoRepository;
+        this.utenteRepository = utenteRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public MedicoResponse getMedicoById(Long id) {
         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
-
         return convertToResponse(medico);
     }
 
@@ -32,54 +42,36 @@ public class MedicoServiceImpl implements MedicoService {
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
         // Campi ereditati da Utente
-        if (updateDTO.getNome() != null) {
-            medico.setNome(updateDTO.getNome());
-        }
-        if (updateDTO.getCognome() != null) {
-            medico.setCognome(updateDTO.getCognome());
-        }
+        if (updateDTO.getNome() != null) medico.setNome(updateDTO.getNome());
+        if (updateDTO.getCognome() != null) medico.setCognome(updateDTO.getCognome());
 
         // Campi specifici di Medico
-        if (updateDTO.getSpecializzazione() != null) {
+        if (updateDTO.getSpecializzazione() != null)
             medico.setSpecializzazione(updateDTO.getSpecializzazione());
-        }
-        if (updateDTO.getNumeroLicenza() != null) {
+        if (updateDTO.getNumeroLicenza() != null)
             medico.setNumeroLicenza(updateDTO.getNumeroLicenza());
-        }
 
         medicoRepository.save(medico);
-
         return convertToResponse(medico);
     }
 
     @Override
     public List<MedicoResponse> getMediciBySpecializzazione(String specializzazione) {
         List<Medico> medici = medicoRepository.findBySpecializzazioneIgnoreCase(specializzazione);
-
-        return medici.stream()
-                .map(this::convertToResponse)
-                .toList();
+        return medici.stream().map(this::convertToResponse).toList();
     }
 
-    // 🔥 NUOVO METODO: medico dinamico per tipo esame
     @Override
     public List<MedicoResponse> getMediciPerTipoEsame(String tipoEsame) {
-
-        // Mappiamo il tipo esame alla specializzazione corretta
         String specializzazione = switch (tipoEsame.toUpperCase()) {
             case "ECG", "HOLTER", "ECOCARDIOGRAMMA" -> "Cardiologia";
             default -> null;
         };
 
-        if (specializzazione == null) {
-            return List.of();
-        }
+        if (specializzazione == null) return List.of();
 
         List<Medico> medici = medicoRepository.findBySpecializzazioneIgnoreCase(specializzazione);
-
-        return medici.stream()
-                .map(this::convertToResponse)
-                .toList();
+        return medici.stream().map(this::convertToResponse).toList();
     }
 
     private MedicoResponse convertToResponse(Medico medico) {
@@ -90,5 +82,20 @@ public class MedicoServiceImpl implements MedicoService {
         response.setSpecializzazione(medico.getSpecializzazione());
         response.setNumeroLicenza(medico.getNumeroLicenza());
         return response;
+    }
+
+    @Override
+    public boolean cambiaPassword(Long id, String passwordAttuale, String nuovaPassword) {
+        Medico medico = medicoRepository.findById(id).orElse(null);
+        if (medico == null) return false;
+
+        if (!passwordEncoder.matches(passwordAttuale, medico.getPassword())) {
+            return false;
+        }
+
+        medico.setPassword(passwordEncoder.encode(nuovaPassword));
+        utenteRepository.save(medico);
+
+        return true;
     }
 }
