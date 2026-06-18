@@ -67,7 +67,7 @@ export default function DashboardMedico() {
             ❤️ Parametri Vitali
           </div>
 
-          <div className="dashboard-card" onClick={() => navigate("/medico/messaggi")}>
+          <div className="dashboard-card" onClick={() => navigate("/medico/conversazioni")}>
             💬 Conversazioni
           </div>
 

@@ -1,5 +1,6 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -18,25 +19,26 @@ public class Messaggio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔹 Conversazione a cui appartiene il messaggio
+    // Conversazione a cui appartiene il messaggio
     @ManyToOne(optional = false)
     @JoinColumn(name = "conversazione_id", nullable = false)
     private Conversazione conversazione;
 
-    // 🔹 Chi ha inviato il messaggio
+    // Chi ha inviato il messaggio
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Mittente mittente;
 
-    // 🔹 Testo del messaggio
+    // Testo del messaggio
     @Column(nullable = false, columnDefinition = "TEXT")
     private String testo;
 
-    // 🔹 Timestamp invio
+    // Timestamp invio (formattato per React)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Europe/Rome")
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    // 🔹 Stato lettura
+    // Stato lettura
     @Column(nullable = false)
     private boolean letto = false;
 

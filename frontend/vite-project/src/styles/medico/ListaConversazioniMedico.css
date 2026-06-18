@@ -1,0 +1,72 @@
+/* ================================
+   LISTA CONVERSAZIONI MEDICO
+   ================================ */
+
+.lista-conversazioni-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.conversazione-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border-left: 4px solid #0d6efd;
+}
+
+.conversazione-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.conversazione-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conversazione-nome {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.conversazione-data {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.conversazione-messaggio {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.badge-non-letti {
+  background-color: #0d6efd;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  margin-left: 10px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .conversazione-card {
+    padding: 12px 15px;
+  }
+
+  .conversazione-nome {
+    font-size: 1rem;
+  }
+
+  .conversazione-data {
+    font-size: 0.75rem;
+  }
+}
