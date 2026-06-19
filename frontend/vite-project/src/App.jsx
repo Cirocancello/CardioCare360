@@ -73,6 +73,8 @@ import ChatMedico from "./pages/medico/ChatMedico";
 // 📌 Profilo medico
 import ProfiloMedico from "./pages/medico/ProfiloMedico";
 import CambiaPasswordMedico from "./pages/medico/CambiaPasswordMedico";
+import DisponibilitaMedico from "./pages/medico/DisponibilitaMedico";
+import AggiungiDisponibilita from "./pages/medico/AggiungiDisponibilita";
 
 function App() {
   return (
@@ -414,6 +416,9 @@ function App() {
       />
 
       <Route path="/medico/cambia-password" element={<CambiaPasswordMedico />} />
+
+      <Route path="/medico/disponibilita" element={<DisponibilitaMedico />} />
+      <Route path="/medico/disponibilita/aggiungi" element={<AggiungiDisponibilita />} />
 
     </Routes>
   );

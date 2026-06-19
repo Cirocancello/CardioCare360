@@ -33,11 +33,9 @@ public class DisponibilitaMedicoServiceImpl implements DisponibilitaMedicoServic
 
     @Override
     public DisponibilitaMedico creaDisponibilita(Long idMedico, String giornoSettimana, String oraInizio, String oraFine) {
-
         Medico medico = medicoRepo.findById(idMedico)
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
-        // 🔹 Permetti più fasce orarie nello stesso giorno, ma evita duplicati identici
         boolean esisteDuplicato = disponibilitaRepo.findByMedicoIdAndGiornoSettimana(idMedico, giornoSettimana)
                 .stream()
                 .anyMatch(d -> d.getOraInizio().equals(LocalTime.parse(oraInizio))
@@ -58,7 +56,6 @@ public class DisponibilitaMedicoServiceImpl implements DisponibilitaMedicoServic
 
     @Override
     public DisponibilitaMedico modificaDisponibilita(Long idDisponibilita, String oraInizio, String oraFine) {
-
         DisponibilitaMedico disp = disponibilitaRepo.findById(idDisponibilita)
                 .orElseThrow(() -> new RuntimeException("Disponibilità non trovata"));
 
@@ -77,6 +74,7 @@ public class DisponibilitaMedicoServiceImpl implements DisponibilitaMedicoServic
     public List<DisponibilitaMedico> getDisponibilitaMedico(Long idMedico) {
         return disponibilitaRepo.findByMedicoId(idMedico);
     }
+
     @Override
     public List<DisponibilitaMedico> getDisponibilitaByMedicoAndGiorno(Long idMedico, String giornoSettimana) {
         List<DisponibilitaMedico> disponibilita = disponibilitaRepo.findByMedicoIdAndGiornoSettimana(idMedico, giornoSettimana);
@@ -88,7 +86,6 @@ public class DisponibilitaMedicoServiceImpl implements DisponibilitaMedicoServic
         return disponibilita;
     }
 
-
     @Override
     public List<DisponibilitaMedico> getDisponibilitaByMedici(List<Long> idMedici) {
         return disponibilitaRepo.findByMedicoIdIn(idMedici);
@@ -96,7 +93,6 @@ public class DisponibilitaMedicoServiceImpl implements DisponibilitaMedicoServic
 
     @Override
     public List<String> generaDateDisponibili(Long idMedico) {
-
         List<DisponibilitaMedico> disponibilita = disponibilitaRepo.findByMedicoId(idMedico);
 
         if (disponibilita.isEmpty()) {
@@ -108,7 +104,6 @@ public class DisponibilitaMedicoServiceImpl implements DisponibilitaMedicoServic
                 .collect(Collectors.toSet());
 
         List<String> dateGenerate = new ArrayList<>();
-
         LocalDate oggi = LocalDate.now();
         LocalDate limite = oggi.plusDays(30);
 
@@ -124,7 +119,6 @@ public class DisponibilitaMedicoServiceImpl implements DisponibilitaMedicoServic
 
     @Override
     public List<String> generaDateDisponibiliPerSpecializzazione(String specializzazione) {
-
         List<Medico> medici = medicoRepo.findBySpecializzazione(specializzazione);
 
         if (medici.isEmpty()) {
@@ -141,5 +135,10 @@ public class DisponibilitaMedicoServiceImpl implements DisponibilitaMedicoServic
         }
 
         return generaDateDisponibili(medico.getId());
+    }
+
+    @Override
+    public DisponibilitaMedico salva(DisponibilitaMedico disponibilita) {
+        return disponibilitaRepo.save(disponibilita);
     }
 }

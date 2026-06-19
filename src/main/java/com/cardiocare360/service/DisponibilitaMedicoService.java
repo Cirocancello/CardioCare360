@@ -17,10 +17,10 @@ public interface DisponibilitaMedicoService {
     List<DisponibilitaMedico> getDisponibilitaByMedici(List<Long> idMedici);
 
     List<String> generaDateDisponibili(Long idMedico);
-    
+
     List<String> generaDateDisponibiliPerSpecializzazione(String specializzazione);
-    
+
     List<DisponibilitaMedico> getDisponibilitaByMedicoAndGiorno(Long idMedico, String giornoSettimana);
 
-
+    DisponibilitaMedico salva(DisponibilitaMedico disponibilita); // ✔ solo firma
 }

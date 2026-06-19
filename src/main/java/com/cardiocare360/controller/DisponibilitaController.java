@@ -32,9 +32,7 @@ public class DisponibilitaController {
     @PostMapping
     public ResponseEntity<DisponibilitaMedico> creaDisponibilita(
             @RequestHeader("Authorization") String token,
-            @RequestParam String giornoSettimana,
-            @RequestParam String oraInizio,
-            @RequestParam String oraFine
+            @RequestBody DisponibilitaMedico disponibilita
     ) {
         String email = jwtUtil.extractEmail(token.substring(7));
 
@@ -42,12 +40,17 @@ public class DisponibilitaController {
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"))
                 .getId();
 
-        DisponibilitaMedico disp = disponibilitaService.creaDisponibilita(
-                idMedico, giornoSettimana, oraInizio, oraFine
-        );
+     // Recupera il medico completo dal database
+        Medico medico = medicoRepository.findById(idMedico)
+                .orElseThrow(() -> new RuntimeException("Medico non trovato"));
+        disponibilita.setMedico(medico);
 
-        return ResponseEntity.ok(disp);
+        // Salva la disponibilità
+        DisponibilitaMedico salvata = disponibilitaService.salva(disponibilita);
+        return ResponseEntity.ok(salvata);
+
     }
+
 
     // ---------------------------------------------------------
     // 2) MODIFICA DISPONIBILITÀ

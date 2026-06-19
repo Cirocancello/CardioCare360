@@ -3,6 +3,8 @@ package com.cardiocare360.model.entity;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "disponibilita_medico")
 public class DisponibilitaMedico {
@@ -11,8 +13,9 @@ public class DisponibilitaMedico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "medico_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "medico_id")
+    @JsonIgnore
     private Medico medico;
 
     @Column(name = "giorno_settimana", nullable = false, length = 10)

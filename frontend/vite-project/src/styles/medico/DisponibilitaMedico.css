@@ -1,0 +1,102 @@
+/* Contenitore principale */
+.disponibilita-container {
+  flex: 1;
+  padding: 40px 80px 40px 260px; /* aumenta il padding-left per spostare tutto a destra */
+  background-color: #eef2f7;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Barra superiore */
+.header-disponibilita {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  margin-left: 20px; /* piccolo offset per bilanciare */
+}
+
+/* Contenitore tabella */
+.tabella-wrapper {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-left: 20px; /* sposta leggermente la tabella a destra */
+}
+
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a3d7c;
+}
+
+/* Pulsante aggiungi */
+.btn-aggiungi {
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-aggiungi:hover {
+  background-color: #155bb5;
+}
+
+/* Contenitore tabella */
+.tabella-wrapper {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+
+/* Tabella */
+.tabella-disponibilita {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabella-disponibilita th {
+  background-color: #1a3d7c;
+  color: white;
+  padding: 14px;
+  text-align: left;
+  font-size: 15px;
+}
+
+.tabella-disponibilita td {
+  padding: 14px;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 14px;
+}
+
+/* Riga vuota */
+.vuoto {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-style: italic;
+}
+
+/* Pulsante elimina */
+.btn-elimina {
+  background-color: #d9534f;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-elimina:hover {
+  background-color: #b52b27;
+}
