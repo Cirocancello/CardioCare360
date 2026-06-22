@@ -3,9 +3,13 @@ package com.cardiocare360.controller;
 import com.cardiocare360.model.request.LoginRequest;
 import com.cardiocare360.model.request.RegisterRequest;
 import com.cardiocare360.model.response.AuthResponse;
+import com.cardiocare360.repository.AppuntamentoRepository;
+import com.cardiocare360.repository.MedicoRepository;
+import com.cardiocare360.repository.PazienteRepository;
 import com.cardiocare360.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    
+    private final MedicoRepository medicoRepository;
+    private final PazienteRepository pazienteRepository;
+    private final AppuntamentoRepository appuntamentoRepository;
 
     // 🔥 Registrazione utente (ADMIN → crea PAZIENTE o MEDICO)
     @PostMapping("/register")
@@ -72,4 +80,14 @@ public class AuthController {
         System.out.println(">>> [AUTH] Email di recupero inviata a: " + email);
         return ResponseEntity.ok("EMAIL_INVIATA");
     }
+    
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Long>> getStats() {
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("medici", medicoRepository.count());
+        stats.put("pazienti", pazienteRepository.count());
+        stats.put("appuntamenti", appuntamentoRepository.count());
+        return ResponseEntity.ok(stats);
+    }
+
 }

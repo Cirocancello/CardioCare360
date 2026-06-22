@@ -72,16 +72,28 @@ public class JwtUtil {
     public boolean validateToken(String token, UserDetails userDetails) {
         try {
             Claims claims = safeGetClaims(token);
-            if (claims == null) return false;
+            if (claims == null) {
+                System.out.println(">>> [JWT] Claims null, token non valido");
+                return false;
+            }
 
             String email = claims.getSubject();
-            return email.equals(userDetails.getUsername()) && !isTokenExpired(claims);
+            boolean emailMatch = email.equals(userDetails.getUsername());
+            boolean expired = isTokenExpired(claims);
+
+            System.out.println(">>> [JWT] Email nel token: " + email);
+            System.out.println(">>> [JWT] Email utente: " + userDetails.getUsername());
+            System.out.println(">>> [JWT] Match email: " + emailMatch);
+            System.out.println(">>> [JWT] Token scaduto: " + expired);
+
+            return emailMatch && !expired;
 
         } catch (Exception e) {
-            System.out.println(">>> JWT NON VALIDO: " + e.getMessage());
+            System.out.println(">>> [JWT] Errore validazione token: " + e.getMessage());
             return false;
         }
     }
+
 
     private boolean isTokenExpired(Claims claims) {
         return claims.getExpiration().before(new Date());

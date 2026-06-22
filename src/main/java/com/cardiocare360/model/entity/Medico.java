@@ -6,8 +6,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "medico")
-@PrimaryKeyJoinColumn(name = "id") // usa la stessa PK di Utente
-@JsonIgnoreProperties({"notifiche"})
+@PrimaryKeyJoinColumn(name = "id")
+@JsonIgnoreProperties({"notifiche", "hibernateLazyInitializer", "handler"})
 public class Medico extends Utente {
 
     @Column(nullable = false, length = 100)
@@ -17,7 +17,7 @@ public class Medico extends Utente {
     private String numeroLicenza;
 
     @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("medico")
+    @JsonIgnoreProperties({"medico", "hibernateLazyInitializer", "handler"})
     private List<Notifica> notifiche;
 
     public Medico() {}

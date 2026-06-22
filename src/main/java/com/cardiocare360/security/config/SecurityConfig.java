@@ -64,19 +64,25 @@ public class SecurityConfig {
                 .requestMatchers("/notifiche/**").permitAll()
 
                 // -------------------------
-                // MEDICI
+                // ADMIN (AGGIUNTO!)
+                // -------------------------
+                .requestMatchers("/admin/**", "/api/admin/**")
+                    .hasAuthority("ADMIN")
+
+                // -------------------------
+                // MEDICI (singolo)
                 // -------------------------
                 .requestMatchers(HttpMethod.GET, "/medico/**", "/api/medico/**")
                     .hasAnyAuthority("MEDICO", "ADMIN")
 
                 .requestMatchers("/medico/visita/**", "/api/medico/visita/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
-                
-                 // -------------------------
-                 // MEDICI (PLURALE, API NUOVE)
-                 // -------------------------
-                 .requestMatchers("/medici/**", "/api/medici/**")
-                     .hasAnyAuthority("MEDICO", "ADMIN")
+
+                // -------------------------
+                // MEDICI (plurale)
+                // -------------------------
+                .requestMatchers("/medici/**", "/api/medici/**")
+                    .hasAnyAuthority("MEDICO", "ADMIN")
 
                 // -------------------------
                 // MESSAGGI
