@@ -1,0 +1,50 @@
+.sidebar-admin {
+  width: 240px;
+  height: 100vh;
+  background-color: #1D4ED8; /* stesso blu delle altre sidebar */
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-grow: 1;
+}
+
+.sidebar-item {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.sidebar-item:hover {
+  background-color: #2563eb; /* tono hover coerente */
+}
+
+.sidebar-logout {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.sidebar-logout:hover {
+  background-color: #dc2626;
+}

@@ -11,7 +11,7 @@ import ForgotPassword from "./pages/public/ForgotPassword";
 // 🔒 Pagine protette
 import DashboardPaziente from "./pages/paziente/DashboardPaziente";
 import DashboardMedico from "./pages/medico/DashboardMedico";
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import DashboardAdmin from "./pages/admin/DashboardAdmin";
 
 // 📌 Prenotazione visite
 import SelezionaVisita from "./pages/paziente/SelezionaVisita";
@@ -75,6 +75,7 @@ import ProfiloMedico from "./pages/medico/ProfiloMedico";
 import CambiaPasswordMedico from "./pages/medico/CambiaPasswordMedico";
 import DisponibilitaMedico from "./pages/medico/DisponibilitaMedico";
 import AggiungiDisponibilita from "./pages/medico/AggiungiDisponibilita";
+
 
 function App() {
   return (
@@ -385,7 +386,7 @@ function App() {
         path="/admin"
         element={
           <ProtectedRoute>
-            <AdminDashboard />
+            <DashboardAdmin />
           </ProtectedRoute>
         }
       />
