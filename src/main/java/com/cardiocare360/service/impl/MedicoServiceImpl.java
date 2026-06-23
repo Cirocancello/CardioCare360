@@ -48,9 +48,7 @@ public class MedicoServiceImpl implements MedicoService {
         // Campi specifici di Medico
         if (updateDTO.getSpecializzazione() != null)
             medico.setSpecializzazione(updateDTO.getSpecializzazione());
-        if (updateDTO.getNumeroLicenza() != null)
-            medico.setNumeroLicenza(updateDTO.getNumeroLicenza());
-
+        
         medicoRepository.save(medico);
         return convertToResponse(medico);
     }
@@ -80,7 +78,7 @@ public class MedicoServiceImpl implements MedicoService {
         response.setNomeCompleto(medico.getNome() + " " + medico.getCognome());
         response.setEmail(medico.getEmail());
         response.setSpecializzazione(medico.getSpecializzazione());
-        response.setNumeroLicenza(medico.getNumeroLicenza());
+       
         return response;
     }
 

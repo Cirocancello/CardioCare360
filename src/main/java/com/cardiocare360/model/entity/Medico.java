@@ -13,9 +13,6 @@ public class Medico extends Utente {
     @Column(nullable = false, length = 100)
     private String specializzazione;
 
-    @Column(name = "numero_licenza", nullable = false, unique = true, length = 50)
-    private String numeroLicenza;
-
     @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties({"medico", "hibernateLazyInitializer", "handler"})
     private List<Notifica> notifiche;
@@ -29,15 +26,8 @@ public class Medico extends Utente {
     public void setSpecializzazione(String specializzazione) {
         this.specializzazione = specializzazione;
     }
-
-    public String getNumeroLicenza() {
-        return numeroLicenza;
-    }
-
-    public void setNumeroLicenza(String numeroLicenza) {
-        this.numeroLicenza = numeroLicenza;
-    }
-
+    
+    
     public List<Notifica> getNotifiche() {
         return notifiche;
     }

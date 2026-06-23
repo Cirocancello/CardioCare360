@@ -97,8 +97,7 @@ public class AuthServiceImpl implements AuthService {
                 medico.setRuolo(ruolo);
 
                 medico.setSpecializzazione(request.getSpecializzazione());
-                medico.setNumeroLicenza(request.getNumeroLicenza());
-
+              
                 medico = medicoRepository.save(medico);
 
                 User userDetails = new User(

@@ -9,6 +9,9 @@ import Login from "./pages/public/Login";
 import ForgotPassword from "./pages/public/ForgotPassword";
 
 // 🔒 Pagine protette
+import ProtectedRoute from "./components/ProtectedRoute";
+
+// Dashboard
 import DashboardPaziente from "./pages/paziente/DashboardPaziente";
 import DashboardMedico from "./pages/medico/DashboardMedico";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
@@ -21,61 +24,69 @@ import SelezionaOrario from "./pages/paziente/SelezionaOrario";
 import RiepilogoPrenotazione from "./pages/paziente/RiepilogoPrenotazione";
 import PrenotazioneConfermata from "./pages/paziente/PrenotazioneConfermata";
 
-// 📌 Flusso appuntamenti paziente
+// 📌 Appuntamenti paziente
 import Appuntamenti from "./pages/paziente/Appuntamenti";
 import DettaglioAppuntamento from "./pages/paziente/DettaglioAppuntamento";
 import ModificaAppuntamento from "./pages/paziente/ModificaAppuntamento";
 import ConfermaAnnullamento from "./pages/paziente/ConfermaAnnullamento";
 
-// 📌 Flusso esami/referti paziente
+// 📌 Esami paziente
 import EsamiList from "./pages/paziente/EsamiList";
 import EsameDettaglio from "./pages/paziente/EsameDettaglio";
 import PrenotaEsame from "./pages/paziente/PrenotaEsame";
 import PrenotazioneEsameConfermata from "./pages/paziente/PrenotazioneEsameConfermata";
 
-// 📌 Parametri vitali (Paziente)
+// 📌 Parametri vitali paziente
 import InserisciParametri from "./pages/paziente/InserisciParametri";
 import StoricoParametri from "./pages/paziente/StoricoParametri";
 
-// 📌 Terapie
+// 📌 Terapie paziente
 import ListaTerapie from "./pages/paziente/ListaTerapie";
 
-// 📌 Conversazioni
+// 📌 Conversazioni paziente
 import ListaConversazioni from "./pages/paziente/ListaConversazioni";
 import DettaglioConversazione from "./pages/paziente/DettaglioConversazione";
 
-// 🧩 Protezione
-import ProtectedRoute from "./components/ProtectedRoute";
-
-// Profilo Paziente
+// Profilo paziente
 import ProfiloPaziente from "./pages/paziente/ProfiloPaziente";
 
-// 📌 Gestione Pazienti (Medico)
+// 📌 Medico – gestione pazienti
 import ListaPazienti from "./pages/medico/ListaPazienti";
 import DettaglioPaziente from "./pages/medico/DettaglioPaziente";
+
+// 📌 Medico – visite
 import ListaVisiteMedico from "./pages/medico/ListaVisiteMedico";
 import DettaglioVisitaMedico from "./pages/medico/DettaglioVisitaMedico";
+
+// 📌 Medico – esami
 import ListaEsamiDaRefertare from "./pages/medico/ListaEsamiDaRefertare";
 import RefertaEsame from "./pages/medico/RefertaEsame";
 
-// 📌 Gestione Terapie (Medico)
+// 📌 Medico – terapie
 import ListaTerapieMedico from "./pages/medico/ListaTerapieMedico";
 import CreaTerapia from "./pages/medico/CreaTerapia";
 
-// 📌 Parametri Vitali Medico
+// 📌 Medico – parametri vitali
 import ParametriVitaliMedico from "./pages/medico/ParametriVitaliMedico";
 import StoricoParametriMedico from "./pages/medico/StoricoParametriMedico";
 
-// 📌 Conversazioni medico paziente
+// 📌 Medico – conversazioni
 import ListaConversazioniMedico from "./pages/medico/ListaConversazioniMedico";
 import ChatMedico from "./pages/medico/ChatMedico";
 
-// 📌 Profilo medico
+// 📌 Medico – profilo
 import ProfiloMedico from "./pages/medico/ProfiloMedico";
 import CambiaPasswordMedico from "./pages/medico/CambiaPasswordMedico";
 import DisponibilitaMedico from "./pages/medico/DisponibilitaMedico";
 import AggiungiDisponibilita from "./pages/medico/AggiungiDisponibilita";
 
+// 📌 Admin – gestione utenti
+import GestioneMedici from "./pages/admin/GestioneMedici";
+import GestionePazienti from "./pages/admin/GestionePazienti";
+import CreaMedico from "./pages/admin/CreaMedico";
+import ModificaMedico from "./pages/admin/ModificaMedico";
+import ConfermaEliminazioneMedico from "./pages/admin/ConfermaEliminazioneMedico";
+import DettaglioMedico from "./pages/admin/DettaglioMedico";
 
 function App() {
   return (
@@ -108,7 +119,54 @@ function App() {
         }
       />
 
-      {/* 📌 Gestione Pazienti (Medico) */}
+      {/* 🛠 Admin */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <DashboardAdmin />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardAdmin />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/medici"
+        element={
+          <ProtectedRoute>
+            <GestioneMedici />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/pazienti"
+        element={
+          <ProtectedRoute>
+            <GestionePazienti />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/medici/crea"
+        element={
+          <ProtectedRoute>
+            <CreaMedico />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* 📌 Medico – gestione pazienti */}
       <Route
         path="/medico/pazienti"
         element={
@@ -127,7 +185,7 @@ function App() {
         }
       />
 
-      {/* 📌 Parametri Vitali Medico */}
+      {/* 📌 Medico – parametri */}
       <Route
         path="/medico/parametri"
         element={
@@ -137,7 +195,16 @@ function App() {
         }
       />
 
-      {/* 📌 Visite Medico */}
+      <Route
+        path="/medico/parametri/storico/:idPaziente"
+        element={
+          <ProtectedRoute>
+            <StoricoParametriMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Medico – visite */}
       <Route
         path="/medico/visite"
         element={
@@ -156,7 +223,7 @@ function App() {
         }
       />
 
-      {/* 📌 Esami Medico */}
+      {/* 📌 Medico – esami */}
       <Route
         path="/medico/esami"
         element={
@@ -175,7 +242,7 @@ function App() {
         }
       />
 
-      {/* 📌 Terapie Medico */}
+      {/* 📌 Medico – terapie */}
       <Route
         path="/medico/terapie"
         element={
@@ -194,7 +261,63 @@ function App() {
         }
       />
 
-      {/* 📌 Prenotazione visite */}
+      {/* 📌 Medico – conversazioni */}
+      <Route
+        path="/medico/conversazioni"
+        element={
+          <ProtectedRoute>
+            <ListaConversazioniMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/medico/conversazioni/:idConversazione"
+        element={
+          <ProtectedRoute>
+            <ChatMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Medico – profilo */}
+      <Route
+        path="/medico/profilo"
+        element={
+          <ProtectedRoute>
+            <ProfiloMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/medico/cambia-password"
+        element={
+          <ProtectedRoute>
+            <CambiaPasswordMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/medico/disponibilita"
+        element={
+          <ProtectedRoute>
+            <DisponibilitaMedico />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/medico/disponibilita/aggiungi"
+        element={
+          <ProtectedRoute>
+            <AggiungiDisponibilita />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 📌 Paziente – prenotazione visite */}
       <Route
         path="/paziente/prenota/visita"
         element={
@@ -249,7 +372,7 @@ function App() {
         }
       />
 
-      {/* 📌 Appuntamenti */}
+      {/* 📌 Paziente – appuntamenti */}
       <Route
         path="/paziente/appuntamenti"
         element={
@@ -286,7 +409,7 @@ function App() {
         }
       />
 
-      {/* 📌 Esami */}
+      {/* 📌 Paziente – esami */}
       <Route
         path="/paziente/esami"
         element={
@@ -323,7 +446,7 @@ function App() {
         }
       />
 
-      {/* 🩺 Parametri vitali (Paziente) */}
+      {/* 📌 Paziente – parametri */}
       <Route
         path="/paziente/parametri/inserisci"
         element={
@@ -342,7 +465,7 @@ function App() {
         }
       />
 
-      {/* 💊 Terapie */}
+      {/* 📌 Paziente – terapie */}
       <Route
         path="/paziente/terapie"
         element={
@@ -352,7 +475,7 @@ function App() {
         }
       />
 
-      {/* 💬 Conversazioni */}
+      {/* 📌 Paziente – conversazioni */}
       <Route
         path="/paziente/conversazioni"
         element={
@@ -371,7 +494,7 @@ function App() {
         }
       />
 
-      {/* 👤 Profilo */}
+      {/* 📌 Paziente – profilo */}
       <Route
         path="/paziente/profilo"
         element={
@@ -381,45 +504,34 @@ function App() {
         }
       />
 
-      {/* 🛠 Admin */}
       <Route
-        path="/admin"
+        path="/admin/medici/:id/modifica"
         element={
           <ProtectedRoute>
-            <DashboardAdmin />
+            <ModificaMedico />
           </ProtectedRoute>
         }
       />
 
-  
       <Route
-        path="/medico/parametri/storico/:idPaziente"
+        path="/admin/medici/:id/elimina"
         element={
           <ProtectedRoute>
-            <StoricoParametriMedico />
+            <ConfermaEliminazioneMedico />
           </ProtectedRoute>
-      }
-     />
-
-     <Route
-        path="/medico/conversazioni"
-        element={<ListaConversazioniMedico />}
+        }
       />
 
       <Route
-        path="/medico/conversazioni/:idConversazione"
-        element={<ChatMedico />}
+        path="/admin/medici/:id"
+        element={
+          <ProtectedRoute>
+            <DettaglioMedico />
+          </ProtectedRoute>
+        }
       />
 
-      <Route
-        path="/medico/profilo"
-        element={<ProfiloMedico />}
-      />
 
-      <Route path="/medico/cambia-password" element={<CambiaPasswordMedico />} />
-
-      <Route path="/medico/disponibilita" element={<DisponibilitaMedico />} />
-      <Route path="/medico/disponibilita/aggiungi" element={<AggiungiDisponibilita />} />
 
     </Routes>
   );

@@ -60,3 +60,33 @@
   font-weight: bold;
   color: #0f172a;
 }
+
+.subtitle {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.actions .action-card {
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: center;
+}
+
+.actions .action-card:hover {
+  background-color: #e0e7ff;
+}
+
+.logout-card {
+  background-color: #ef4444; /* rosso CardioCare360 */
+  color: white;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.logout-card:hover {
+  background-color: #dc2626; /* rosso più scuro per hover */
+}
+
