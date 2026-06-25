@@ -9,11 +9,14 @@ public class PazienteUpdateDTO {
     private String nome;
     private String cognome;
 
+    private String email;
+
+    private String password;   
+
     private String codiceFiscale;
 
     private String luogoNascita;
 
-    // 🔥 Il frontend invia "yyyy-MM-dd"
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String dataNascita;
 

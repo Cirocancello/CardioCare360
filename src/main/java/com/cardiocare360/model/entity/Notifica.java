@@ -6,14 +6,15 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifica")
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Notifica {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    // ⭐ UTENTE
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "utente_id", nullable = false)
     @JsonIgnoreProperties({
             "password",
@@ -21,7 +22,9 @@ public class Notifica {
             "appuntamenti",
             "terapie",
             "referti",
-            "notifiche"
+            "notifiche",
+            "parametri",
+            "conversazioni"
     })
     private Utente utente;
 
@@ -37,89 +40,51 @@ public class Notifica {
     @Column(name = "data_creazione", nullable = false)
     private LocalDateTime dataCreazione = LocalDateTime.now();
 
-    @ManyToOne
+    // ⭐ APPUNTAMENTO (opzionale)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appuntamento_id")
     @JsonIgnoreProperties({
             "paziente",
             "medico",
             "slot",
-            "notifiche"
+            "notifiche",
+            "terapia"
     })
     private Appuntamento appuntamento;
 
-    @ManyToOne
+    // ⭐ PARAMETRO CLINICO (opzionale)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parametro_id")
     @JsonIgnoreProperties({
-            "paziente",
-            "notifiche"
+            "paziente"
     })
     private ParametroClinico parametroClinico;
 
     public Notifica() {}
 
-    // GETTER & SETTER COMPLETI
+    // GETTER & SETTER
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Utente getUtente() { return utente; }
+    public void setUtente(Utente utente) { this.utente = utente; }
 
-    public Utente getUtente() {
-        return utente;
-    }
+    public String getTitolo() { return titolo; }
+    public void setTitolo(String titolo) { this.titolo = titolo; }
 
-    public void setUtente(Utente utente) {
-        this.utente = utente;
-    }
+    public String getMessaggio() { return messaggio; }
+    public void setMessaggio(String messaggio) { this.messaggio = messaggio; }
 
-    public String getTitolo() {
-        return titolo;
-    }
+    public boolean isLetto() { return letto; }
+    public void setLetto(boolean letto) { this.letto = letto; }
 
-    public void setTitolo(String titolo) {
-        this.titolo = titolo;
-    }
+    public LocalDateTime getDataCreazione() { return dataCreazione; }
+    public void setDataCreazione(LocalDateTime dataCreazione) { this.dataCreazione = dataCreazione; }
 
-    public String getMessaggio() {
-        return messaggio;
-    }
+    public Appuntamento getAppuntamento() { return appuntamento; }
+    public void setAppuntamento(Appuntamento appuntamento) { this.appuntamento = appuntamento; }
 
-    public void setMessaggio(String messaggio) {
-        this.messaggio = messaggio;
-    }
-
-    public boolean isLetto() {
-        return letto;
-    }
-
-    public void setLetto(boolean letto) {
-        this.letto = letto;
-    }
-
-    public LocalDateTime getDataCreazione() {
-        return dataCreazione;
-    }
-
-    public void setDataCreazione(LocalDateTime dataCreazione) {
-        this.dataCreazione = dataCreazione;
-    }
-
-    public Appuntamento getAppuntamento() {
-        return appuntamento;
-    }
-
-    public void setAppuntamento(Appuntamento appuntamento) {
-        this.appuntamento = appuntamento;
-    }
-
-    public ParametroClinico getParametroClinico() {
-        return parametroClinico;
-    }
-
-    public void setParametroClinico(ParametroClinico parametroClinico) {
-        this.parametroClinico = parametroClinico;
-    }
+    public ParametroClinico getParametroClinico() { return parametroClinico; }
+    public void setParametroClinico(ParametroClinico parametroClinico) { this.parametroClinico = parametroClinico; }
 }

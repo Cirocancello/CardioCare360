@@ -1,18 +1,22 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "slot_orario")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SlotOrario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    // ⭐ DISPONIBILITÀ MEDICO
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "disponibilita_id", nullable = false)
+    @JsonIgnoreProperties({"slotOrari", "medico"})
     private DisponibilitaMedico disponibilita;
 
     @Column(name = "inizio", nullable = false)
@@ -24,10 +28,8 @@ public class SlotOrario {
     @Column(nullable = false)
     private boolean prenotato = false;
 
-    // Costruttore vuoto richiesto da JPA
     public SlotOrario() {}
 
-    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

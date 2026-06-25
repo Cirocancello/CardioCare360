@@ -1,21 +1,27 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "soglia_parametro")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SogliaParametro {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    // ⭐ PAZIENTE
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
+    @JsonIgnoreProperties({"appuntamenti", "esami", "parametri", "conversazioni"})
     private Paziente paziente;
 
-    @ManyToOne(optional = false)
+    // ⭐ PARAMETRO CLINICO
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "parametro_id", nullable = false)
+    @JsonIgnoreProperties({"paziente"})
     private ParametroClinico parametro;
 
     @Column(name = "valore_min", length = 50)

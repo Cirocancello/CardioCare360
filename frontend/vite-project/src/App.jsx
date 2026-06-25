@@ -12,6 +12,7 @@ import ForgotPassword from "./pages/public/ForgotPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Dashboard
+
 import DashboardPaziente from "./pages/paziente/DashboardPaziente";
 import DashboardMedico from "./pages/medico/DashboardMedico";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
@@ -87,6 +88,10 @@ import CreaMedico from "./pages/admin/CreaMedico";
 import ModificaMedico from "./pages/admin/ModificaMedico";
 import ConfermaEliminazioneMedico from "./pages/admin/ConfermaEliminazioneMedico";
 import DettaglioMedico from "./pages/admin/DettaglioMedico";
+import DettaglioPazienteAdmin from "./pages/admin/DettaglioPazienteAdmin";
+import ModificaPazienteAdmin from "./pages/admin/ModificaPazienteAdmin";
+import CreaPaziente from "./pages/admin/CreaPaziente";
+import ConfermaEliminazionePaziente from "./pages/admin/ConfermaEliminazionePaziente";
 
 function App() {
   return (
@@ -119,7 +124,18 @@ function App() {
         }
       />
 
-      {/* 🛠 Admin */}
+      {/* 🛠 Admin */}       
+
+      {/* 🔥 CONFERMA ELIMINAZIONE */}
+      <Route
+        path="/admin/pazienti/:id/conferma-eliminazione"
+        element={
+          <ProtectedRoute>            
+              <ConfermaEliminazionePaziente />            
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path="/admin"
         element={
@@ -164,7 +180,33 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin/paziente/crea"
+        element={
+          <ProtectedRoute>
+            <CreaPaziente />
+          </ProtectedRoute>
+        }
+      />
 
+      <Route
+        path="/admin/pazienti/:id"
+        element={
+          <ProtectedRoute>
+            <DettaglioPazienteAdmin />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/pazienti/:id/modifica"
+        element={
+          <ProtectedRoute>
+            <ModificaPazienteAdmin />
+          </ProtectedRoute>
+        }
+      />
+      
 
       {/* 📌 Medico – gestione pazienti */}
       <Route

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messaggio")
-@JsonIgnoreProperties({"conversazione"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Messaggio {
 
     public enum Mittente {
@@ -19,32 +19,33 @@ public class Messaggio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Conversazione a cui appartiene il messaggio
-    @ManyToOne(optional = false)
+    // ⭐ CONVERSAZIONE (relazione figlio → padre)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "conversazione_id", nullable = false)
+    @JsonIgnoreProperties({"paziente", "medico", "messaggi"})
     private Conversazione conversazione;
 
-    // Chi ha inviato il messaggio
+    // ⭐ MITTENTE
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Mittente mittente;
 
-    // Testo del messaggio
+    // ⭐ TESTO DEL MESSAGGIO
     @Column(nullable = false, columnDefinition = "TEXT")
     private String testo;
 
-    // Timestamp invio (formattato per React)
+    // ⭐ TIMESTAMP (formattato per React)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Europe/Rome")
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    // Stato lettura
+    // ⭐ STATO LETTURA
     @Column(nullable = false)
     private boolean letto = false;
 
     public Messaggio() {}
 
-    // Getter & Setter
+    // GETTER & SETTER
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

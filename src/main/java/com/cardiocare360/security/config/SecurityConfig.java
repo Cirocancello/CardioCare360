@@ -63,11 +63,10 @@ public class SecurityConfig {
                 .requestMatchers("/disponibilita/date/**").permitAll()
                 .requestMatchers("/notifiche/**").permitAll()
 
-                // -------------------------
-                // ADMIN (AGGIUNTO!)
-                // -------------------------
-                .requestMatchers("/admin/**", "/api/admin/**")
-                    .hasAuthority("ADMIN")
+                // ----------------------------------------------------
+                // 🔥 ADMIN — PRIORITARIO (DEVE ESSERE PRIMA DI TUTTO)
+                // ----------------------------------------------------
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
 
                 // -------------------------
                 // MEDICI (singolo)
@@ -127,7 +126,7 @@ public class SecurityConfig {
                     .hasAuthority("MEDICO")
 
                 // -------------------------
-                // PAZIENTI
+                // PAZIENTI (solo medico)
                 // -------------------------
                 .requestMatchers(HttpMethod.GET, "/paziente/**", "/api/paziente/**")
                     .hasAuthority("MEDICO")

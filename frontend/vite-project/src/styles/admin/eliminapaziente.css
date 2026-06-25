@@ -1,0 +1,24 @@
+.confirm-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.05);
+}
+
+.confirm-box {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.confirm-box h2 {
+  margin-bottom: 15px;
+}
+
+.confirm-box p {
+  margin-bottom: 25px;
+  font-size: 16px;
+}

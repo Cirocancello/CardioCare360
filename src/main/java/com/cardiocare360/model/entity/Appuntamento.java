@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "appuntamento")
-@JsonIgnoreProperties({"notifiche"}) // 🔥 evita loop Appuntamento → Notifica → Appuntamento
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Appuntamento {
 
     public enum StatoAppuntamento {
@@ -22,14 +22,16 @@ public class Appuntamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    // ⭐ PAZIENTE
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
-    @JsonIgnoreProperties({"notifiche"})
+    @JsonIgnoreProperties({"appuntamenti", "esami", "parametri", "conversazioni"})
     private Paziente paziente;
 
-    @ManyToOne(optional = false)
+    // ⭐ MEDICO
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
-    @JsonIgnoreProperties({"notifiche"})
+    @JsonIgnoreProperties({"pazienti", "visite", "esami"})
     private Medico medico;
 
     @Column(name = "data_appuntamento", nullable = false)
@@ -45,14 +47,18 @@ public class Appuntamento {
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    // ⭐ NUOVO CAMPO: tipo di visita
     @Column(name = "tipo_visita")
     private String tipoVisita;
 
-    // ⭐ Relazione con Notifica (necessaria!)
-    @OneToMany(mappedBy = "appuntamento", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("appuntamento")
+    // ⭐ NOTIFICHE (senza cascade)
+    @OneToMany(mappedBy = "appuntamento")
+    @JsonIgnoreProperties({"appuntamento", "utente", "parametroClinico"})
     private List<Notifica> notifiche;
+
+    // ⭐ TERAPIE (senza cascade)
+    @OneToMany(mappedBy = "appuntamento")
+    @JsonIgnoreProperties({"appuntamento", "paziente", "medico", "farmaco"})
+    private List<Terapia> terapie;
 
     public Appuntamento() {}
 
@@ -83,4 +89,7 @@ public class Appuntamento {
 
     public List<Notifica> getNotifiche() { return notifiche; }
     public void setNotifiche(List<Notifica> notifiche) { this.notifiche = notifiche; }
+
+    public List<Terapia> getTerapie() { return terapie; }
+    public void setTerapie(List<Terapia> terapie) { this.terapie = terapie; }
 }

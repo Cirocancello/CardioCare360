@@ -1,21 +1,22 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "disponibilita_medico")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class DisponibilitaMedico {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "medico_id")
-    @JsonIgnore
+    // ⭐ MEDICO
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "medico_id", nullable = false)
+    @JsonIgnoreProperties({"pazienti", "visite", "esami", "notifiche"})
     private Medico medico;
 
     @Column(name = "giorno_settimana", nullable = false, length = 10)

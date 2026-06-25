@@ -7,14 +7,14 @@ import java.util.List;
 @Entity
 @Table(name = "medico")
 @PrimaryKeyJoinColumn(name = "id")
-@JsonIgnoreProperties({"notifiche", "hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Medico extends Utente {
 
     @Column(nullable = false, length = 100)
     private String specializzazione;
 
-    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties({"medico", "hibernateLazyInitializer", "handler"})
+    @OneToMany(mappedBy = "medico")
+    @JsonIgnoreProperties({"medico"})
     private List<Notifica> notifiche;
 
     public Medico() {}
@@ -26,8 +26,7 @@ public class Medico extends Utente {
     public void setSpecializzazione(String specializzazione) {
         this.specializzazione = specializzazione;
     }
-    
-    
+
     public List<Notifica> getNotifiche() {
         return notifiche;
     }

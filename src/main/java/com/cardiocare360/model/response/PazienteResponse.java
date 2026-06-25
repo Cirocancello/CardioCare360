@@ -5,7 +5,8 @@ import java.time.LocalDate;
 public class PazienteResponse {
 
     private Long id;
-    private String nomeCompleto;
+    private String nome;
+    private String cognome;
     private String email;
     private String codiceFiscale;
     private String luogoNascita;
@@ -23,12 +24,20 @@ public class PazienteResponse {
         this.id = id;
     }
 
-    public String getNomeCompleto() {
-        return nomeCompleto;
+    public String getNome() {
+        return nome;
     }
 
-    public void setNomeCompleto(String nomeCompleto) {
-        this.nomeCompleto = nomeCompleto;
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCognome() {
+        return cognome;
+    }
+
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
     }
 
     public String getEmail() {

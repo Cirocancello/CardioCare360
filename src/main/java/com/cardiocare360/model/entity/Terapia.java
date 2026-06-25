@@ -1,31 +1,40 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "terapia")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Terapia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    // ⭐ PAZIENTE
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
+    @JsonIgnoreProperties({"appuntamenti", "esami", "parametri", "conversazioni"})
     private Paziente paziente;
 
-    @ManyToOne(optional = false)
+    // ⭐ MEDICO
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
+    @JsonIgnoreProperties({"pazienti", "visite", "esami"})
     private Medico medico;
 
-    @ManyToOne(optional = false)
+    // ⭐ FARMACO
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "farmaco_id", nullable = false)
     private Farmaco farmaco;
 
-    @OneToOne(optional = false)
+    // ⭐ APPUNTAMENTO
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "appuntamento_id", nullable = false, unique = true)
+    @JsonIgnoreProperties({"terapia", "notifiche"})
     private Appuntamento appuntamento;
 
     @Column(nullable = false, length = 255)
@@ -45,6 +54,7 @@ public class Terapia {
 
     public Terapia() {}
 
+    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
