@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import SidebarMedico from "../../components/SidebarMedico";
 import TopbarMedico from "../../components/TopbarMedico";
 import "../../styles/medico/DisponibilitaMedico.css";
 
 export default function DisponibilitaMedico() {
   const [disponibilita, setDisponibilita] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errore, setErrore] = useState(null);
+
   const navigate = useNavigate();
 
   const idMedico = localStorage.getItem("idMedico");
@@ -16,24 +20,37 @@ export default function DisponibilitaMedico() {
   }, []);
 
   const fetchDisponibilita = async () => {
+    setErrore(null);
+
+    if (!token) {
+      setErrore("Token mancante. Effettua nuovamente il login.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`http://localhost:8080/disponibilita/medico`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-
       if (!res.ok) throw new Error("Errore nel caricamento delle disponibilità");
 
       const data = await res.json();
-      setDisponibilita(data);
+      setDisponibilita(data || []);
     } catch (err) {
       console.error(err);
-      alert("Errore: " + err.message);
+      setErrore("Errore durante il caricamento delle disponibilità.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const eliminaDisponibilita = async (id) => {
-    if (!window.confirm("Sei sicuro di voler eliminare questa disponibilità?")) return;
+    if (!id) return;
+
+    if (!window.confirm("Sei sicuro di voler eliminare questa disponibilità?")) {
+      return;
+    }
 
     try {
       const res = await fetch(`http://localhost:8080/disponibilita/${id}`, {
@@ -43,13 +60,28 @@ export default function DisponibilitaMedico() {
 
       if (!res.ok) throw new Error("Errore durante l'eliminazione");
 
-      alert("Disponibilità eliminata");
       fetchDisponibilita();
     } catch (err) {
       console.error(err);
-      alert("Errore: " + err.message);
+      setErrore("Errore durante l'eliminazione della disponibilità.");
     }
   };
+
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
+
+  if (loading) {
+    return (
+      <div className="layout-medico">
+        <SidebarMedico />
+        <div className="disponibilita-container">
+          <TopbarMedico />
+          <p className="loading-message">Caricamento disponibilità...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="layout-medico">
@@ -59,6 +91,8 @@ export default function DisponibilitaMedico() {
         <TopbarMedico />
 
         <h1 className="title">Le mie disponibilità</h1>
+
+        {errore && <p className="error-message">{errore}</p>}
 
         <button
           className="btn-aggiungi"
@@ -87,9 +121,10 @@ export default function DisponibilitaMedico() {
             ) : (
               disponibilita.map((d) => (
                 <tr key={d.id}>
-                  <td>{d.giorno}</td>
-                  <td>{d.oraInizio}</td>
-                  <td>{d.oraFine}</td>
+                  <td>{d.giorno || "—"}</td>
+                  <td>{d.oraInizio || "—"}</td>
+                  <td>{d.oraFine || "—"}</td>
+
                   <td>
                     <button
                       className="btn-elimina"

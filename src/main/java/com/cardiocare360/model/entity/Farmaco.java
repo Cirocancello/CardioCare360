@@ -1,9 +1,11 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "farmaco")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Farmaco {
 
     @Id
@@ -19,10 +21,8 @@ public class Farmaco {
     @Column(length = 255)
     private String descrizione;
 
-    // Costruttore vuoto richiesto da JPA
     public Farmaco() {}
 
-    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

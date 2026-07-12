@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { forgotPassword } from "../../api/auth";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { forgotPassword } from "../../api/auth";
 import "../../styles/public/user.css";
 import logo from "../../assets/logo-CardioCare360.png";
 
@@ -10,27 +10,37 @@ function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleForgot = async (e) => {
-  e.preventDefault();
-  setError("");
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  try {
-    const message = await forgotPassword(email);
+    if (!email || !email.includes("@")) {
+      setError("Inserisci un'email valida.");
+      setLoading(false);
+      return;
+    }
 
-    // ✅ Se arriva qui, la chiamata è andata a buon fine
-    console.log("Risposta backend:", message);
-    setSent(true);
+    try {
+      const message = await forgotPassword(email);
 
-    // Redirect dopo 2 secondi
-    setTimeout(() => navigate("/login"), 2000);
+      console.log("Risposta backend:", message);
+      setSent(true);
 
-  } catch (err) {
-    // 🔥 Mostra il messaggio esatto se disponibile
-    setError(err.message || "Errore: impossibile inviare l'email.");
-  }
-};
+      setTimeout(() => navigate("/login"), 2000);
 
+    } catch (err) {
+      setError(
+        err.message === "404"
+          ? "Email non trovata."
+          : err.message || "Errore: impossibile inviare l'email."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="user-page">
@@ -39,6 +49,9 @@ function ForgotPassword() {
         <img src={logo} alt="CardioCare360" className="user-logo" />
 
         <h2 className="user-title">Recupera la password</h2>
+
+        {loading && <p className="loading-message">Invio in corso...</p>}
+        {error && <p className="error-message">{error}</p>}
 
         {!sent ? (
           <form onSubmit={handleForgot}>
@@ -52,19 +65,15 @@ function ForgotPassword() {
               required
             />
 
-            <button type="submit" className="user-button">
+            <button type="submit" className="user-button" disabled={loading}>
               Invia email di recupero
             </button>
 
           </form>
         ) : (
-          <p style={{ color: "green", marginTop: "10px" }}>
+          <p className="success-message">
             Email inviata! Controlla la tua casella di posta.
           </p>
-        )}
-
-        {error && (
-          <p style={{ color: "red", marginTop: "10px" }}>{error}</p>
         )}
 
         <a href="/login" className="user-link">Torna al login</a>

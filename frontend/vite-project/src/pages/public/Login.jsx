@@ -9,53 +9,56 @@ import Footer from "../../components/Footer";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errore, setErrore] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setErrore(null);
+    setLoading(true);
 
-  try {
-    console.log("TRY PARTITO");
+    try {
+      const data = await login(email, password);
 
-    const data = await login(email, password);
-    console.log("RISPOSTA LOGIN:", data);
+      if (!data || !data.token || !data.ruolo) {
+        setErrore("Credenziali non valide");
+        setLoading(false);
+        return;
+      }
 
-    if (!data) {
-      alert("Credenziali non valide");
-      return;
+      // 🔥 Salva dati comuni
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("ruolo", data.ruolo);
+      localStorage.setItem("idUtente", data.idUtente || "");
+
+      // 🔥 Redirect e salvataggio specifico per ruolo
+      if (data.ruolo === "PAZIENTE") {
+        localStorage.setItem("idPaziente", data.idPaziente || data.idUtente);
+        navigate("/dashboard-paziente");
+        return;
+      }
+
+      if (data.ruolo === "MEDICO") {
+        localStorage.setItem("idMedico", data.idMedico || data.idUtente);
+        navigate("/dashboard-medico");
+        return;
+      }
+
+      if (data.ruolo === "ADMIN") {
+        navigate("/admin");
+        return;
+      }
+
+      setErrore("Ruolo non riconosciuto");
+    } catch (err) {
+      console.error("Errore durante il login:", err);
+      setErrore("Errore di connessione al server");
+    } finally {
+      setLoading(false);
     }
-
-    // 🔥 Salva dati comuni
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("ruolo", data.ruolo);
-    localStorage.setItem("idUtente", data.idUtente);
-
-    // 🔥 Redirect e salvataggio specifico per ruolo
-    if (data.ruolo === "PAZIENTE") {
-      localStorage.setItem("idPaziente", data.idPaziente);
-      navigate("/dashboard-paziente");
-      return;
-    }
-
-    if (data.ruolo === "MEDICO") {
-      localStorage.setItem("idMedico", data.idMedico);
-      navigate("/dashboard-medico");
-      return;
-    }
-
-    if (data.ruolo === "ADMIN") {
-      navigate("/admin");
-      return;
-    }
-
-    alert("Ruolo non riconosciuto");
-
-  } catch (err) {
-    console.error("Errore durante il login:", err);
-    alert("Errore di connessione al server");
-  }
-};
-
+  };
 
   return (
     <>
@@ -65,6 +68,9 @@ export default function Login() {
         <div className="user-card">
           <img src={logo} alt="CardioCare360" className="user-logo" />
           <h2 className="user-title">Accedi al tuo account</h2>
+
+          {errore && <p className="error-message">{errore}</p>}
+          {loading && <p className="loading-message">Accesso in corso...</p>}
 
           <form onSubmit={handleSubmit}>
             <input
@@ -85,7 +91,7 @@ export default function Login() {
               required
             />
 
-            <button type="submit" className="user-button">
+            <button type="submit" className="user-button" disabled={loading}>
               Login
             </button>
           </form>

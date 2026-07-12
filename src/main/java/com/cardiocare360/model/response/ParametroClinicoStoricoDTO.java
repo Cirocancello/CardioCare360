@@ -35,4 +35,19 @@ public class ParametroClinicoStoricoDTO {
     public void setValore(String valore) { this.valore = valore; }
     public void setUnitaMisura(String unitaMisura) { this.unitaMisura = unitaMisura; }
     public void setDataRilevazione(String dataRilevazione) { this.dataRilevazione = dataRilevazione; }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+    public boolean isValid() {
+        return id != null && id > 0 &&
+               tipo != null && !tipo.isBlank() &&
+               nome != null && !nome.isBlank() &&
+               valore != null && !valore.isBlank() &&
+               dataRilevazione != null && !dataRilevazione.isBlank();
+    }
+
+    public boolean hasUnitaMisura() {
+        return unitaMisura != null && !unitaMisura.isBlank();
+    }
 }

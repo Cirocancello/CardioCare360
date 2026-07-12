@@ -1,3 +1,20 @@
+/* ====== LAYOUT PAZIENTE (Sidebar + Contenuto) ====== */
+
+.layout-paziente {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: #f7f9fc;
+}
+
+/* Contenitore contenuto a destra della sidebar */
+.appuntamenti-container {
+  flex: 1;
+  padding: 30px;
+  margin-left: 260px; /* 🔹 larghezza sidebar */
+}
+
+
 /* ====== LAYOUT GENERALE ====== */
 
 .page-container {
@@ -315,4 +332,64 @@ hr {
   justify-content: center;
   gap: 15px;
   margin-top: 20px;
+}
+
+/* FORM PRENOTA ESAME - stile uniforme */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 450px;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-group select,
+.form-group textarea {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  background: #fff;
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.box-disponibilita {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
+  max-width: 450px;
+}
+
+.box-disponibilita h4 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.appuntamenti-container {
+  padding: 30px;
+}
+
+.page-title {
+  margin-bottom: 25px;
 }

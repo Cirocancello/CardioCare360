@@ -23,16 +23,21 @@ export default function CreaTerapia() {
 
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const authHeader = () => {
     const token = localStorage.getItem("token");
-    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    return token
+      ? { headers: { Authorization: `Bearer ${token}` } }
+      : { headers: {} };
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
+
+    if (!token || !medicoId) {
       setError("Sessione scaduta. Effettua di nuovo il login.");
+      setLoading(false);
       return;
     }
 
@@ -44,29 +49,38 @@ export default function CreaTerapia() {
           axios.get("http://localhost:8080/appuntamenti/medico/disponibili", authHeader()),
         ]);
 
-        setPazienti(pazRes.data);
-        setFarmaci(farmRes.data);
-        setAppuntamenti(appRes.data);
+        setPazienti(Array.isArray(pazRes.data) ? pazRes.data : []);
+        setFarmaci(Array.isArray(farmRes.data) ? farmRes.data : []);
+        setAppuntamenti(Array.isArray(appRes.data) ? appRes.data : []);
         setError(null);
       } catch (err) {
         console.error("Errore Axios:", err);
-        setError("Errore nel caricamento dei dati");
+        setError("Errore nel caricamento dei dati.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [medicoId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Token non trovato, effettua di nuovo il login.");
+      return;
+    }
+
+    if (!pazienteId || !farmacoId || !appuntamentoId || !dosaggio || !dataInizio) {
+      setError("Compila tutti i campi obbligatori.");
+      return;
+    }
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("Token non trovato, effettua di nuovo il login.");
-        return;
-      }
-
       const formData = new FormData();
       formData.append("pazienteId", pazienteId);
       formData.append("medicoId", medicoId);
@@ -78,18 +92,18 @@ export default function CreaTerapia() {
       formData.append("dataFine", dataFine);
 
       await axios.post("http://localhost:8080/api/terapie", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       setSuccess("Terapia creata con successo!");
       setTimeout(() => navigate("/medico/terapie"), 1500);
     } catch (err) {
       console.error("Errore POST:", err);
-      setError("Errore durante la creazione della terapia");
+      setError("Errore durante la creazione della terapia.");
     }
   };
+
+  if (loading) return <p className="loading-message">Caricamento dati...</p>;
 
   return (
     <div className="layout-medico">

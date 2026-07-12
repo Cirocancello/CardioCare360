@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../../styles/paziente/prenotazione.css";
+
+import SidebarPaziente from "../../components/SidebarPaziente.jsx";
+import TopbarPaziente from "../../components/TopbarPaziente.jsx";
+
+import "../../styles/paziente/Appuntamenti.css";
 
 export default function SelezionaMedico() {
   const navigate = useNavigate();
@@ -11,11 +15,11 @@ export default function SelezionaMedico() {
   const [errore, setErrore] = useState("");
 
   useEffect(() => {
-    // 🔥 ORA PRENDIAMO LA SPECIALIZZAZIONE, NON LA VISITA
     const visita = localStorage.getItem("specializzazioneVisita");
     const token = localStorage.getItem("token");
 
     if (!visita) {
+      setErrore("Specializzazione non selezionata.");
       navigate("/paziente/prenota/visita");
       return;
     }
@@ -26,23 +30,29 @@ export default function SelezionaMedico() {
       return;
     }
 
-    axios
-      .get(`http://localhost:8080/medici/visita/${visita}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        setMedici(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
+    const fetchMedici = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/medico/visita/${visita}`, // 🔥 CORRETTO
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setMedici(res.data || []);
+      } catch (err) {
         console.error("Errore nel caricamento medici:", err);
         setErrore("Errore nel caricamento medici. Riprova più tardi.");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchMedici();
   }, [navigate]);
 
   const handleNext = () => {
     if (!medicoSelezionato) return;
+    localStorage.setItem("idMedicoSelezionato", medicoSelezionato);
     navigate("/paziente/prenota/data");
   };
 
@@ -51,51 +61,54 @@ export default function SelezionaMedico() {
   }
 
   return (
-    <div className="prenotazione-container">
-      <h1>Seleziona il medico</h1>
+    <div className="layout-paziente">
+      <SidebarPaziente />
 
-      {errore && <p className="error-message">{errore}</p>}
+      <div className="appuntamenti-container">
+        <TopbarPaziente />
 
-      <div className="steps-grid">
-        {medici.length > 0 ? (
-          medici.map((medico) => (
-            <div
-              key={medico.id}
-              className={`step-card ${
-                medicoSelezionato === medico.id ? "selected" : ""
-              }`}
-              onClick={() => {
-                setMedicoSelezionato(medico.id);
-                localStorage.setItem("idMedicoSelezionato", medico.id);
-              }}
-            >
-              <h3>{medico.nomeCompleto}</h3>
-              <p>{medico.specializzazione}</p>
-              <p>{medico.email}</p>
-            </div>
-          ))
-        ) : (
-          <p>Nessun medico disponibile per questa visita.</p>
-        )}
-      </div>
+        <h1 className="page-title">Seleziona il medico</h1>
 
-      {/* 🔙 Pulsante Indietro + Continua */}
-      <div style={{ marginTop: "30px" }}>
-        <button
-          className="btn-secondary"
-          onClick={() => navigate(-1)}
-          style={{ marginRight: "15px" }}
-        >
-          Indietro
-        </button>
+        {errore && <p className="error-message">{errore}</p>}
 
-        <button
-          className="btn-primary"
-          disabled={!medicoSelezionato}
-          onClick={handleNext}
-        >
-          Continua
-        </button>
+        <div className="appointments-grid">
+          {medici.length > 0 ? (
+            medici.map((medico) => (
+              <div
+                key={medico.id}
+                className={`appointment-card ${
+                  medicoSelezionato === medico.id ? "selected" : ""
+                }`}
+                onClick={() => setMedicoSelezionato(medico.id)}
+                style={{ cursor: "pointer" }}
+              >
+                <h3>{medico.nomeCompleto}</h3>
+                <p>{medico.specializzazione}</p>
+                <p>{medico.email}</p>
+              </div>
+            ))
+          ) : (
+            <p>Nessun medico disponibile per questa visita.</p>
+          )}
+        </div>
+
+        <div style={{ marginTop: "30px" }}>
+          <button
+            className="btn-secondary"
+            onClick={() => navigate(-1)}
+            style={{ marginRight: "15px" }}
+          >
+            Indietro
+          </button>
+
+          <button
+            className="btn-primary"
+            disabled={!medicoSelezionato}
+            onClick={handleNext}
+          >
+            Continua
+          </button>
+        </div>
       </div>
     </div>
   );

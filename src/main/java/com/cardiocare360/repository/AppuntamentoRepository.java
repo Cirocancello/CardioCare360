@@ -12,31 +12,35 @@ import java.util.Optional;
 
 public interface AppuntamentoRepository extends JpaRepository<Appuntamento, Long> {
 
-    // Appuntamenti del paziente con medico incluso
     @Query("SELECT a FROM Appuntamento a JOIN FETCH a.medico WHERE a.paziente.id = :idPaziente")
     List<Appuntamento> findByPazienteId(@Param("idPaziente") Long idPaziente);
 
-    // Appuntamenti del medico (senza filtri)
     List<Appuntamento> findByMedicoId(Long idMedico);
 
-    // Appuntamenti del medico in una data
     List<Appuntamento> findByMedicoIdAndDataAppuntamento(Long idMedico, LocalDate data);
 
-    // Controllo sovrapposizione medico
     boolean existsByMedicoIdAndDataAppuntamentoAndOraAppuntamento(
             Long idMedico, LocalDate data, LocalTime ora);
 
-    // Controllo sovrapposizione paziente
     boolean existsByPazienteIdAndDataAppuntamentoAndOraAppuntamento(
             Long idPaziente, LocalDate data, LocalTime ora);
 
-    // Controllo proprietà appuntamento (paziente)
     Optional<Appuntamento> findByIdAndPazienteId(Long id, Long idPaziente);
 
-    // Controllo proprietà appuntamento (medico)
     Optional<Appuntamento> findByIdAndMedicoId(Long id, Long idMedico);
 
-    // 🔥 Appuntamenti NON ancora usati (anche se passati)
+    // ⭐ Appuntamenti futuri del medico
+    boolean existsByMedicoIdAndDataAppuntamentoAfter(Long medicoId, LocalDate data);
+
+    List<Appuntamento> findByMedicoIdAndDataAppuntamentoAfter(Long medicoId, LocalDate oggi);
+
+    // ⭐ Appuntamenti futuri del paziente
+    List<Appuntamento> findByPazienteIdAndDataAppuntamentoAfter(Long idPaziente, LocalDate oggi);
+
+    // ⭐ Filtri per stato
+    List<Appuntamento> findByMedicoIdAndStato(Long idMedico, Appuntamento.StatoAppuntamento stato);
+
+    // ⭐ Appuntamenti non usati per terapia
     @Query("""
         SELECT a
         FROM Appuntamento a

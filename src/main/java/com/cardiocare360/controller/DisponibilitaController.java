@@ -30,128 +30,246 @@ public class DisponibilitaController {
     // 1) CREAZIONE DISPONIBILITÀ (MEDICO)
     // ---------------------------------------------------------
     @PostMapping
-    public ResponseEntity<DisponibilitaMedico> creaDisponibilita(
+    public ResponseEntity<?> creaDisponibilita(
             @RequestHeader("Authorization") String token,
             @RequestBody DisponibilitaMedico disponibilita
     ) {
-        String email = jwtUtil.extractEmail(token.substring(7));
+        try {
+            if (token == null || !token.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("TOKEN_NON_VALIDO");
+            }
 
-        Long idMedico = medicoRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Medico non trovato"))
-                .getId();
+            if (disponibilita == null) {
+                return ResponseEntity.badRequest().body("DISPONIBILITA_NULL");
+            }
 
-     // Recupera il medico completo dal database
-        Medico medico = medicoRepository.findById(idMedico)
-                .orElseThrow(() -> new RuntimeException("Medico non trovato"));
-        disponibilita.setMedico(medico);
+            String email = jwtUtil.extractEmail(token.substring(7));
 
-        // Salva la disponibilità
-        DisponibilitaMedico salvata = disponibilitaService.salva(disponibilita);
-        return ResponseEntity.ok(salvata);
+            Medico medico = medicoRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("MEDICO_NON_TROVATO"));
 
+            disponibilita.setMedico(medico);
+
+            DisponibilitaMedico salvata = disponibilitaService.salva(disponibilita);
+            return ResponseEntity.ok(salvata);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore inatteso: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
-
 
     // ---------------------------------------------------------
     // 2) MODIFICA DISPONIBILITÀ
     // ---------------------------------------------------------
     @PutMapping("/{idDisponibilita}")
-    public ResponseEntity<DisponibilitaMedico> modificaDisponibilita(
+    public ResponseEntity<?> modificaDisponibilita(
             @PathVariable Long idDisponibilita,
             @RequestParam String oraInizio,
             @RequestParam String oraFine
     ) {
-        DisponibilitaMedico disp = disponibilitaService.modificaDisponibilita(
-                idDisponibilita, oraInizio, oraFine
-        );
+        try {
+            if (idDisponibilita == null || idDisponibilita <= 0) {
+                return ResponseEntity.badRequest().body("ID_NON_VALIDO");
+            }
 
-        return ResponseEntity.ok(disp);
+            DisponibilitaMedico disp = disponibilitaService.modificaDisponibilita(
+                    idDisponibilita, oraInizio, oraFine
+            );
+
+            return ResponseEntity.ok(disp);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore modifica: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // ---------------------------------------------------------
     // 3) ELIMINA DISPONIBILITÀ
     // ---------------------------------------------------------
     @DeleteMapping("/{idDisponibilita}")
-    public ResponseEntity<String> eliminaDisponibilita(
-            @PathVariable Long idDisponibilita
-    ) {
-        disponibilitaService.eliminaDisponibilita(idDisponibilita);
-        return ResponseEntity.ok("Disponibilità eliminata");
+    public ResponseEntity<?> eliminaDisponibilita(@PathVariable Long idDisponibilita) {
+        try {
+            if (idDisponibilita == null || idDisponibilita <= 0) {
+                return ResponseEntity.badRequest().body("ID_NON_VALIDO");
+            }
+
+            disponibilitaService.eliminaDisponibilita(idDisponibilita);
+            return ResponseEntity.ok("DISPONIBILITA_ELIMINATA");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore eliminazione: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // ---------------------------------------------------------
     // 4) LISTA DISPONIBILITÀ DEL MEDICO (AUTENTICATO)
     // ---------------------------------------------------------
     @GetMapping("/medico")
-    public ResponseEntity<List<DisponibilitaMedico>> getDisponibilitaMedico(
+    public ResponseEntity<?> getDisponibilitaMedico(
             @RequestHeader("Authorization") String token
     ) {
-        String email = jwtUtil.extractEmail(token.substring(7));
+        try {
+            if (token == null || !token.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("TOKEN_NON_VALIDO");
+            }
 
-        Long idMedico = medicoRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Medico non trovato"))
-                .getId();
+            String email = jwtUtil.extractEmail(token.substring(7));
 
-        return ResponseEntity.ok(disponibilitaService.getDisponibilitaMedico(idMedico));
+            Long idMedico = medicoRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("MEDICO_NON_TROVATO"))
+                    .getId();
+
+            return ResponseEntity.ok(disponibilitaService.getDisponibilitaMedico(idMedico));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore lista medico: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // ---------------------------------------------------------
     // 5) GENERA SLOT PER UNA DATA (PAZIENTE)
     // ---------------------------------------------------------
     @PostMapping("/slot/{idMedico}")
-    public ResponseEntity<List<SlotOrario>> generaSlot(
+    public ResponseEntity<?> generaSlot(
             @PathVariable Long idMedico,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
     ) {
-        return ResponseEntity.ok(slotService.generaSlotPerData(idMedico, data));
+        try {
+            if (idMedico == null || idMedico <= 0) {
+                return ResponseEntity.badRequest().body("MEDICO_ID_NON_VALIDO");
+            }
+
+            if (data == null) {
+                return ResponseEntity.badRequest().body("DATA_NON_VALIDA");
+            }
+
+            return ResponseEntity.ok(slotService.generaSlotPerData(idMedico, data));
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore genera slot: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // ---------------------------------------------------------
     // 6) OTTIENI SLOT DISPONIBILI PER UNA DATA
     // ---------------------------------------------------------
     @GetMapping("/slot/{idMedico}")
-    public ResponseEntity<List<SlotOrario>> getSlotDisponibili(
+    public ResponseEntity<?> getSlotDisponibili(
             @PathVariable Long idMedico,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
     ) {
-        return ResponseEntity.ok(slotService.getSlotDisponibili(idMedico, data));
+        try {
+            if (idMedico == null || idMedico <= 0) {
+                return ResponseEntity.badRequest().body("MEDICO_ID_NON_VALIDO");
+            }
+
+            if (data == null) {
+                return ResponseEntity.badRequest().body("DATA_NON_VALIDA");
+            }
+
+            return ResponseEntity.ok(slotService.getSlotDisponibili(idMedico, data));
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore get slot: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // ---------------------------------------------------------
     // 7) PRENOTA SLOT
     // ---------------------------------------------------------
     @PutMapping("/slot/prenota/{idSlot}")
-    public ResponseEntity<SlotOrario> prenotaSlot(@PathVariable Long idSlot) {
-        return ResponseEntity.ok(slotService.prenotaSlot(idSlot));
+    public ResponseEntity<?> prenotaSlot(@PathVariable Long idSlot) {
+        try {
+            if (idSlot == null || idSlot <= 0) {
+                return ResponseEntity.badRequest().body("SLOT_ID_NON_VALIDO");
+            }
+
+            return ResponseEntity.ok(slotService.prenotaSlot(idSlot));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore prenota slot: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // ---------------------------------------------------------
     // 8) LIBERA SLOT
     // ---------------------------------------------------------
     @PutMapping("/slot/libera/{idSlot}")
-    public ResponseEntity<String> liberaSlot(@PathVariable Long idSlot) {
-        slotService.liberaSlot(idSlot);
-        return ResponseEntity.ok("Slot liberato");
+    public ResponseEntity<?> liberaSlot(@PathVariable Long idSlot) {
+        try {
+            if (idSlot == null || idSlot <= 0) {
+                return ResponseEntity.badRequest().body("SLOT_ID_NON_VALIDO");
+            }
+
+            slotService.liberaSlot(idSlot);
+            return ResponseEntity.ok("SLOT_LIBERATO");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore libera slot: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
- // ---------------------------------------------------------
- // 9) DATE DISPONIBILI PER TIPO VISITA (VERSIONE CORRETTA)
- // ---------------------------------------------------------
- @GetMapping("/date/visita/{tipoVisita}")
- public ResponseEntity<List<String>> getDateDisponibiliPerVisita(
-         @PathVariable String tipoVisita
- ) {
-     List<String> date = disponibilitaService.generaDateDisponibiliPerSpecializzazione(tipoVisita);
-     return ResponseEntity.ok(date);
- }
+    // ---------------------------------------------------------
+    // 9) DATE DISPONIBILI PER TIPO VISITA
+    // ---------------------------------------------------------
+    @GetMapping("/date/visita/{tipoVisita}")
+    public ResponseEntity<?> getDateDisponibiliPerVisita(@PathVariable String tipoVisita) {
+        try {
+            if (tipoVisita == null || tipoVisita.isBlank()) {
+                return ResponseEntity.badRequest().body("TIPO_VISITA_NON_VALIDO");
+            }
 
+            List<String> date = disponibilitaService.generaDateDisponibiliPerSpecializzazione(tipoVisita);
+            return ResponseEntity.ok(date);
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore date visita: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
+    }
 
     // ---------------------------------------------------------
     // 10) DATE DISPONIBILI PER MEDICO
     // ---------------------------------------------------------
     @GetMapping("/date/medico/{idMedico}")
-    public ResponseEntity<List<String>> getDateDisponibiliPerMedico(@PathVariable Long idMedico) {
-        List<String> date = disponibilitaService.generaDateDisponibili(idMedico);
-        return ResponseEntity.ok(date);
+    public ResponseEntity<?> getDateDisponibiliPerMedico(@PathVariable Long idMedico) {
+        try {
+            if (idMedico == null || idMedico <= 0) {
+                return ResponseEntity.badRequest().body("MEDICO_ID_NON_VALIDO");
+            }
+
+            List<String> date = disponibilitaService.generaDateDisponibili(idMedico);
+            return ResponseEntity.ok(date);
+
+        } catch (Exception e) {
+            System.err.println(">>> [DISP] Errore date medico: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 }

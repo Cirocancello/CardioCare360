@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../../api/auth";
-import "../styles/user.css";
-import logo from "../assets/logo-CardioCare360.png";
+import "../../styles/public/user.css";
+import logo from "../../assets/logo-CardioCare360.png";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ export default function Register() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -29,14 +30,30 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
+    // 🔒 Controllo password
     if (form.password !== form.confermaPassword) {
       setError("Le password non coincidono.");
+      setLoading(false);
+      return;
+    }
+
+    // 🔒 Controllo email valida
+    if (!form.email.includes("@")) {
+      setError("Inserisci un'email valida.");
+      setLoading(false);
       return;
     }
 
     try {
-      await register(form);
+      const response = await register(form);
+
+      if (!response) {
+        setError("Registrazione fallita. Riprova.");
+        setLoading(false);
+        return;
+      }
 
       setSuccess("Registrazione completata! Reindirizzamento in corso...");
       setTimeout(() => navigate("/login"), 1500);
@@ -53,6 +70,8 @@ export default function Register() {
       } else {
         setError("Registrazione fallita. Riprova.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,13 +83,9 @@ export default function Register() {
 
         <h2 className="user-title">Crea il tuo account</h2>
 
-        {error && (
-          <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>
-        )}
-
-        {success && (
-          <p style={{ color: "green", marginBottom: "10px" }}>{success}</p>
-        )}
+        {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
+        {loading && <p className="loading-message">Registrazione in corso...</p>}
 
         <form onSubmit={handleRegister}>
 
@@ -166,7 +181,7 @@ export default function Register() {
             />
           </div>
 
-          <button type="submit" className="user-button">
+          <button type="submit" className="user-button" disabled={loading}>
             Registrati
           </button>
         </form>

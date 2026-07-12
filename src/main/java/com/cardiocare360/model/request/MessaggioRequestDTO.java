@@ -38,4 +38,26 @@ public class MessaggioRequestDTO {
     public void setContenuto(String contenuto) {
         this.contenuto = contenuto;
     }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return isMittenteValido()
+                && isDestinatarioValido()
+                && isContenutoValido();
+    }
+
+    public boolean isMittenteValido() {
+        return mittenteId != null && mittenteId > 0;
+    }
+
+    public boolean isDestinatarioValido() {
+        return destinatarioId != null && destinatarioId > 0;
+    }
+
+    public boolean isContenutoValido() {
+        return contenuto != null && !contenuto.isBlank();
+    }
 }

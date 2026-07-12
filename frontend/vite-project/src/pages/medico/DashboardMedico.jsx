@@ -1,38 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import SidebarMedico from "../../components/SidebarMedico.jsx";
 import TopbarMedico from "../../components/TopbarMedico.jsx";
 import "../../styles/medico/DashboardMedico.css";
 
 export default function DashboardMedico() {
   const [medico, setMedico] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [errore, setErrore] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const idMedico = localStorage.getItem("idMedico");
     const token = localStorage.getItem("token");
 
+    // 🔒 Blindatura: token o id mancanti
     if (!idMedico || !token) {
       navigate("/login");
       return;
     }
 
-    fetch(`http://localhost:8080/medico/${idMedico}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async (res) => {
+    const fetchMedico = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/medico/${idMedico}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         if (!res.ok) {
           const text = await res.text();
           console.error(`Errore HTTP ${res.status}: ${text}`);
-          throw new Error(`Errore HTTP ${res.status}`);
+          throw new Error("Errore nel caricamento del profilo medico");
         }
-        return res.json();
-      })
-      .then((data) => setMedico(data))
-      .catch((err) => console.error("Errore caricamento medico:", err));
+
+        const data = await res.json();
+        setMedico(data);
+      } catch (err) {
+        console.error("Errore caricamento medico:", err);
+        setErrore("Errore nel caricamento dei dati del medico.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMedico();
   }, [navigate]);
 
-  if (!medico) return <p>Caricamento dati...</p>;
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
+
+  if (loading) return <p className="loading-message">Caricamento dati...</p>;
+
+  if (errore) return <p className="error-message">{errore}</p>;
+
+  if (!medico) return <p className="error-message">Medico non trovato.</p>;
 
   return (
     <div className="layout-medico">
@@ -41,12 +64,12 @@ export default function DashboardMedico() {
       <div className="dashboard-medico-container">
         <TopbarMedico />
 
-        
         <h1 className="dashboard-title">
-          Benvenuto, {medico.nomeCompleto}
+          Benvenuto, {medico.nomeCompleto || "—"}
         </h1>
 
         <div className="dashboard-grid">
+
           <div className="dashboard-card" onClick={() => navigate("/medico/pazienti")}>
             👤 Gestione Pazienti
           </div>
@@ -79,12 +102,15 @@ export default function DashboardMedico() {
             ⚙️ Profilo
           </div>
 
-          <div className="dashboard-card" onClick={() => {
+          <div
+            className="dashboard-card logout-card"
+            onClick={() => {
               localStorage.clear();
               window.location.href = "/login";
-            }}>
-              🚪 Logout
-            </div>
+            }}
+          >
+            🚪 Logout
+          </div>
 
         </div>
       </div>

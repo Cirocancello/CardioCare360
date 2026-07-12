@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import SidebarMedico from "../../components/SidebarMedico";
 import TopbarMedico from "../../components/TopbarMedico";
 import "../../styles/medico/AggiungiDisponibilita.css";
@@ -8,14 +9,34 @@ export default function AggiungiDisponibilita() {
   const [giornoSettimana, setGiornoSettimana] = useState("");
   const [oraInizio, setOraInizio] = useState("");
   const [oraFine, setOraFine] = useState("");
+  const [errore, setErrore] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrore(null);
+
+    if (!token) {
+      setErrore("Token mancante. Effettua nuovamente il login.");
+      return;
+    }
+
+    if (!giornoSettimana || !oraInizio || !oraFine) {
+      setErrore("Compila tutti i campi.");
+      return;
+    }
+
+    if (oraFine <= oraInizio) {
+      setErrore("L'orario di fine deve essere successivo all'orario di inizio.");
+      return;
+    }
 
     try {
+      setLoading(true);
+
       const res = await fetch("http://localhost:8080/disponibilita", {
         method: "POST",
         headers: {
@@ -23,7 +44,7 @@ export default function AggiungiDisponibilita() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          giornoSettimana, // ✅ nome corretto
+          giornoSettimana,
           oraInizio,
           oraFine,
         }),
@@ -31,11 +52,12 @@ export default function AggiungiDisponibilita() {
 
       if (!res.ok) throw new Error("Errore durante la creazione della disponibilità");
 
-      alert("Disponibilità aggiunta con successo");
       navigate("/medico/disponibilita");
     } catch (err) {
       console.error(err);
-      alert("Errore: " + err.message);
+      setErrore("Errore: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,6 +69,9 @@ export default function AggiungiDisponibilita() {
         <TopbarMedico />
 
         <h1 className="title">Aggiungi disponibilità</h1>
+
+        {errore && <p className="error-message">{errore}</p>}
+        {loading && <p className="loading-message">Salvataggio in corso...</p>}
 
         <form className="form-disponibilita" onSubmit={handleSubmit}>
           <label>Giorno</label>
@@ -80,7 +105,7 @@ export default function AggiungiDisponibilita() {
             required
           />
 
-          <button type="submit" className="btn-salva">
+          <button type="submit" className="btn-salva" disabled={loading}>
             💾 Salva disponibilità
           </button>
         </form>

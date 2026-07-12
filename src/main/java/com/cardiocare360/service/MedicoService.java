@@ -18,4 +18,6 @@ public interface MedicoService {
     
     boolean cambiaPassword(Long id, String passwordAttuale, String nuovaPassword);
 
+    void deleteMedico(Long id);
+
 }

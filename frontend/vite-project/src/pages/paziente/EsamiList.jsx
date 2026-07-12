@@ -6,7 +6,9 @@ import "../../styles/paziente/esami.css";
 
 const EsamiList = () => {
   const [esami, setEsami] = useState([]);
-  const [referti, setReferti] = useState({}); // 🔥 referti per ogni esame
+  const [referti, setReferti] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -15,20 +17,32 @@ const EsamiList = () => {
 
   useEffect(() => {
     const fetchEsami = async () => {
+      // 🔒 Controlli iniziali
+      if (!token) {
+        setError("Token non presente. Effettua di nuovo il login.");
+        setLoading(false);
+        return;
+      }
+
+      if (!pazienteId) {
+        setError("ID paziente non trovato.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get(
           `http://localhost:8080/esami/paziente/${pazienteId}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
 
-        setEsami(response.data);
+        const listaEsami = response.data || [];
+        setEsami(listaEsami);
 
-        // 🔥 Per ogni esame, prova a recuperare il referto
-        response.data.forEach(async (esame) => {
+        // 🔥 Recupero referti in modo sicuro
+        listaEsami.forEach(async (esame) => {
           try {
             const refertoRes = await axios.get(
               `http://localhost:8080/referti/esame/${esame.id}`,
@@ -37,16 +51,21 @@ const EsamiList = () => {
               }
             );
 
-            setReferti((prev) => ({
-              ...prev,
-              [esame.id]: refertoRes.data, // salva referto associato
-            }));
-          } catch (err) {
+            if (refertoRes.data) {
+              setReferti((prev) => ({
+                ...prev,
+                [esame.id]: refertoRes.data,
+              }));
+            }
+          } catch {
             // Nessun referto → ignora
           }
         });
-      } catch (error) {
-        console.error("Errore nel recupero degli esami:", error);
+      } catch (err) {
+        console.error("Errore nel recupero degli esami:", err);
+        setError("Errore nel recupero degli esami.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -54,8 +73,21 @@ const EsamiList = () => {
   }, [pazienteId, token]);
 
   const goToDettaglio = (id) => {
+    if (!id) return;
     navigate(`/paziente/esami/${id}`);
   };
+
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
+
+  if (loading) {
+    return <p>Caricamento in corso...</p>;
+  }
+
+  if (error) {
+    return <p className="error-message">{error}</p>;
+  }
 
   return (
     <div className="esami-container">
@@ -71,22 +103,24 @@ const EsamiList = () => {
               <th>Data</th>
               <th>Ora</th>
               <th>Stato</th>
-              <th>Referto</th> {/* 🔥 nuova colonna */}
+              <th>Referto</th>
               <th>Azioni</th>
             </tr>
           </thead>
+
           <tbody>
             {esami.map((esame) => (
               <tr key={esame.id}>
                 <td>{esame.tipoEsame}</td>
                 <td>{esame.dataEsame}</td>
                 <td>{esame.oraEsame}</td>
+
                 <td>
                   <span
                     className={`badge ${
                       esame.stato === "REFERTATO"
                         ? "bg-success"
-                        : esame.stato === "IN_ATTESA"
+                        : esame.stato === "ESEGUITO"
                         ? "bg-warning"
                         : "bg-secondary"
                     }`}
@@ -95,7 +129,7 @@ const EsamiList = () => {
                   </span>
                 </td>
 
-                {/* 🔥 Se il referto esiste → pulsante download */}
+                {/* REFERTI */}
                 <td>
                   {referti[esame.id] ? (
                     <button

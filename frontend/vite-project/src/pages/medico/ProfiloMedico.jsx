@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import SidebarMedico from "../../components/SidebarMedico.jsx";
 import TopbarMedico from "../../components/TopbarMedico.jsx";
 import "../../styles/medico/ProfiloMedico.css";
@@ -8,33 +9,45 @@ export default function ProfiloMedico() {
   const [medico, setMedico] = useState(null);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [errore, setErrore] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const idMedico = localStorage.getItem("idMedico");
     const token = localStorage.getItem("token");
 
+    // 🔒 Blindatura: token o id mancanti
     if (!idMedico || !token) {
       navigate("/login");
       return;
     }
 
-    fetch(`http://localhost:8080/medico/${idMedico}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async (res) => {
+    const fetchMedico = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/medico/${idMedico}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         if (!res.ok) {
           const text = await res.text();
           console.error(`Errore HTTP ${res.status}: ${text}`);
-          throw new Error(`Errore HTTP ${res.status}`);
+          throw new Error("Errore nel caricamento del profilo");
         }
-        return res.json();
-      })
-      .then((data) => {
+
+        const data = await res.json();
         setMedico(data);
         setFormData(data);
-      })
-      .catch((err) => console.error("Errore caricamento medico:", err));
+      } catch (err) {
+        console.error("Errore caricamento medico:", err);
+        setErrore("Errore nel caricamento del profilo.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMedico();
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -43,6 +56,11 @@ export default function ProfiloMedico() {
 
   const salvaModifiche = async () => {
     const token = localStorage.getItem("token");
+
+    if (!token) {
+      setErrore("Token mancante. Effettua nuovamente il login.");
+      return;
+    }
 
     try {
       const res = await fetch(`http://localhost:8080/medico/${medico.id}`, {
@@ -62,11 +80,39 @@ export default function ProfiloMedico() {
       alert("Profilo aggiornato con successo");
     } catch (err) {
       console.error(err);
-      alert("Errore durante l'aggiornamento");
+      setErrore("Errore durante l'aggiornamento del profilo.");
     }
   };
 
-  if (!medico) return <p>Caricamento profilo...</p>;
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
+
+  if (loading) return <p className="loading-message">Caricamento profilo...</p>;
+
+  if (errore) {
+    return (
+      <div className="layout-medico">
+        <SidebarMedico />
+        <div className="profilo-medico-container">
+          <TopbarMedico />
+          <p className="error-message">{errore}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!medico) {
+    return (
+      <div className="layout-medico">
+        <SidebarMedico />
+        <div className="profilo-medico-container">
+          <TopbarMedico />
+          <p className="error-message">Medico non trovato.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="layout-medico">

@@ -1,18 +1,22 @@
 package com.cardiocare360.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "parametro_clinico")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ParametroClinico {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // ⭐ PAZIENTE (relazione figlio → padre)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
+    @JsonIgnoreProperties({"appuntamenti", "esami", "parametri", "conversazioni"})
     private Paziente paziente;
 
     // Nome leggibile del parametro (es. "Pressione arteriosa")
@@ -36,6 +40,7 @@ public class ParametroClinico {
 
     public ParametroClinico() {}
 
+    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

@@ -3,36 +3,45 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-// Layout components
 import SidebarMedico from "../../components/SidebarMedico";
 import TopbarMedico from "../../components/TopbarMedico";
 
-// CSS
 import "../../styles/medico/ListaConversazioniMedico.css";
 
 const ListaConversazioniMedico = () => {
   const [conversazioni, setConversazioni] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errore, setErrore] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchConversazioni = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const idMedico = localStorage.getItem("idMedico");
+      const token = localStorage.getItem("token");
+      const idMedico = localStorage.getItem("idMedico");
 
+      if (!token || !idMedico) {
+        setErrore("Sessione scaduta. Effettua nuovamente il login.");
+        setLoading(false);
+        return;
+      }
+
+      try {
         const response = await axios.get(
           `http://localhost:8080/api/conversazioni/medico/${idMedico}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
 
-        setConversazioni(response.data);
+        const data = response.data;
+        setConversazioni(Array.isArray(data) ? data : []);
       } catch (err) {
+        console.error("Errore nel caricamento conversazioni:", err);
         toast.error("Errore nel caricamento delle conversazioni");
-        console.error(err);
+        setErrore("Errore nel caricamento delle conversazioni.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -42,6 +51,9 @@ const ListaConversazioniMedico = () => {
   const apriChat = (id) => {
     navigate(`/medico/conversazioni/${id}`);
   };
+
+  if (loading) return <div className="lista-conversazioni-container">Caricamento...</div>;
+  if (errore) return <div className="error-message">{errore}</div>;
 
   return (
     <div className="layout-medico">
@@ -68,7 +80,9 @@ const ListaConversazioniMedico = () => {
                   </span>
 
                   <span className="conversazione-data">
-                    {new Date(c.ultimoAggiornamento).toLocaleString()}
+                    {c.ultimoAggiornamento
+                      ? new Date(c.ultimoAggiornamento).toLocaleString()
+                      : "—"}
                   </span>
                 </div>
 

@@ -16,7 +16,10 @@ import DashboardPaziente from "./pages/paziente/DashboardPaziente";
 import DashboardMedico from "./pages/medico/DashboardMedico";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 
-// 📌 Prenotazione visite
+// 📌 Prenotazione visite (pagina iniziale)
+import PrenotazioneVisite from "./pages/paziente/PrenotazioneVisite";
+
+// 📌 Prenotazione visite (step)
 import SelezionaVisita from "./pages/paziente/SelezionaVisita";
 import SelezionaMedico from "./pages/paziente/SelezionaMedico";
 import SelezionaData from "./pages/paziente/SelezionaData";
@@ -87,6 +90,10 @@ import CreaMedico from "./pages/admin/CreaMedico";
 import ModificaMedico from "./pages/admin/ModificaMedico";
 import ConfermaEliminazioneMedico from "./pages/admin/ConfermaEliminazioneMedico";
 import DettaglioMedico from "./pages/admin/DettaglioMedico";
+import DettaglioPazienteAdmin from "./pages/admin/DettaglioPazienteAdmin";
+import ModificaPazienteAdmin from "./pages/admin/ModificaPazienteAdmin";
+import CreaPaziente from "./pages/admin/CreaPaziente";
+import ConfermaEliminazionePaziente from "./pages/admin/ConfermaEliminazionePaziente";
 
 function App() {
   return (
@@ -120,6 +127,15 @@ function App() {
       />
 
       {/* 🛠 Admin */}
+      <Route
+        path="/admin/pazienti/:id/conferma-eliminazione"
+        element={
+          <ProtectedRoute>
+            <ConfermaEliminazionePaziente />
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path="/admin"
         element={
@@ -165,6 +181,32 @@ function App() {
         }
       />
 
+      <Route
+        path="/admin/paziente/crea"
+        element={
+          <ProtectedRoute>
+            <CreaPaziente />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/pazienti/:id"
+        element={
+          <ProtectedRoute>
+            <DettaglioPazienteAdmin />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/pazienti/:id/modifica"
+        element={
+          <ProtectedRoute>
+            <ModificaPazienteAdmin />
+          </ProtectedRoute>
+        }
+      />
 
       {/* 📌 Medico – gestione pazienti */}
       <Route
@@ -317,7 +359,16 @@ function App() {
         }
       />
 
-      {/* 📌 Paziente – prenotazione visite */}
+      <Route
+        path="/paziente/prenota"
+        element={
+          <ProtectedRoute>
+            <PrenotazioneVisite />
+          </ProtectedRoute>
+        }
+      />
+
+
       <Route
         path="/paziente/prenota/visita"
         element={
@@ -504,6 +555,7 @@ function App() {
         }
       />
 
+      {/* 📌 Admin – medico */}
       <Route
         path="/admin/medici/:id/modifica"
         element={
@@ -530,8 +582,6 @@ function App() {
           </ProtectedRoute>
         }
       />
-
-
 
     </Routes>
   );

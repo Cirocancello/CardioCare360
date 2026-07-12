@@ -1,32 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import SidebarMedico from "../../components/SidebarMedico";
 import TopbarMedico from "../../components/TopbarMedico";
+
 import "../../styles/medico/parametriMedico.css";
 
 const ParametriVitaliMedico = () => {
   const [parametri, setParametri] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errore, setErrore] = useState(null);
+
   const navigate = useNavigate();
 
   const medicoId = localStorage.getItem("idMedico");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    if (!token || !medicoId) {
+      setErrore("Sessione scaduta. Effettua nuovamente il login.");
+      setLoading(false);
+      return;
+    }
+
     const fetchParametri = async () => {
       try {
         const response = await axios.get(
           `http://localhost:8080/api/medici/${medicoId}/parametri/recenti`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setParametri(response.data);
+
+        const data = response.data;
+        setParametri(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Errore nel recupero dei parametri:", error);
+        setErrore("Errore nel caricamento dei parametri.");
       } finally {
         setLoading(false);
       }
@@ -42,21 +53,21 @@ const ParametriVitaliMedico = () => {
       case "ALERT":
         return "badge-alert";
       case "NODATA":
-        return "badge-nodata";
       default:
         return "badge-nodata";
     }
   };
 
-  if (loading) {
-    return <div className="lista-visite-container">Caricamento...</div>;
-  }
+  if (loading) return <div className="lista-visite-container">Caricamento...</div>;
+  if (errore) return <div className="error-message">{errore}</div>;
 
   return (
     <div className="layout-medico">
       <SidebarMedico />
+
       <div className="lista-visite-container">
         <TopbarMedico />
+
         <div className="lista-parametri-header">
           <h2 className="lista-parametri-title">Monitoraggio Parametri Vitali</h2>
         </div>
@@ -76,6 +87,7 @@ const ParametriVitaliMedico = () => {
                 <th>Storico</th>
               </tr>
             </thead>
+
             <tbody>
               {parametri.map((p) => (
                 <tr key={p.idPaziente}>

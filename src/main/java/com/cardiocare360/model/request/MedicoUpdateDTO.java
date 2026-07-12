@@ -40,4 +40,28 @@ public class MedicoUpdateDTO {
     public void setNumeroLicenza(String numeroLicenza) {
         this.numeroLicenza = numeroLicenza;
     }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return isSpecializzazioneValida() && isNumeroLicenzaValida();
+    }
+
+    public boolean isNomeValido() {
+        return nome != null && !nome.isBlank();
+    }
+
+    public boolean isCognomeValido() {
+        return cognome != null && !cognome.isBlank();
+    }
+
+    public boolean isSpecializzazioneValida() {
+        return specializzazione != null && !specializzazione.isBlank();
+    }
+
+    public boolean isNumeroLicenzaValida() {
+        return numeroLicenza != null && !numeroLicenza.isBlank();
+    }
 }

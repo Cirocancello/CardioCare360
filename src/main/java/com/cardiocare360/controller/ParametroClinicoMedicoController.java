@@ -22,24 +22,55 @@ public class ParametroClinicoMedicoController {
     // GET → Ultimi parametri dei pazienti del medico
     // ---------------------------------------------------------
     @GetMapping("/recenti")
-    public ResponseEntity<List<ParametriRecentiDTO>> getParametriRecenti(
-            @PathVariable Long idMedico) {
+    public ResponseEntity<?> getParametriRecenti(@PathVariable Long idMedico) {
 
-        List<ParametriRecentiDTO> lista = parametroService.getParametriRecentiByMedico(idMedico);
-        return ResponseEntity.ok(lista);
+        try {
+            if (idMedico == null || idMedico <= 0) {
+                return ResponseEntity.badRequest().body("MEDICO_ID_NON_VALIDO");
+            }
+
+            List<ParametriRecentiDTO> lista =
+                    parametroService.getParametriRecentiByMedico(idMedico);
+
+            return ResponseEntity.ok(lista);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [PARAMETRI_MEDICO] Errore recenti: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // ---------------------------------------------------------
     // GET → Storico parametri di un paziente (visibile al medico)
     // ---------------------------------------------------------
     @GetMapping("/storico/{idPaziente}")
-    public ResponseEntity<List<ParametroClinicoStoricoDTO>> getStoricoParametriPaziente(
+    public ResponseEntity<?> getStoricoParametriPaziente(
             @PathVariable Long idMedico,
             @PathVariable Long idPaziente) {
 
-        List<ParametroClinicoStoricoDTO> storico =
-                parametroService.getStoricoParametriByPaziente(idPaziente);
+        try {
+            if (idMedico == null || idMedico <= 0) {
+                return ResponseEntity.badRequest().body("MEDICO_ID_NON_VALIDO");
+            }
 
-        return ResponseEntity.ok(storico);
+            if (idPaziente == null || idPaziente <= 0) {
+                return ResponseEntity.badRequest().body("PAZIENTE_ID_NON_VALIDO");
+            }
+
+            List<ParametroClinicoStoricoDTO> storico =
+                    parametroService.getStoricoParametriByPaziente(idPaziente);
+
+            return ResponseEntity.ok(storico);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [PARAMETRI_MEDICO] Errore storico: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 }

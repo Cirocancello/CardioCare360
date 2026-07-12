@@ -7,43 +7,41 @@ import java.util.List;
 
 @Entity
 @Table(name = "conversazione")
-@JsonIgnoreProperties({"messaggi"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Conversazione {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔹 Paziente coinvolto nella conversazione
-    @ManyToOne(optional = false)
+    // ⭐ PAZIENTE
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
+    @JsonIgnoreProperties({"appuntamenti", "esami", "parametri", "conversazioni"})
     private Paziente paziente;
 
-    // 🔹 Medico coinvolto nella conversazione
-    @ManyToOne(optional = false)
+    // ⭐ MEDICO
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
+    @JsonIgnoreProperties({"pazienti", "visite", "esami"})
     private Medico medico;
 
-    // 🔹 Data creazione conversazione
     @Column(nullable = false)
     private LocalDateTime dataCreazione;
 
-    // 🔹 Ultimo messaggio (testo)
     @Column(name = "ultimo_messaggio")
     private String ultimoMessaggio;
 
-    // 🔹 Timestamp ultimo aggiornamento
     @Column(name = "ultimo_aggiornamento")
     private LocalDateTime ultimoAggiornamento;
 
-    // 🔹 Lista messaggi associati
-    @OneToMany(mappedBy = "conversazione", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("conversazione")
+    // ⭐ LISTA MESSAGGI
+    @OneToMany(mappedBy = "conversazione")
+    @JsonIgnoreProperties({"conversazione"})
     private List<Messaggio> messaggi;
 
     public Conversazione() {}
 
-    // Getter & Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

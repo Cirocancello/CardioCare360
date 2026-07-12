@@ -1,8 +1,13 @@
+/* Contenitore principale con scroll */
 .gestione-pazienti-content {
   padding: 30px;
   background-color: #f9fafb;
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
+/* Tabella */
 .pazienti-table {
   width: 100%;
   border-collapse: collapse;
@@ -23,29 +28,68 @@
   color: white;
 }
 
+/* Pulsanti base */
+.btn-details,
+.btn-edit,
+.btn-delete {
+  display: inline-flex;      /* 🔹 Forza dimensione uniforme */
+  justify-content: center;   /* 🔹 Centra il testo */
+  align-items: center;       /* 🔹 Centra verticalmente */
+  width: 120px;              /* 🔹 Larghezza fissa */
+  height: 36px;              /* 🔹 Altezza fissa */
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.2s ease;
+  margin-right: 8px;
+  text-align: center;
+}
+
+/* Pulsante Dettagli */
+.btn-details {
+  background-color: #10b981;
+  color: white;
+}
+
+.btn-details:hover {
+  background-color: #059669;
+}
+
+/* Pulsante Modifica */
 .btn-edit {
   background-color: #3b82f6;
   color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-right: 8px;
 }
 
 .btn-edit:hover {
   background-color: #2563eb;
 }
 
+/* Pulsante Elimina */
 .btn-delete {
   background-color: #ef4444;
   color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
 }
 
 .btn-delete:hover {
   background-color: #dc2626;
+}
+
+/* Pulsante Aggiungi */
+.btn-add {
+  background-color: #1d4ed8;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.btn-add:hover {
+  background-color: #1e40af;
 }

@@ -34,23 +34,24 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         System.out.println(">>> [DEBUG] Filtro JWT attivo su path: " + path);
 
-        // 🔥 LOG FONDAMENTALE PER DEBUG
-        System.out.println(">>> [JWT] Path ricevuto: " + path);
-
-        // Endpoint pubblici
+        // ---------------------------------------------------------
+        // ENDPOINT PUBBLICI (NON devono richiedere JWT)
+        // ---------------------------------------------------------
         if (path.startsWith("/auth")
                 || path.startsWith("/disponibilita/slot")
                 || path.startsWith("/disponibilita/date")
                 || path.startsWith("/notifiche")
-                || path.startsWith("/api/notifiche")
-                || path.startsWith("/api/appuntamenti")) {
+                || path.startsWith("/api/notifiche")) {
 
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Header Authorization
+        // ---------------------------------------------------------
+        // HEADER AUTHORIZATION
+        // ---------------------------------------------------------
         String authHeader = request.getHeader("Authorization");
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -65,20 +66,22 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Estrazione email dal token
+        // ---------------------------------------------------------
+        // ESTRAZIONE EMAIL DAL TOKEN
+        // ---------------------------------------------------------
         String email = jwtUtil.extractEmail(token);
 
-        // 🔥 LOG DIAGNOSTICI (sempre stampati)
         System.out.println(">>> [JWT] Email estratta dal token: " + email);
         System.out.println(">>> [JWT] AuthContext PRIMA del controllo: "
                 + SecurityContextHolder.getContext().getAuthentication());
 
-        // Se email valida e nessuna autenticazione già presente
+        // ---------------------------------------------------------
+        // AUTENTICAZIONE
+        // ---------------------------------------------------------
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             Utente userDetails = customUserDetailsService.loadUserByUsername(email);
 
-            // Validazione token
             if (jwtUtil.validateToken(token, userDetails)) {
 
                 List<String> authoritiesFromToken = jwtUtil.extractAuthorities(token);

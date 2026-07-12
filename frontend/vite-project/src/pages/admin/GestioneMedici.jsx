@@ -6,6 +6,8 @@ import "../../styles/admin/GestioneMedici.css";
 
 export default function GestioneMedici() {
   const [medici, setMedici] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -15,15 +17,39 @@ export default function GestioneMedici() {
         const res = await fetch("http://localhost:8080/admin/medici", {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        if (!res.ok) {
+          setErrorMsg("Errore nel caricamento dei medici");
+          setLoading(false);
+          return;
+        }
+
         const data = await res.json();
         setMedici(data);
       } catch (err) {
         console.error("Errore caricamento medici", err);
+        setErrorMsg("Errore di connessione al server");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchMedici();
   }, [token]);
+
+  if (loading) return <p>Caricamento...</p>;
+
+  if (errorMsg) {
+    return (
+      <div className="layout-admin">
+        <SidebarAdmin />
+        <div className="dashboard-admin-container">
+          <TopbarAdmin />
+          <p className="error-message">{errorMsg}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="layout-admin">
@@ -47,7 +73,7 @@ export default function GestioneMedici() {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Nome</th>
+                <th>Nome Completo</th>
                 <th>Email</th>
                 <th>Specializzazione</th>
                 <th>Azioni</th>
@@ -57,7 +83,7 @@ export default function GestioneMedici() {
               {medici.map((medico) => (
                 <tr key={medico.id}>
                   <td>{medico.id}</td>
-                  <td>{medico.nome}</td>
+                  <td>{medico.nomeCompleto}</td>
                   <td>{medico.email}</td>
                   <td>{medico.specializzazione}</td>
                   <td>
@@ -82,8 +108,6 @@ export default function GestioneMedici() {
                       Elimina
                     </button>
                   </td>
-
-
                 </tr>
               ))}
             </tbody>

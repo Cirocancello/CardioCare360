@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SidebarAdmin from "../../components/SidebarAdmin";
 import TopbarAdmin from "../../components/TopbarAdmin";
@@ -9,7 +9,13 @@ export default function ConfermaEliminazioneMedico() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
   const handleDelete = async () => {
+    setLoading(true);
+    setErrorMsg("");
+
     try {
       const res = await fetch(`http://localhost:8080/admin/medici/${id}`, {
         method: "DELETE",
@@ -22,11 +28,14 @@ export default function ConfermaEliminazioneMedico() {
         alert("Medico eliminato con successo!");
         navigate("/admin/medici");
       } else {
-        alert("Errore durante l'eliminazione del medico");
+        const text = await res.text();
+        setErrorMsg(text || "Errore durante l'eliminazione del medico");
       }
     } catch (err) {
       console.error("Errore:", err);
-      alert("Errore di connessione al server");
+      setErrorMsg("Errore di connessione al server");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,20 +48,26 @@ export default function ConfermaEliminazioneMedico() {
         <div className="confirm-delete-container">
           <h1 className="title">Conferma Eliminazione</h1>
 
+          {errorMsg && <p className="error-message">{errorMsg}</p>}
+
           <p className="warning-text">
-            Sei sicuro di voler eliminare il medico con ID <strong>{id}</strong>?
-            <br />
+            Sei sicuro di voler eliminare il medico con ID <strong>{id}</strong>?<br />
             Questa azione è irreversibile.
           </p>
 
           <div className="button-group">
-            <button className="btn-delete" onClick={handleDelete}>
-              Elimina
+            <button
+              className="btn-delete"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              {loading ? "Eliminazione..." : "Elimina"}
             </button>
 
             <button
               className="btn-cancel"
               onClick={() => navigate("/admin/medici")}
+              disabled={loading}
             >
               Annulla
             </button>

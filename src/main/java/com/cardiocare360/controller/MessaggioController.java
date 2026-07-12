@@ -19,25 +19,75 @@ public class MessaggioController {
 
     // 🔹 Invia un messaggio
     @PostMapping("/invia")
-    public ResponseEntity<Messaggio> inviaMessaggio(
-            @RequestParam Long conversazioneId,
-            @RequestParam Messaggio.Mittente mittente,
-            @RequestParam String testo) {
+    public ResponseEntity<?> inviaMessaggio(
+            @RequestParam(required = false) Long conversazioneId,
+            @RequestParam(required = false) Messaggio.Mittente mittente,
+            @RequestParam(required = false) String testo) {
 
-        Messaggio msg = messaggioService.inviaMessaggio(conversazioneId, mittente, testo);
-        return ResponseEntity.ok(msg);
+        try {
+            if (conversazioneId == null || conversazioneId <= 0) {
+                return ResponseEntity.badRequest().body("CONVERSAZIONE_ID_NON_VALIDO");
+            }
+
+            if (mittente == null) {
+                return ResponseEntity.badRequest().body("MITTENTE_NON_VALIDO");
+            }
+
+            if (testo == null || testo.isBlank()) {
+                return ResponseEntity.badRequest().body("TESTO_NON_VALIDO");
+            }
+
+            Messaggio msg = messaggioService.inviaMessaggio(conversazioneId, mittente, testo);
+            return ResponseEntity.ok(msg);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [MSG] Errore invio messaggio: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // 🔹 Recupera tutti i messaggi di una conversazione
     @GetMapping("/{conversazioneId}")
-    public ResponseEntity<List<Messaggio>> getMessaggi(@PathVariable Long conversazioneId) {
-        return ResponseEntity.ok(messaggioService.getMessaggiConversazione(conversazioneId));
+    public ResponseEntity<?> getMessaggi(@PathVariable Long conversazioneId) {
+
+        try {
+            if (conversazioneId == null || conversazioneId <= 0) {
+                return ResponseEntity.badRequest().body("CONVERSAZIONE_ID_NON_VALIDO");
+            }
+
+            List<Messaggio> lista = messaggioService.getMessaggiConversazione(conversazioneId);
+            return ResponseEntity.ok(lista);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [MSG] Errore recupero messaggi: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 
     // 🔹 Segna tutti i messaggi come letti
     @PutMapping("/segna-letti/{conversazioneId}")
-    public ResponseEntity<Void> segnaComeLetti(@PathVariable Long conversazioneId) {
-        messaggioService.segnaComeLetti(conversazioneId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> segnaComeLetti(@PathVariable Long conversazioneId) {
+
+        try {
+            if (conversazioneId == null || conversazioneId <= 0) {
+                return ResponseEntity.badRequest().body("CONVERSAZIONE_ID_NON_VALIDO");
+            }
+
+            messaggioService.segnaComeLetti(conversazioneId);
+            return ResponseEntity.ok("MESSAGGI_SEGNATI_COME_LETTI");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println(">>> [MSG] Errore segna letti: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
     }
 }

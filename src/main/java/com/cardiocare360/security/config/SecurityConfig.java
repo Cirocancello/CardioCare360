@@ -46,53 +46,76 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // -------------------------
+                // ----------------------------------------------------
                 // CORS preflight
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // -------------------------
+                // ----------------------------------------------------
                 // LOGIN / REGISTRAZIONE
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers("/auth/**").permitAll()
 
-                // -------------------------
+                // ----------------------------------------------------
                 // ENDPOINT PUBBLICI
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers("/disponibilita/slot/**").permitAll()
                 .requestMatchers("/disponibilita/date/**").permitAll()
                 .requestMatchers("/notifiche/**").permitAll()
 
-                // -------------------------
-                // ADMIN (AGGIUNTO!)
-                // -------------------------
-                .requestMatchers("/admin/**", "/api/admin/**")
-                    .hasAuthority("ADMIN")
+                // ----------------------------------------------------
+                // ADMIN
+                // ----------------------------------------------------
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
 
-                // -------------------------
-                // MEDICI (singolo)
-                // -------------------------
-                .requestMatchers(HttpMethod.GET, "/medico/**", "/api/medico/**")
-                    .hasAnyAuthority("MEDICO", "ADMIN")
-
+                // ----------------------------------------------------
+                // VISITE — accessibile al PAZIENTE
+                // ----------------------------------------------------
                 .requestMatchers("/medico/visita/**", "/api/medico/visita/**")
                     .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
-                // -------------------------
-                // MEDICI (plurale)
-                // -------------------------
-                .requestMatchers("/medici/**", "/api/medici/**")
-                    .hasAnyAuthority("MEDICO", "ADMIN")
+                // ----------------------------------------------------
+                // PRENOTAZIONE ESAMI — PAZIENTE
+                // ----------------------------------------------------
+                .requestMatchers(HttpMethod.POST, "/esami/prenota", "/api/esami/prenota")
+                    .hasAuthority("PAZIENTE")
 
-                // -------------------------
+                // ----------------------------------------------------
+                // MEDICI PER ESAMI — PAZIENTE
+                // ----------------------------------------------------
+                .requestMatchers("/medici/esami", "/api/medici/esami")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+
+                .requestMatchers("/medici/esami/**", "/api/medici/esami/**")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+
+                // ----------------------------------------------------
+                // PROFILO PAZIENTE
+                // ----------------------------------------------------
+                .requestMatchers(HttpMethod.GET, "/paziente/**", "/api/paziente/**")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+
+                // ----------------------------------------------------
+                // MEDICO (singolo) — LETTURA CONSENTITA AL PAZIENTE
+                // ----------------------------------------------------
+                .requestMatchers(HttpMethod.GET, "/medici/**", "/api/medici/**")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+
+                // ----------------------------------------------------
+                // MEDICI (lista) — LETTURA CONSENTITA AL PAZIENTE
+                // ----------------------------------------------------
+                .requestMatchers(HttpMethod.GET, "/medici/**", "/api/medici/**")
+                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+
+                // ----------------------------------------------------
                 // MESSAGGI
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers("/messaggi/**", "/api/messaggi/**")
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
-                // -------------------------
+                // ----------------------------------------------------
                 // REFERTI
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers(HttpMethod.POST, "/referti/esame/**", "/api/referti/esame/**")
                     .hasAuthority("MEDICO")
 
@@ -102,15 +125,15 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/referti/**", "/api/referti/**")
                     .hasAnyAuthority("MEDICO", "PAZIENTE")
 
-                // -------------------------
+                // ----------------------------------------------------
                 // ESAMI
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers(HttpMethod.PUT, "/esami/**", "/api/esami/**")
                     .hasAuthority("MEDICO")
 
-                // -------------------------
+                // ----------------------------------------------------
                 // APPUNTAMENTI
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers(HttpMethod.GET, "/appuntamenti/paziente/**", "/api/appuntamenti/paziente/**")
                     .hasAuthority("PAZIENTE")
 
@@ -120,30 +143,24 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/appuntamenti/*", "/api/appuntamenti/*")
                     .hasAnyAuthority("PAZIENTE", "MEDICO")
 
-                // -------------------------
+                // ----------------------------------------------------
                 // FARMACI
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers(HttpMethod.GET, "/farmaci/**", "/api/farmaci/**")
                     .hasAuthority("MEDICO")
 
-                // -------------------------
-                // PAZIENTI
-                // -------------------------
-                .requestMatchers(HttpMethod.GET, "/paziente/**", "/api/paziente/**")
-                    .hasAuthority("MEDICO")
-
-                // -------------------------
+                // ----------------------------------------------------
                 // PARAMETRI CLINICI
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers(HttpMethod.POST, "/pazienti/*/parametri/**", "/api/pazienti/*/parametri/**")
                     .hasAuthority("PAZIENTE")
 
                 .requestMatchers(HttpMethod.GET, "/pazienti/*/parametri/**", "/api/pazienti/*/parametri/**")
                     .hasAuthority("PAZIENTE")
 
-                // -------------------------
+                // ----------------------------------------------------
                 // TERAPIE
-                // -------------------------
+                // ----------------------------------------------------
                 .requestMatchers(HttpMethod.GET, "/terapie/paziente/*", "/api/terapie/paziente/*")
                     .hasAuthority("PAZIENTE")
 
@@ -153,9 +170,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/terapie", "/api/terapie")
                     .hasAuthority("MEDICO")
 
-                // -------------------------
+                // ----------------------------------------------------
                 // TUTTO IL RESTO
-                // -------------------------
+                // ----------------------------------------------------
                 .anyRequest().authenticated()
             )
 

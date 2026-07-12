@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../../styles/paziente/prenotazione.css";
+
+import SidebarPaziente from "../../components/SidebarPaziente.jsx";
+import TopbarPaziente from "../../components/TopbarPaziente.jsx";
+
+import "../../styles/paziente/Appuntamenti.css"; // 🔥 layout funzionante
 
 export default function SelezionaData() {
   const navigate = useNavigate();
@@ -15,21 +19,27 @@ export default function SelezionaData() {
     const idMedico = localStorage.getItem("idMedicoSelezionato");
 
     if (!idMedico) {
+      setErrore("Medico non selezionato.");
       navigate("/paziente/prenota/medico");
       return;
     }
 
-    axios
-      .get(`http://localhost:8080/disponibilita/date/medico/${idMedico}`)
-      .then((res) => {
-        setDateDisponibili(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
+    const fetchDate = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/disponibilita/date/medico/${idMedico}`
+        );
+
+        setDateDisponibili(res.data || []);
+      } catch (err) {
         console.error("Errore caricamento date:", err);
         setErrore("Errore nel caricamento delle date disponibili.");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchDate();
   }, [navigate]);
 
   const handleNext = () => {
@@ -42,44 +52,59 @@ export default function SelezionaData() {
   if (loading) return <p>Caricamento date disponibili...</p>;
 
   return (
-    <div className="prenotazione-container">
-      <h1>Seleziona la data</h1>
-      <p>Scegli una data tra quelle disponibili per il medico.</p>
+    <div className="layout-paziente">
 
-      {errore && <p className="error-message">{errore}</p>}
+      {/* Sidebar */}
+      <SidebarPaziente />
 
-      <div className="steps-column">
-        {dateDisponibili.length > 0 ? (
-          dateDisponibili.map((data) => (
-            <div
-              key={data}
-              className={`step-card ${dataSelezionata === data ? "selected" : ""}`}
-              onClick={() => setDataSelezionata(data)}
-            >
-              {data}
-            </div>
-          ))
-        ) : (
-          <p>Nessuna data disponibile.</p>
-        )}
-      </div>
+      {/* Contenuto */}
+      <div className="appuntamenti-container">
 
-      <div style={{ marginTop: "30px" }}>
-        <button
-          className="btn-secondary"
-          onClick={() => navigate(-1)}
-          style={{ marginRight: "15px" }}
-        >
-          Indietro
-        </button>
+        {/* Topbar */}
+        <TopbarPaziente />
 
-        <button
-          className="btn-primary"
-          disabled={!dataSelezionata}
-          onClick={handleNext}
-        >
-          Continua
-        </button>
+        <h1 className="page-title">Seleziona la data</h1>
+        <p>Scegli una data tra quelle disponibili per il medico.</p>
+
+        {errore && <p className="error-message">{errore}</p>}
+
+        <div className="appointments-grid">
+          {dateDisponibili.length > 0 ? (
+            dateDisponibili.map((data) => (
+              <div
+                key={data}
+                className={`appointment-card ${
+                  dataSelezionata === data ? "selected" : ""
+                }`}
+                onClick={() => setDataSelezionata(data)}
+                style={{ cursor: "pointer" }}
+              >
+                {data}
+              </div>
+            ))
+          ) : (
+            <p>Nessuna data disponibile.</p>
+          )}
+        </div>
+
+        <div style={{ marginTop: "30px" }}>
+          <button
+            className="btn-secondary"
+            onClick={() => navigate(-1)}
+            style={{ marginRight: "15px" }}
+          >
+            Indietro
+          </button>
+
+          <button
+            className="btn-primary"
+            disabled={!dataSelezionata}
+            onClick={handleNext}
+          >
+            Continua
+          </button>
+        </div>
+
       </div>
     </div>
   );

@@ -1,35 +1,91 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ConfermaAnnullamento() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
+  const [errore, setErrore] = useState(null);
+  const [controllo, setControllo] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setErrore("Token non trovato. Effettua di nuovo il login.");
+      setControllo(false);
+      return;
+    }
+
+    // 🔹 Controllo stato appuntamento prima di annullare
+    async function checkAppuntamento() {
+      try {
+        const res = await fetch(`http://localhost:8080/appuntamenti/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (res.status === 403) {
+          throw new Error("Non hai i permessi per annullare questo appuntamento");
+        }
+
+        if (!res.ok) {
+          throw new Error("Errore nel recupero dell'appuntamento");
+        }
+
+        const data = await res.json();
+        const stato = data.stato?.toLowerCase();
+
+        if (stato === "completato" || stato === "annullato") {
+          throw new Error("Questo appuntamento non può essere annullato");
+        }
+      } catch (err) {
+        setErrore(err.message);
+        setControllo(false);
+      }
+    }
+
+    checkAppuntamento();
+  }, [id]);
 
   async function handleConferma() {
     setLoading(true);
+    setErrore(null);
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://localhost:8080/appuntamenti/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`
+    try {
+      const res = await fetch(`http://localhost:8080/appuntamenti/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Non è possibile annullare questo appuntamento");
       }
-    });
 
-    setLoading(false);
-
-    if (res.ok) {
       navigate("/paziente/appuntamenti");
-    } else {
-      alert("Non è possibile annullare questo appuntamento");
+    } catch (err) {
+      setErrore(err.message);
       navigate("/paziente/appuntamenti");
+    } finally {
+      setLoading(false);
     }
   }
 
   function handleAnnulla() {
     navigate(`/paziente/appuntamenti/${id}`);
+  }
+
+  if (errore) {
+    return <p className="error-message">{errore}</p>;
+  }
+
+  if (!controllo) {
+    return <p className="error-message">Operazione non consentita.</p>;
   }
 
   return (

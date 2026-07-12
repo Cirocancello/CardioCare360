@@ -12,25 +12,58 @@ export default function DettaglioEsame() {
   const [referto, setReferto] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // ---------------------------------------------------------
+  // FETCH DATI ESAME + REFERTO
+  // ---------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
+      if (!id) {
+        setError("ID esame non valido.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const resEsame = await api.get(`/esami/${id}`);
-        setEsame(resEsame.data);
+        const esameData = resEsame.data;
 
-        if (resEsame.data.stato === "REFERTATO") {
-          const resReferto = await api.get(`/referti/esame/${id}`);
-          setReferto(resReferto.data);
+        if (!resEsame.data) {
+          setError("Esame non trovato.");
+          setLoading(false);
+          return;
+        }
+
+        setEsame(esameData);
+
+        // Recupero referto solo se REFERTATO
+        if (esameData.stato === "REFERTATO") {
+          try {
+            const resReferto = await api.get(`/referti/esame/${id}`);
+            setReferto(resReferto.data);
+          } catch {
+            // Nessun referto → ignora
+          }
         }
       } catch (error) {
         console.error("Errore nel recupero dei dati:", error);
+        setError("Errore nel recupero dei dati dell'esame.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [id]);
 
+  // ---------------------------------------------------------
+  // APERTURA PDF
+  // ---------------------------------------------------------
   const apriPdf = async () => {
+    if (!id) return;
+
     try {
       const res = await api.get(`/referti/preview/${id}`, {
         responseType: "arraybuffer",
@@ -42,10 +75,16 @@ export default function DettaglioEsame() {
       setPdfUrl(fileURL);
     } catch (err) {
       console.error("Errore apertura PDF:", err);
+      setError("Impossibile aprire il PDF.");
     }
   };
 
+  // ---------------------------------------------------------
+  // DOWNLOAD PDF
+  // ---------------------------------------------------------
   const scaricaPdf = async () => {
+    if (!referto || !referto.id) return;
+
     try {
       const res = await api.get(`/referti/download/${referto.id}`, {
         responseType: "arraybuffer",
@@ -64,10 +103,19 @@ export default function DettaglioEsame() {
       URL.revokeObjectURL(fileURL);
     } catch (err) {
       console.error("Errore download PDF:", err);
+      setError("Errore durante il download del PDF.");
     }
   };
 
-  if (!esame) return <p>Caricamento...</p>;
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
+
+  if (loading) return <p>Caricamento...</p>;
+
+  if (error) return <p className="error-message">{error}</p>;
+
+  if (!esame) return <p>Esame non trovato.</p>;
 
   return (
     <div className="esami-container">
@@ -75,6 +123,7 @@ export default function DettaglioEsame() {
 
       <div className="info-card-esame">
         <h3>Dati Esame</h3>
+
         <p><strong>Tipo Esame:</strong> {esame.tipoEsame}</p>
         <p><strong>Data:</strong> {esame.dataEsame}</p>
         <p><strong>Ora:</strong> {esame.oraEsame}</p>
@@ -85,7 +134,7 @@ export default function DettaglioEsame() {
             className={`badge ${
               esame.stato === "REFERTATO"
                 ? "bg-success"
-                : esame.stato === "IN_ATTESA"
+                : esame.stato === "ESEGUITO"
                 ? "bg-warning"
                 : "bg-secondary"
             }`}
@@ -94,22 +143,27 @@ export default function DettaglioEsame() {
           </span>
         </p>
 
-        <p><strong>Note Paziente:</strong> {esame.notePaziente || "Nessuna nota"}</p>
-        <p><strong>Note Medico:</strong> {esame.noteMedico || "Nessuna nota"}</p>
+        <p><strong>Note Paziente:</strong> {esame.note || "Nessuna nota"}</p>
       </div>
 
+      {/* REFERTI */}
       {referto && (
         <div className="info-card-esame">
           <h3>Referto</h3>
-          <p><strong>Note Medico:</strong> {referto.noteMedico || "—"}</p>
-          <p><strong>Medico:</strong> {referto.nomeMedico} {referto.cognomeMedico}</p>
+
+          <p><strong>Titolo:</strong> {referto.titolo || "—"}</p>
+          <p><strong>Descrizione:</strong> {referto.descrizione || "—"}</p>
+          <p><strong>Diagnosi:</strong> {referto.diagnosi || "—"}</p>
+
+          <p>
+            <strong>Medico:</strong> {referto.nomeMedico} {referto.cognomeMedico}
+          </p>
 
           <div className="azioni-referto">
             <button className="btn-view-pdf" onClick={apriPdf}>
               Visualizza PDF
             </button>
 
-            {/* 🔥 QUI LA CORREZIONE */}
             <button className="btn-download-pdf" onClick={scaricaPdf}>
               Scarica PDF
             </button>

@@ -25,7 +25,6 @@ public class EsameDTO {
     private String stato;
     private String note;
 
-    // Indica se esiste un referto collegato
     private boolean refertoPresente;
 
     public EsameDTO() {}
@@ -66,4 +65,23 @@ public class EsameDTO {
 
     public boolean isRefertoPresente() { return refertoPresente; }
     public void setRefertoPresente(boolean refertoPresente) { this.refertoPresente = refertoPresente; }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return id != null && id > 0 &&
+               idPaziente != null && idPaziente > 0 &&
+               idMedico != null && idMedico > 0 &&
+               tipoEsame != null && !tipoEsame.isBlank() &&
+               dataEsame != null &&
+               oraEsame != null &&
+               stato != null && !stato.isBlank();
+    }
+
+    public boolean hasMedicoData() {
+        return nomeMedico != null && !nomeMedico.isBlank()
+                && cognomeMedico != null && !cognomeMedico.isBlank();
+    }
 }

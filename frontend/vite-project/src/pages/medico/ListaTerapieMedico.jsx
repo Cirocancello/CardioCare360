@@ -10,19 +10,42 @@ import "../../styles/medico/listaTerapieMedico.css";
 export default function ListaTerapieMedico() {
   const [terapie, setTerapie] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const medicoId = localStorage.getItem("idMedico");
 
-    axios
-      .get(`http://localhost:8080/api/terapie/medico/${medicoId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setTerapie(res.data))
-      .catch(() => setError("Errore nel caricamento delle terapie"));
+    if (!token || !medicoId) {
+      setError("Sessione scaduta. Effettua nuovamente il login.");
+      setLoading(false);
+      return;
+    }
+
+    const fetchTerapie = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/terapie/medico/${medicoId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const data = res.data;
+        setTerapie(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Errore nel caricamento delle terapie:", err);
+        setError("Errore nel caricamento delle terapie.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTerapie();
   }, []);
+
+  if (loading) return <p className="loading-message">Caricamento terapie...</p>;
+  if (error) return <p className="error-message">{error}</p>;
 
   return (
     <div className="layout-medico">
@@ -41,8 +64,6 @@ export default function ListaTerapieMedico() {
             + Crea Terapia
           </button>
         </div>
-
-        {error && <p className="error-message">{error}</p>}
 
         <table className="tabella-visite">
           <thead>

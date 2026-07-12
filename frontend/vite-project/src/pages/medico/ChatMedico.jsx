@@ -2,51 +2,55 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// Layout components
 import SidebarMedico from "../../components/SidebarMedico";
 import TopbarMedico from "../../components/TopbarMedico";
 
-// CSS
 import "../../styles/medico/ChatMedico.css";
 
 export default function ChatMedico() {
   const { idConversazione } = useParams();
   const [messaggi, setMessaggi] = useState([]);
   const [testo, setTesto] = useState("");
-  const [pazienteNome, setPazienteNome] = useState("");
+  const [pazienteNome, setPazienteNome] = useState("Paziente");
+  const [errore, setErrore] = useState(null);
+
   const navigate = useNavigate();
   const bottomRef = useRef(null);
+
+  const token = localStorage.getItem("token");
+  const idMedico = localStorage.getItem("idMedico");
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const fetchMessaggi = async () => {
-    try {
-      const token = localStorage.getItem("token");
+    if (!token || !idConversazione) return;
 
+    try {
       const response = await axios.get(
         `http://localhost:8080/api/messaggi/${idConversazione}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setMessaggi(response.data);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setMessaggi(data);
 
-      if (response.data.length > 0) {
-        setPazienteNome(response.data[0].pazienteNomeCompleto || "Paziente");
+      if (data.length > 0) {
+        setPazienteNome(data[0].pazienteNomeCompleto || "Paziente");
       }
 
       scrollToBottom();
     } catch (err) {
       console.error("Errore caricamento messaggi:", err);
+      setErrore("Errore nel caricamento dei messaggi.");
     }
   };
 
   const segnaLetti = async () => {
+    if (!token || !idConversazione) return;
+
     try {
-      const token = localStorage.getItem("token");
       await axios.put(
         `http://localhost:8080/api/messaggi/segna-letti/${idConversazione}`,
         {},
@@ -58,11 +62,9 @@ export default function ChatMedico() {
   };
 
   const inviaMessaggio = async () => {
-    if (testo.trim() === "") return;
+    if (testo.trim() === "" || !token) return;
 
     try {
-      const token = localStorage.getItem("token");
-
       await axios.post(
         `http://localhost:8080/api/messaggi/invia`,
         {},
@@ -80,16 +82,39 @@ export default function ChatMedico() {
       fetchMessaggi();
     } catch (err) {
       console.error("Errore invio messaggio:", err);
+      setErrore("Errore durante l'invio del messaggio.");
     }
   };
 
   useEffect(() => {
+    if (!token || !idMedico) {
+      setErrore("Sessione scaduta. Effettua nuovamente il login.");
+      return;
+    }
+
+    if (!idConversazione) {
+      setErrore("Conversazione non valida.");
+      return;
+    }
+
     fetchMessaggi();
     segnaLetti();
 
     const interval = setInterval(fetchMessaggi, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [idConversazione]);
+
+  if (errore) {
+    return (
+      <div className="layout-medico">
+        <SidebarMedico />
+        <div className="chat-medico-container">
+          <TopbarMedico />
+          <p className="error-message">{errore}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="layout-medico">
@@ -117,6 +142,7 @@ export default function ChatMedico() {
               }`}
             >
               <p>{m.testo}</p>
+
               <span className="timestamp">
                 {m.timestamp
                   ? new Date(m.timestamp.replace(" ", "T")).toLocaleString(

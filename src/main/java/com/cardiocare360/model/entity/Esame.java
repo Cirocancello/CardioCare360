@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "esame")
-@JsonIgnoreProperties({"referti"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Esame {
 
     public enum StatoEsame {
@@ -21,12 +21,16 @@ public class Esame {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    // ⭐ PAZIENTE
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
+    @JsonIgnoreProperties({"appuntamenti", "esami", "parametri", "conversazioni"})
     private Paziente paziente;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    // ⭐ MEDICO
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
+    @JsonIgnoreProperties({"pazienti", "visite", "esami"})
     private Medico medico;
 
     @Column(name = "tipo_esame", nullable = false)
@@ -45,8 +49,9 @@ public class Esame {
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    // ✔ Relazione corretta: un esame può avere più referti
-    @OneToMany(mappedBy = "esame", cascade = CascadeType.ALL)
+    // ⭐ REFERTI COLLEGATI ALL'ESAME
+    @OneToMany(mappedBy = "esame")
+    @JsonIgnoreProperties({"esame", "paziente", "medico"})
     private List<Referto> referti;
 
     public Esame() {}

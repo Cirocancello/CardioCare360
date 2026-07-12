@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/paziente")
+@RequestMapping("admin/paziente")
 @RequiredArgsConstructor
 public class PazienteController {
 
@@ -76,7 +76,8 @@ public class PazienteController {
     private PazienteResponse toResponse(PazienteDTO dto) {
         PazienteResponse res = new PazienteResponse();
         res.setId(dto.getId());
-        res.setNomeCompleto(dto.getNome() + " " + dto.getCognome());
+        res.setNome(dto.getNome());
+        res.setCognome(dto.getCognome());
         res.setEmail(dto.getEmail());
         res.setCodiceFiscale(dto.getCodiceFiscale());
         res.setLuogoNascita(dto.getLuogoNascita());
@@ -85,4 +86,12 @@ public class PazienteController {
         res.setIndirizzo(dto.getIndirizzo());
         return res;
     }
+    
+    // Crea paziente
+    @PostMapping("/crea")
+    public ResponseEntity<PazienteResponse> creaPaziente(@RequestBody PazienteUpdateDTO request) {
+        PazienteDTO dto = pazienteService.creaPaziente(request);
+        return ResponseEntity.ok(toResponse(dto));
+    }
+
 }

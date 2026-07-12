@@ -35,16 +35,52 @@ public class EsameServiceImpl implements EsameService {
     @Autowired
     private RefertoRepository refertoRepository;
 
+    // ---------------------------------------------------------
+    // CREA ESAME (blindato)
+    // ---------------------------------------------------------
     @Override
     public EsameDTO creaEsame(EsameDTO dto) {
-        Esame esame = new Esame();
 
+        // 🔒 Validazioni input
+        if (dto.getTipoEsame() == null || dto.getTipoEsame().isBlank()) {
+            throw new RuntimeException("Il tipo di esame è obbligatorio");
+        }
+
+        if (dto.getDataEsame() == null) {
+            throw new RuntimeException("La data dell'esame è obbligatoria");
+        }
+
+        if (dto.getDataEsame().isBefore(LocalDate.now())) {
+            throw new RuntimeException("La data dell'esame non può essere nel passato");
+        }
+
+        if (dto.getOraEsame() == null) {
+            throw new RuntimeException("L'orario dell'esame è obbligatorio");
+        }
+
+        if (dto.getNote() != null && dto.getNote().length() > 2000) {
+            throw new RuntimeException("Le note non possono superare 2000 caratteri");
+        }
+
+        // 🔒 Controllo slot occupato
+        boolean slotOccupato = esameRepository.existsByDataEsameAndOraEsame(
+                dto.getDataEsame(),
+                dto.getOraEsame()
+        );
+
+        if (slotOccupato) {
+            throw new RuntimeException("Lo slot selezionato è già occupato");
+        }
+
+        // 🔒 Paziente e medico devono esistere
         Paziente paziente = pazienteRepository.findById(dto.getIdPaziente())
                 .orElseThrow(() -> new RuntimeException("Paziente non trovato"));
 
         Medico medico = medicoRepository.findById(dto.getIdMedico())
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
+        // 🔒 Creazione esame
+        Esame esame = new Esame();
         esame.setPaziente(paziente);
         esame.setMedico(medico);
         esame.setTipoEsame(dto.getTipoEsame());
@@ -58,6 +94,9 @@ public class EsameServiceImpl implements EsameService {
         return convertToDTO(esame);
     }
 
+    // ---------------------------------------------------------
+    // LISTA ESAMI PAZIENTE
+    // ---------------------------------------------------------
     @Override
     public List<EsameDTO> getEsamiPaziente(Long idPaziente) {
         return esameRepository.findByPazienteId(idPaziente)
@@ -66,6 +105,9 @@ public class EsameServiceImpl implements EsameService {
                 .toList();
     }
 
+    // ---------------------------------------------------------
+    // LISTA ESAMI MEDICO
+    // ---------------------------------------------------------
     @Override
     public List<EsameDTO> getEsamiMedico(Long idMedico) {
         return esameRepository.findByMedicoId(idMedico)
@@ -74,6 +116,9 @@ public class EsameServiceImpl implements EsameService {
                 .toList();
     }
 
+    // ---------------------------------------------------------
+    // DETTAGLIO ESAME
+    // ---------------------------------------------------------
     @Override
     public EsameDTO getEsameById(Long id) {
         Esame esame = esameRepository.findById(id)
@@ -81,26 +126,52 @@ public class EsameServiceImpl implements EsameService {
         return convertToDTO(esame);
     }
 
+    // ---------------------------------------------------------
+    // AGGIORNA STATO (blindato)
+    // ---------------------------------------------------------
     @Override
     public EsameDTO aggiornaStatoEsame(Long idEsame, String nuovoStato) {
+
+        if (nuovoStato == null || nuovoStato.isBlank()) {
+            throw new RuntimeException("Lo stato è obbligatorio");
+        }
+
+        Esame.StatoEsame stato;
+        try {
+            stato = Esame.StatoEsame.valueOf(nuovoStato);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Stato esame non valido");
+        }
+
         Esame esame = esameRepository.findById(idEsame)
                 .orElseThrow(() -> new RuntimeException("Esame non trovato"));
 
-        esame.setStato(Esame.StatoEsame.valueOf(nuovoStato));
+        esame.setStato(stato);
         esameRepository.save(esame);
 
         return convertToDTO(esame);
     }
 
+    // ---------------------------------------------------------
+    // ELIMINA ESAME (blindato)
+    // ---------------------------------------------------------
     @Override
     public void eliminaEsame(Long idEsame) {
-        if (!esameRepository.existsById(idEsame)) {
-            throw new RuntimeException("Esame non trovato");
+
+        Esame esame = esameRepository.findById(idEsame)
+                .orElseThrow(() -> new RuntimeException("Esame non trovato"));
+
+        // 🔒 Non eliminare esami refertati
+        if (esame.getStato() == Esame.StatoEsame.REFERTATO) {
+            throw new RuntimeException("Non è possibile eliminare un esame già refertato");
         }
+
         esameRepository.deleteById(idEsame);
     }
 
-    // ⭐ Recupero referto dell’esame (ultimo referto)
+    // ---------------------------------------------------------
+    // RECUPERA REFERTO (blindato)
+    // ---------------------------------------------------------
     @Override
     public RefertoDTO getRefertoByEsame(Long idEsame) {
 
@@ -110,7 +181,6 @@ public class EsameServiceImpl implements EsameService {
             throw new RuntimeException("Referto non presente per questo esame");
         }
 
-        // Prendi l’ultimo referto
         Referto referto = referti.get(referti.size() - 1);
 
         RefertoDTO dto = new RefertoDTO();
@@ -125,7 +195,6 @@ public class EsameServiceImpl implements EsameService {
         dto.setFilePath(referto.getFilePath());
         dto.setDataCreazione(referto.getDataCreazione());
 
-        // 🔥 NUOVI CAMPI DEL REFERTO
         dto.setTitolo(referto.getTitolo());
         dto.setDescrizione(referto.getDescrizione());
         dto.setDiagnosi(referto.getDiagnosi());
@@ -134,6 +203,9 @@ public class EsameServiceImpl implements EsameService {
         return dto;
     }
 
+    // ---------------------------------------------------------
+    // CONVERSIONE DTO
+    // ---------------------------------------------------------
     private EsameDTO convertToDTO(Esame esame) {
         EsameDTO dto = new EsameDTO();
 
@@ -151,18 +223,23 @@ public class EsameServiceImpl implements EsameService {
         dto.setStato(esame.getStato().name());
         dto.setNote(esame.getNote());
 
-        // 🔥 Esame ha referti? (1 → N)
         dto.setRefertoPresente(
                 esame.getReferti() != null && !esame.getReferti().isEmpty()
         );
 
         return dto;
     }
-    
+
+    // ---------------------------------------------------------
+    // CALCOLO PROSSIMA DISPONIBILITÀ
+    // ---------------------------------------------------------
     @Override
     public DisponibilitaEsameResponse calcolaProssimaDisponibilita(String tipoEsame) {
 
-        // 1. Durata esame (in minuti)
+        if (tipoEsame == null || tipoEsame.isBlank()) {
+            throw new RuntimeException("Il tipo di esame è obbligatorio");
+        }
+
         int durata = switch (tipoEsame.toUpperCase()) {
             case "ECG" -> 15;
             case "HOLTER" -> 30;
@@ -170,11 +247,9 @@ public class EsameServiceImpl implements EsameService {
             default -> 20;
         };
 
-        // 2. Orari disponibili (esempio: 9:00 - 18:00)
         LocalTime start = LocalTime.of(9, 0);
         LocalTime end = LocalTime.of(18, 0);
 
-        // 3. Data di partenza = oggi
         LocalDate data = LocalDate.now();
 
         while (true) {
@@ -184,7 +259,8 @@ public class EsameServiceImpl implements EsameService {
 
                 boolean occupato = esameRepository.existsByDataEsameAndOraEsame(
                         data,
-                        orario                );
+                        orario
+                );
 
                 if (!occupato) {
                     return new DisponibilitaEsameResponse(
@@ -199,15 +275,15 @@ public class EsameServiceImpl implements EsameService {
             data = data.plusDays(1);
         }
     }
-    
+
+    // ---------------------------------------------------------
+    // ESAMI DA REFERTARE
+    // ---------------------------------------------------------
     @Override
     public List<EsameDTO> getEsamiDaRefertare(Long idMedico) {
         return esameRepository.findByMedicoIdAndStato(idMedico, Esame.StatoEsame.ESEGUITO)
-
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
-
-
 }

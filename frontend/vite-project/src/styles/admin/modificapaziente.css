@@ -1,0 +1,103 @@
+/* Contenitore principale */
+.modifica-paziente-content {
+  padding: 30px;
+  min-height: 100vh; /* garantisce spazio verticale */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto; /* abilita lo scroll */
+}
+
+/* Titolo */
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #1f2937;
+}
+
+/* Form */
+.modifica-form {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Label */
+.modifica-form label {
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Input */
+.modifica-form input {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+/* Bottoni */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+/* Pulsante SALVA MODIFICHE */
+.btn-save {
+  background-color: #1d4ed8;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+}
+
+.btn-save:hover {
+  background-color: #2563eb;
+}
+
+/* Pulsante ANNULLA */
+.btn-cancel {
+  background-color: #ef4444;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+}
+
+.btn-cancel:hover {
+  background-color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modifica-form {
+    padding: 20px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .btn-save,
+  .btn-cancel {
+    width: 100%;
+  }
+}

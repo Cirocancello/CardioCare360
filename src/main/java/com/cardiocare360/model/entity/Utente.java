@@ -40,7 +40,7 @@ public class Utente implements UserDetails {
     @Column(name = "data_registrazione")
     private LocalDateTime dataRegistrazione = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "utente")
     @JsonIgnoreProperties("utente")
     private List<Notifica> notifiche;
 

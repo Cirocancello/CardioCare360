@@ -61,4 +61,34 @@ public class NotificaRequestDTO {
     public void setLetto(boolean letto) {
         this.letto = letto;
     }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return isUtenteValido()
+                && isTitoloValido()
+                && isMessaggioValido();
+    }
+
+    public boolean isUtenteValido() {
+        return utenteId != null && utenteId > 0;
+    }
+
+    public boolean isTitoloValido() {
+        return titolo != null && !titolo.isBlank();
+    }
+
+    public boolean isMessaggioValido() {
+        return messaggio != null && !messaggio.isBlank();
+    }
+
+    public boolean isAppuntamentoValido() {
+        return appuntamentoId == null || appuntamentoId > 0;
+    }
+
+    public boolean isParametroClinicoValido() {
+        return parametroClinicoId == null || parametroClinicoId > 0;
+    }
 }

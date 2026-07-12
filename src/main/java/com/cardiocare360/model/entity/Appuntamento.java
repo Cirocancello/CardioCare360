@@ -2,59 +2,73 @@ package com.cardiocare360.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 @Entity
 @Table(name = "appuntamento")
-@JsonIgnoreProperties({"notifiche"}) // 🔥 evita loop Appuntamento → Notifica → Appuntamento
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Appuntamento {
 
     public enum StatoAppuntamento {
         PRENOTATO,
+        CONFERMATO,
         COMPLETATO,
-        ANNULLATO,
-        CONFERMATO
+        ANNULLATO
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
-    @JsonIgnoreProperties({"notifiche"})
+    @NotNull(message = "Il paziente è obbligatorio")
     private Paziente paziente;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
-    @JsonIgnoreProperties({"notifiche"})
+    @NotNull(message = "Il medico è obbligatorio")
     private Medico medico;
 
     @Column(name = "data_appuntamento", nullable = false)
+    @NotNull(message = "La data è obbligatoria")
+    @FutureOrPresent(message = "La data non può essere nel passato")
     private LocalDate dataAppuntamento;
 
     @Column(name = "ora_appuntamento", nullable = false)
+    @NotNull(message = "L'orario è obbligatorio")
     private LocalTime oraAppuntamento;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatoAppuntamento stato;
+    @NotNull(message = "Lo stato è obbligatorio")
+    private StatoAppuntamento stato = StatoAppuntamento.PRENOTATO;
 
     @Column(columnDefinition = "TEXT")
+    @Size(max = 2000, message = "Le note non possono superare 2000 caratteri")
     private String note;
 
-    // ⭐ NUOVO CAMPO: tipo di visita
     @Column(name = "tipo_visita")
+    @NotBlank(message = "Il tipo visita è obbligatorio")
     private String tipoVisita;
 
-    // ⭐ Relazione con Notifica (necessaria!)
-    @OneToMany(mappedBy = "appuntamento", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("appuntamento")
+    @OneToMany(mappedBy = "appuntamento")
+    @JsonIgnoreProperties({"appuntamento"})
     private List<Notifica> notifiche;
 
+    @OneToMany(mappedBy = "appuntamento")
+    @JsonIgnoreProperties({"appuntamento"})
+    private List<Terapia> terapie;
+
     public Appuntamento() {}
+
 
     // Getter e Setter
     public Long getId() { return id; }
@@ -83,4 +97,7 @@ public class Appuntamento {
 
     public List<Notifica> getNotifiche() { return notifiche; }
     public void setNotifiche(List<Notifica> notifiche) { this.notifiche = notifiche; }
+
+    public List<Terapia> getTerapie() { return terapie; }
+    public void setTerapie(List<Terapia> terapie) { this.terapie = terapie; }
 }

@@ -20,10 +20,10 @@ public class ParametriRecentiDTO {
     public ParametriRecentiDTO() {}
 
     public ParametriRecentiDTO(Long idPaziente, String nome, String cognome,
-                                    String dataUltimaRilevazione,
-                                    Integer pressioneSistolica, Integer pressioneDiastolica,
-                                    Integer battiti, Integer glicemia, Integer saturazione,
-                                    Double temperatura, String stato) {
+                               String dataUltimaRilevazione,
+                               Integer pressioneSistolica, Integer pressioneDiastolica,
+                               Integer battiti, Integer glicemia, Integer saturazione,
+                               Double temperatura, String stato) {
         this.idPaziente = idPaziente;
         this.nome = nome;
         this.cognome = cognome;
@@ -69,4 +69,36 @@ public class ParametriRecentiDTO {
 
     public String getStato() { return stato; }
     public void setStato(String stato) { this.stato = stato; }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return idPaziente != null && idPaziente > 0 &&
+               nome != null && !nome.isBlank() &&
+               cognome != null && !cognome.isBlank() &&
+               dataUltimaRilevazione != null && !dataUltimaRilevazione.isBlank() &&
+               stato != null && !stato.isBlank();
+    }
+
+    public boolean hasPressione() {
+        return pressioneSistolica != null && pressioneDiastolica != null;
+    }
+
+    public boolean hasBattiti() {
+        return battiti != null;
+    }
+
+    public boolean hasGlicemia() {
+        return glicemia != null;
+    }
+
+    public boolean hasSaturazione() {
+        return saturazione != null;
+    }
+
+    public boolean hasTemperatura() {
+        return temperatura != null;
+    }
 }

@@ -1,74 +1,92 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import "../../styles/paziente/listaConversazioni.css";
+import "../../styles/paziente/listaTerapie.css";
 
-const ListaConversazioni = () => {
-  const [conversazioni, setConversazioni] = useState([]);
-  const navigate = useNavigate();
+const ListaTerapie = () => {
+  const [terapie, setTerapie] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errore, setErrore] = useState(null);
 
   useEffect(() => {
-    const fetchConversazioni = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const idPaziente = localStorage.getItem("idPaziente");
+    const fetchTerapie = async () => {
+      const token = localStorage.getItem("token");
+      const idPaziente = localStorage.getItem("idPaziente");
 
+      if (!token || !idPaziente) {
+        setErrore("Sessione scaduta. Effettua nuovamente il login.");
+        setLoading(false);
+        return;
+      }
+
+      try {
         const response = await axios.get(
-          `http://localhost:8080/api/conversazioni/paziente/${idPaziente}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          `http://localhost:8080/api/terapie/paziente/${idPaziente}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        setConversazioni(response.data);
-
+        const data = response.data;
+        setTerapie(Array.isArray(data) ? data : []);
       } catch (err) {
-        toast.error("Errore nel caricamento delle conversazioni");
-        console.error(err);
+        console.error("Errore nel caricamento delle terapie:", err);
+        toast.error("Errore nel caricamento delle terapie");
+        setErrore("Errore nel caricamento delle terapie.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchConversazioni();
+    fetchTerapie();
   }, []);
 
-  const apriChat = (id) => {
-    navigate(`/paziente/conversazioni/${id}`);
-  };
+  if (loading) return <p>Caricamento terapie...</p>;
+  if (errore) return <p className="error-message">{errore}</p>;
 
   return (
-    <div className="conv-page">
-      <div className="conv-container">
+    <div className="lista-terapie-page">
+      <div className="lista-terapie-container">
 
-        <h2 className="conv-title">Le tue Conversazioni</h2>
+        <h2 className="lista-terapie-title">Le tue Terapie</h2>
 
-        {conversazioni.length === 0 ? (
-          <p className="conv-empty">Nessuna conversazione disponibile.</p>
+        {terapie.length === 0 ? (
+          <p>Nessuna terapia disponibile.</p>
         ) : (
-          conversazioni.map((c) => (
-            <div
-              key={c.id}
-              className="conv-card"
-              onClick={() => apriChat(c.id)}
-            >
-              <h5 className="conv-doctor">
-                Dr. {c.medicoNome} {c.medicoCognome}
-              </h5>
+          terapie.map((t) => (
+            <div key={t.id} className="terapia-card">
 
-              <p className="conv-lastmsg">
-                {c.ultimoMessaggio ? c.ultimoMessaggio : "Nessun messaggio ancora"}
+              <h5>{t.tipoTerapia || "Terapia"}</h5>
+
+              <p className="terapia-info">
+                <span>Medico:</span> {t.medicoNome || ""} {t.medicoCognome || ""}
               </p>
 
-              <small className="conv-date">
-                Ultimo aggiornamento:{" "}
-                {new Date(c.ultimoAggiornamento).toLocaleString()}
-              </small>
+              <p className="terapia-info">
+                <span>Data inizio:</span> {t.dataInizio || "—"}
+              </p>
 
-              {c.nonLetti > 0 && (
-                <span className="conv-badge">{c.nonLetti} non letti</span>
+              <p className="terapia-info">
+                <span>Data fine:</span> {t.dataFine || "—"}
+              </p>
+
+              <p className="terapia-info">
+                <span>Dosaggio:</span> {t.dosaggio || "—"}
+              </p>
+
+              {Array.isArray(t.farmaci) && t.farmaci.length > 0 && (
+                <p className="terapia-info">
+                  <span>Farmaci:</span> {t.farmaci.join(", ")}
+                </p>
               )}
+
+              <span
+                className={
+                  "terapia-stato " +
+                  (t.stato === "ATTIVA" ? "attiva" : "conclusa")
+                }
+              >
+                {t.stato || "—"}
+              </span>
+
             </div>
           ))
         )}
@@ -77,4 +95,4 @@ const ListaConversazioni = () => {
   );
 };
 
-export default ListaConversazioni;
+export default ListaTerapie;

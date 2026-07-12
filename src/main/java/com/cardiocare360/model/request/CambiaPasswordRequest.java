@@ -1,6 +1,7 @@
 package com.cardiocare360.model.request;
 
 public class CambiaPasswordRequest {
+
     private String passwordAttuale;
     private String nuovaPassword;
 
@@ -18,5 +19,21 @@ public class CambiaPasswordRequest {
 
     public void setNuovaPassword(String nuovaPassword) {
         this.nuovaPassword = nuovaPassword;
+    }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+    public boolean isValid() {
+        return passwordAttuale != null && !passwordAttuale.isBlank()
+                && nuovaPassword != null && !nuovaPassword.isBlank();
+    }
+
+    public boolean isPasswordAttualeValida() {
+        return passwordAttuale != null && !passwordAttuale.isBlank();
+    }
+
+    public boolean isNuovaPasswordValida() {
+        return nuovaPassword != null && !nuovaPassword.isBlank();
     }
 }

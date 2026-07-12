@@ -10,12 +10,10 @@ public class AppuntamentoDTO {
     private Long idPaziente;
     private Long idMedico;
 
-    // 🔹 Dati Medico
     private String nomeMedico;
     private String cognomeMedico;
     private String specializzazioneMedico;
 
-    // 🔹 Dati Paziente (aggiunti)
     private String nomePaziente;
     private String cognomePaziente;
 
@@ -31,10 +29,7 @@ public class AppuntamentoDTO {
 
     public AppuntamentoDTO() {}
 
-    // -------------------------
-    // Getter e Setter
-    // -------------------------
-
+    // GETTER & SETTER
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -73,4 +68,25 @@ public class AppuntamentoDTO {
 
     public String getTipoVisita() { return tipoVisita; }
     public void setTipoVisita(String tipoVisita) { this.tipoVisita = tipoVisita; }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return id != null && id > 0 &&
+               idPaziente != null && idPaziente > 0 &&
+               idMedico != null && idMedico > 0 &&
+               dataAppuntamento != null &&
+               oraAppuntamento != null &&
+               stato != null && !stato.isBlank();
+    }
+
+    public boolean hasMedicoData() {
+        return nomeMedico != null && cognomeMedico != null;
+    }
+
+    public boolean hasPazienteData() {
+        return nomePaziente != null && cognomePaziente != null;
+    }
 }

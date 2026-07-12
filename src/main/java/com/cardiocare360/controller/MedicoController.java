@@ -4,11 +4,13 @@ import com.cardiocare360.model.request.CambiaPasswordRequest;
 import com.cardiocare360.model.request.MedicoUpdateDTO;
 import com.cardiocare360.model.response.MedicoResponse;
 import com.cardiocare360.service.MedicoService;
-import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/medico")
@@ -20,34 +22,62 @@ public class MedicoController {
         this.medicoService = medicoService;
     }
 
+    // ---------------------------------------------------------
+    // GET MEDICO BY ID
+    // ---------------------------------------------------------
     @GetMapping("/{id}")
-    public MedicoResponse getMedico(@PathVariable Long id) {
-        return medicoService.getMedicoById(id);
+    public ResponseEntity<MedicoResponse> getMedico(@PathVariable Long id) {
+        MedicoResponse response = medicoService.getMedicoById(id);
+        return ResponseEntity.ok(response);
     }
 
+    // ---------------------------------------------------------
+    // UPDATE MEDICO
+    // ---------------------------------------------------------
     @PutMapping("/{id}")
-    public MedicoResponse updateMedico(@PathVariable Long id,
-                                       @RequestBody MedicoUpdateDTO updateDTO) {
-        return medicoService.updateMedico(id, updateDTO);
-    }
-    
-    @GetMapping("/visita/{specializzazione}")
-    public List<MedicoResponse> getMediciBySpecializzazione(@PathVariable String specializzazione) {
-        return medicoService.getMediciBySpecializzazione(specializzazione);
+    public ResponseEntity<MedicoResponse> updateMedico(
+            @PathVariable Long id,
+            @Valid @RequestBody MedicoUpdateDTO updateDTO) {
+
+        MedicoResponse response = medicoService.updateMedico(id, updateDTO);
+        return ResponseEntity.ok(response);
     }
 
-    // 🔥 NUOVO ENDPOINT: medici per tipo di esame
-    @GetMapping("/esami")
-    public List<MedicoResponse> getMediciPerTipoEsame(@RequestParam String tipo) {
-        return medicoService.getMediciPerTipoEsame(tipo);
+    // ---------------------------------------------------------
+    // GET MEDICI BY SPECIALIZZAZIONE
+    // ---------------------------------------------------------
+    @GetMapping("/visita/{specializzazione}")
+    public ResponseEntity<List<MedicoResponse>> getMediciBySpecializzazione(
+            @PathVariable String specializzazione) {
+
+        List<MedicoResponse> medici = medicoService.getMediciBySpecializzazione(specializzazione);
+        return ResponseEntity.ok(medici);
     }
-    
+
+    // ---------------------------------------------------------
+    // GET MEDICI PER TIPO ESAME
+    // ---------------------------------------------------------
+    @GetMapping("/esami")
+    public ResponseEntity<List<MedicoResponse>> getMediciPerTipoEsame(
+            @RequestParam String tipo) {
+
+        List<MedicoResponse> medici = medicoService.getMediciPerTipoEsame(tipo);
+        return ResponseEntity.ok(medici);
+    }
+
+    // ---------------------------------------------------------
+    // CAMBIO PASSWORD
+    // ---------------------------------------------------------
     @PutMapping("/{id}/cambia-password")
     public ResponseEntity<String> cambiaPassword(
             @PathVariable Long id,
-            @RequestBody CambiaPasswordRequest request) {
+            @Valid @RequestBody CambiaPasswordRequest request) {
 
-        boolean success = medicoService.cambiaPassword(id, request.getPasswordAttuale(), request.getNuovaPassword());
+        boolean success = medicoService.cambiaPassword(
+                id,
+                request.getPasswordAttuale(),
+                request.getNuovaPassword()
+        );
 
         if (!success) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -57,4 +87,14 @@ public class MedicoController {
         return ResponseEntity.ok("Password aggiornata con successo");
     }
 
+    // ---------------------------------------------------------
+    // DELETE MEDICO (BLINDATO)
+    // ---------------------------------------------------------
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMedico(@PathVariable Long id) {
+
+        medicoService.deleteMedico(id); // LANCIA ECCEZIONI SE NON CONSENTITO
+
+        return ResponseEntity.ok("Medico eliminato con successo");
+    }
 }

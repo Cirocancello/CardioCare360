@@ -10,6 +10,7 @@ export default function DettaglioMedico() {
   const token = localStorage.getItem("token");
 
   const [medico, setMedico] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const fetchMedico = async () => {
@@ -19,7 +20,7 @@ export default function DettaglioMedico() {
         });
 
         if (!res.ok) {
-          alert("Errore nel caricamento del medico");
+          setErrorMsg("Errore nel caricamento del medico");
           return;
         }
 
@@ -27,11 +28,27 @@ export default function DettaglioMedico() {
         setMedico(data);
       } catch (err) {
         console.error("Errore:", err);
+        setErrorMsg("Errore di connessione al server");
       }
     };
 
     fetchMedico();
   }, [id, token]);
+
+  if (errorMsg) {
+    return (
+      <div className="layout-admin">
+        <SidebarAdmin />
+        <div className="dashboard-admin-container">
+          <TopbarAdmin />
+          <p className="error-message">{errorMsg}</p>
+          <button className="btn-back" onClick={() => navigate("/admin/medici")}>
+            Torna alla lista
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!medico) return <p>Caricamento...</p>;
 
@@ -46,8 +63,7 @@ export default function DettaglioMedico() {
 
           <div className="info-box">
             <p><strong>ID:</strong> {medico.id}</p>
-            <p><strong>Nome:</strong> {medico.nome}</p>
-            <p><strong>Cognome:</strong> {medico.cognome}</p>
+            <p><strong>Nome Completo:</strong> {medico.nomeCompleto}</p>
             <p><strong>Email:</strong> {medico.email}</p>
             <p><strong>Specializzazione:</strong> {medico.specializzazione}</p>
           </div>

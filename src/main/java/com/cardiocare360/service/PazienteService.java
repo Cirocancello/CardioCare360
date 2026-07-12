@@ -31,4 +31,8 @@ public interface PazienteService {
 
     // 🔵 Storico esami
     List<Esame> getEsamiByPaziente(Long idPaziente);
+    
+    // Crea paziente
+    PazienteDTO creaPaziente(PazienteUpdateDTO request);
+
 }

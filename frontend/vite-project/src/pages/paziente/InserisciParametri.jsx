@@ -17,12 +17,15 @@ const InserisciParametri = () => {
     temperatura: ""
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (campo, valore) => {
     setForm({ ...form, [campo]: valore });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const token = localStorage.getItem("token");
@@ -30,37 +33,38 @@ const InserisciParametri = () => {
 
       if (!token || !idPaziente) {
         toast.error("Sessione scaduta. Effettua di nuovo il login.");
+        setLoading(false);
         return;
       }
 
-      // 🔥 Conversione corretta dei valori
+      // 🔒 Conversione sicura dei valori
+      const safeNumber = (v) => (v !== "" && !isNaN(v) ? Number(v) : null);
+
       const payload = {
-        pressioneSistolica: form.pressioneSistolica ? Number(form.pressioneSistolica) : null,
-        pressioneDiastolica: form.pressioneDiastolica ? Number(form.pressioneDiastolica) : null,
-        battiti: form.battiti ? Number(form.battiti) : null,
-        glicemia: form.glicemia ? Number(form.glicemia) : null,
-        saturazione: form.saturazione ? Number(form.saturazione) : null,
-        peso: form.peso ? Number(form.peso) : null,
-        temperatura: form.temperatura ? Number(form.temperatura) : null,
+        pressioneSistolica: safeNumber(form.pressioneSistolica),
+        pressioneDiastolica: safeNumber(form.pressioneDiastolica),
+        battiti: safeNumber(form.battiti),
+        glicemia: safeNumber(form.glicemia),
+        saturazione: safeNumber(form.saturazione),
+        peso: safeNumber(form.peso),
+        temperatura: safeNumber(form.temperatura),
         dataRilevazione: new Date().toISOString()
       };
 
       await axios.post(
         `http://localhost:8080/api/pazienti/${idPaziente}/parametri`,
         payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       toast.success("Parametri salvati con successo");
       navigate("/paziente/storico-parametri");
 
     } catch (err) {
+      console.error("Errore salvataggio parametri:", err);
       toast.error("Errore durante il salvataggio dei parametri");
-      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,8 +139,8 @@ const InserisciParametri = () => {
             required
           />
 
-          <button type="submit" className="parametri-button">
-            Salva Parametri
+          <button type="submit" className="parametri-button" disabled={loading}>
+            {loading ? "Salvataggio..." : "Salva Parametri"}
           </button>
 
         </form>

@@ -7,6 +7,7 @@ import com.cardiocare360.repository.AppuntamentoRepository;
 import com.cardiocare360.repository.MedicoRepository;
 import com.cardiocare360.repository.PazienteRepository;
 import com.cardiocare360.service.AuthService;
+
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
@@ -21,52 +22,87 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    
+
     private final MedicoRepository medicoRepository;
     private final PazienteRepository pazienteRepository;
     private final AppuntamentoRepository appuntamentoRepository;
 
-    // 🔥 Registrazione utente (ADMIN → crea PAZIENTE o MEDICO)
+    // ⭐ Registrazione utente (ADMIN → crea PAZIENTE o MEDICO)
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+
+        if (request == null) {
+            return ResponseEntity.badRequest().body("REQUEST_NULL");
+        }
+
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            return ResponseEntity.badRequest().body("EMAIL_OBBLIGATORIA");
+        }
+
+        if (request.getRuolo() == null || request.getRuolo().isBlank()) {
+            return ResponseEntity.badRequest().body("RUOLO_OBBLIGATORIO");
+        }
+
         System.out.println(">>> [AUTH] Richiesta registrazione ricevuta per: " + request.getEmail());
 
         try {
             AuthResponse response = authService.register(request);
-            System.out.println(">>> [AUTH] Registrazione completata, ritorno 200");
+            System.out.println(">>> [AUTH] Registrazione completata");
             return ResponseEntity.ok(response);
 
         } catch (IllegalArgumentException e) {
-            // Errori previsti → email duplicata, CF duplicato, ruolo mancante
             System.err.println(">>> [AUTH] Errore di validazione: " + e.getMessage());
             return ResponseEntity.status(409).body(e.getMessage()); // 409 CONFLICT
 
         } catch (Exception e) {
-            // Errori imprevisti → non mandiamo stacktrace al frontend
             System.err.println(">>> [AUTH] Errore inatteso: " + e.getMessage());
             return ResponseEntity.status(500).body("ERRORE_SERVER");
         }
     }
 
-    // 🔥 Login utente
+    // ⭐ Login utente
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+
+        if (request == null) {
+            return ResponseEntity.badRequest().body("REQUEST_NULL");
+        }
+
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            return ResponseEntity.badRequest().body("EMAIL_OBBLIGATORIA");
+        }
+
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            return ResponseEntity.badRequest().body("PASSWORD_OBBLIGATORIA");
+        }
+
         System.out.println(">>> [AUTH] Richiesta login ricevuta per: " + request.getEmail());
+
         try {
             AuthResponse response = authService.login(request);
-            System.out.println(">>> [AUTH] Login completato, ritorno 200");
+            System.out.println(">>> [AUTH] Login completato");
             return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            System.err.println(">>> [AUTH] Credenziali errate: " + e.getMessage());
+            return ResponseEntity.status(401).body("CREDENZIALI_ERRATE");
+
         } catch (Exception e) {
-            System.err.println(">>> [AUTH] Errore durante il login: " + e.getMessage());
-            return ResponseEntity.status(401).build(); // ⭐ restituisce 401 se credenziali errate
+            System.err.println(">>> [AUTH] Errore inatteso: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
         }
     }
 
-    // 🔥 Recupero password
+    // ⭐ Recupero password (simulato)
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
 
+        if (body == null || !body.containsKey("email")) {
+            return ResponseEntity.badRequest().body("EMAIL_OBBLIGATORIA");
+        }
+
         String email = body.get("email");
+
         System.out.println(">>> [AUTH] Richiesta recupero password per: " + email);
 
         if (email == null || email.isBlank()) {
@@ -80,14 +116,21 @@ public class AuthController {
         System.out.println(">>> [AUTH] Email di recupero inviata a: " + email);
         return ResponseEntity.ok("EMAIL_INVIATA");
     }
-    
-    @GetMapping("/stats")
-    public ResponseEntity<Map<String, Long>> getStats() {
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("medici", medicoRepository.count());
-        stats.put("pazienti", pazienteRepository.count());
-        stats.put("appuntamenti", appuntamentoRepository.count());
-        return ResponseEntity.ok(stats);
-    }
 
+    // ⭐ Statistiche admin
+    @GetMapping("/stats")
+    public ResponseEntity<?> getStats() {
+        try {
+            Map<String, Long> stats = new HashMap<>();
+            stats.put("medici", medicoRepository.count());
+            stats.put("pazienti", pazienteRepository.count());
+            stats.put("appuntamenti", appuntamentoRepository.count());
+
+            return ResponseEntity.ok(stats);
+
+        } catch (Exception e) {
+            System.err.println(">>> [AUTH] Errore stats: " + e.getMessage());
+            return ResponseEntity.status(500).body("ERRORE_SERVER");
+        }
+    }
 }

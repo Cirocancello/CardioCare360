@@ -1,7 +1,6 @@
 package com.cardiocare360.model.response;
 
 import java.time.LocalDate;
-
 import com.cardiocare360.model.entity.Paziente;
 
 public class PazienteDTO {
@@ -21,18 +20,18 @@ public class PazienteDTO {
     public PazienteDTO() {}
 
     public PazienteDTO(Paziente p) {
-        this.setId(p.getId());
-        this.setNome(p.getNome());
-        this.setCognome(p.getCognome());
-        this.setEmail(p.getEmail());
-        this.setCodiceFiscale(p.getCodiceFiscale());
-        this.setLuogoNascita(p.getLuogoNascita());
-        this.setDataNascita(p.getDataNascita());
-        this.setTelefono(p.getTelefono());
-        this.setIndirizzo(p.getIndirizzo());
+        this.id = p.getId();
+        this.nome = p.getNome();
+        this.cognome = p.getCognome();
+        this.email = p.getEmail();
+        this.codiceFiscale = p.getCodiceFiscale();
+        this.luogoNascita = p.getLuogoNascita();
+        this.dataNascita = p.getDataNascita();
+        this.telefono = p.getTelefono();
+        this.indirizzo = p.getIndirizzo();
     }
 
-    // Getter e Setter
+    // GETTER & SETTER
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -59,4 +58,24 @@ public class PazienteDTO {
 
     public String getIndirizzo() { return indirizzo; }
     public void setIndirizzo(String indirizzo) { this.indirizzo = indirizzo; }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return id != null && id > 0 &&
+               nome != null && !nome.isBlank() &&
+               cognome != null && !cognome.isBlank() &&
+               email != null && !email.isBlank() &&
+               codiceFiscale != null && !codiceFiscale.isBlank() &&
+               luogoNascita != null && !luogoNascita.isBlank() &&
+               dataNascita != null &&
+               telefono != null && !telefono.isBlank() &&
+               indirizzo != null && !indirizzo.isBlank();
+    }
+
+    public boolean hasBasicInfo() {
+        return nome != null && cognome != null;
+    }
 }

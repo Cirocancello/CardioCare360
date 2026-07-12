@@ -14,16 +14,14 @@ public class RefertoDTO {
     private String noteMedico;
 
     private String filePath;
-    private LocalDateTime dataCreazione; 
+    private LocalDateTime dataCreazione;
     private String titolo;
     private String descrizione;
     private String diagnosi;
     private LocalDateTime dataReferto;
 
-    // ✅ COSTRUTTORE VUOTO NECESSARIO
     public RefertoDTO() {}
 
-    // 🔥 COSTRUTTORE OPZIONALE (puoi tenerlo)
     public RefertoDTO(Long id, Long esameId, Long medicoId,
                       String titolo, String descrizione, String diagnosi,
                       String noteMedico, String filePath,
@@ -40,7 +38,7 @@ public class RefertoDTO {
         this.dataCreazione = dataCreazione;
     }
 
-    // Getter e Setter
+    // GETTER & SETTER
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -76,4 +74,28 @@ public class RefertoDTO {
 
     public LocalDateTime getDataReferto() { return dataReferto; }
     public void setDataReferto(LocalDateTime dataReferto) { this.dataReferto = dataReferto; }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return id != null && id > 0 &&
+               esameId != null && esameId > 0 &&
+               medicoId != null && medicoId > 0 &&
+               titolo != null && !titolo.isBlank() &&
+               descrizione != null && !descrizione.isBlank() &&
+               diagnosi != null && !diagnosi.isBlank() &&
+               filePath != null && !filePath.isBlank() &&
+               dataCreazione != null;
+    }
+
+    public boolean hasMedicoData() {
+        return nomeMedico != null && !nomeMedico.isBlank()
+                && cognomeMedico != null && !cognomeMedico.isBlank();
+    }
+
+    public boolean hasRefertoFile() {
+        return filePath != null && !filePath.isBlank();
+    }
 }

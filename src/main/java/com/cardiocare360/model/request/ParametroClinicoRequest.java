@@ -4,13 +4,9 @@ import java.time.LocalDateTime;
 
 public class ParametroClinicoRequest {
 
-    // Campo opzionale: se non arriva, il service lo deduce automaticamente
     private String tipo;
-
-    // Valore generico (non usato per i parametri vitali classici)
     private String valore;
 
-    // Campi specifici dei parametri vitali
     private Integer pressioneSistolica;
     private Integer pressioneDiastolica;
     private Integer battiti;
@@ -19,7 +15,6 @@ public class ParametroClinicoRequest {
     private Double peso;
     private Double temperatura;
 
-    // Data rilevazione (opzionale)
     private LocalDateTime dataRilevazione;
 
     // GETTER & SETTER
@@ -101,5 +96,32 @@ public class ParametroClinicoRequest {
 
     public void setDataRilevazione(LocalDateTime dataRilevazione) {
         this.dataRilevazione = dataRilevazione;
+    }
+
+    // ---------------------------------------------------------
+    // VALIDAZIONI DI SICUREZZA
+    // ---------------------------------------------------------
+
+    public boolean isValid() {
+        return hasAtLeastOneParameter() && isDataRilevazioneValida();
+    }
+
+    public boolean hasAtLeastOneParameter() {
+        return pressioneSistolica != null ||
+               pressioneDiastolica != null ||
+               battiti != null ||
+               glicemia != null ||
+               saturazione != null ||
+               peso != null ||
+               temperatura != null ||
+               (valore != null && !valore.isBlank());
+    }
+
+    public boolean isDataRilevazioneValida() {
+        return dataRilevazione != null;
+    }
+
+    public boolean isTipoValido() {
+        return tipo == null || !tipo.isBlank();
     }
 }

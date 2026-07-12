@@ -17,12 +17,35 @@ export default function CreaMedico() {
     telefono: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // VALIDAZIONI FRONTEND (minimo 3 caratteri)
+  const validateForm = () => {
+    if (form.nome.trim().length < 3) return "Il nome deve avere almeno 3 caratteri";
+    if (form.cognome.trim().length < 3) return "Il cognome deve avere almeno 3 caratteri";
+    if (!form.email.includes("@")) return "Email non valida";
+    if (form.password.length < 8) return "La password deve avere almeno 8 caratteri";
+    if (form.specializzazione.trim().length < 3)
+      return "La specializzazione deve avere almeno 3 caratteri";
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
+
+    const validationError = validateForm();
+    if (validationError) {
+      setErrorMsg(validationError);
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await fetch("http://localhost:8080/admin/medici", {
@@ -38,11 +61,14 @@ export default function CreaMedico() {
         alert("Medico creato con successo!");
         navigate("/admin/medici");
       } else {
-        alert("Errore nella creazione del medico");
+        const text = await res.text();
+        setErrorMsg(text || "Errore nella creazione del medico");
       }
     } catch (err) {
       console.error("Errore:", err);
-      alert("Errore di connessione al server");
+      setErrorMsg("Errore di connessione al server");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,6 +80,8 @@ export default function CreaMedico() {
 
         <div className="crea-medico-content">
           <h1 className="title">Aggiungi Nuovo Medico</h1>
+
+          {errorMsg && <p className="error-message">{errorMsg}</p>}
 
           <form className="crea-medico-form" onSubmit={handleSubmit}>
             <label>Nome</label>
@@ -101,14 +129,23 @@ export default function CreaMedico() {
               required
             />
 
-            <button type="submit" className="btn-save">
-              Salva
+            <label>Telefono</label>
+            <input
+              type="text"
+              name="telefono"
+              value={form.telefono}
+              onChange={handleChange}
+            />
+
+            <button type="submit" className="btn-save" disabled={loading}>
+              {loading ? "Salvataggio..." : "Salva"}
             </button>
 
             <button
               type="button"
               className="btn-cancel"
               onClick={() => navigate("/admin/medici")}
+              disabled={loading}
             >
               Annulla
             </button>

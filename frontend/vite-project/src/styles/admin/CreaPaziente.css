@@ -1,0 +1,98 @@
+/* Contenitore principale con scroll */
+.crea-paziente-content {
+  padding: 40px 60px;
+  background-color: #f5f6fa;
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Titolo */
+.crea-paziente-content .title {
+  font-size: 30px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Form */
+.crea-form {
+  background: #fff;
+  width: 800px;
+  max-width: 95%;
+  padding: 35px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;                /* 🔹 Cambiato da grid a flex */
+  flex-direction: column;       /* 🔹 Tutti gli elementi in colonna */
+  gap: 20px;                    /* 🔹 Spazio uniforme tra campi */
+}
+
+/* Label */
+.crea-form label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Input */
+.crea-form input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.crea-form input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+/* Pulsanti */
+.form-buttons {
+  display: flex;
+  flex-direction: column;   /* 🔹 Uno sotto l’altro */
+  align-items: center;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.btn-save,
+.btn-cancel {
+  width: 250px;
+  padding: 12px 28px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-save {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-save:hover {
+  background-color: #0056b3;
+}
+
+.btn-cancel {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.btn-cancel:hover {
+  background-color: #a71d2a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .crea-form {
+    width: 100%;
+  }
+}
