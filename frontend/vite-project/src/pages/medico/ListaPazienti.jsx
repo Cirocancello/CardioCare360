@@ -15,13 +15,24 @@ export default function ListaPazienti() {
     fetch("http://localhost:8080/paziente/all", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
-      .then((data) => setPazienti(data))
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        // Costruisce nomeCompleto se manca
+        const listaConNomeCompleto = data.map((p) => ({
+          ...p,
+          nomeCompleto: `${p.nome || ""} ${p.cognome || ""}`.trim(),
+        }));
+        setPazienti(listaConNomeCompleto);
+      })
       .catch((err) => console.error("Errore caricamento pazienti:", err));
   }, []);
 
+  // Filtro sicuro
   const pazientiFiltrati = pazienti.filter((p) =>
-    p.nomeCompleto.toLowerCase().includes(search.toLowerCase())
+    (p.nomeCompleto || "").toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -71,7 +82,6 @@ export default function ListaPazienti() {
             ))}
           </tbody>
         </table>
-
       </div>
     </div>
   );

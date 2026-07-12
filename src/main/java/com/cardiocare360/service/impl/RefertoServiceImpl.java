@@ -36,10 +36,9 @@ public class RefertoServiceImpl implements RefertoService {
         try {
             System.out.println("=== UPLOAD REFERTO ===");
 
-            // 🔹 Controllo null e tipo file
-            if (file == null || file.isEmpty()) {
-                System.out.println(">>> [UPLOAD] Nessun file caricato, salvo solo note.");
-            } else if (!"application/pdf".equalsIgnoreCase(file.getContentType())) {
+            // 🔹 Controllo file
+            if (file != null && !file.isEmpty() &&
+                    !"application/pdf".equalsIgnoreCase(file.getContentType())) {
                 throw new RuntimeException("Il file caricato non è un PDF valido");
             }
 
@@ -50,20 +49,18 @@ public class RefertoServiceImpl implements RefertoService {
             Medico medico = medicoRepository.findById(medicoId)
                     .orElseThrow(() -> new RuntimeException("Medico non trovato"));
 
-            // 2️⃣ Percorso sicuro
+            // 2️⃣ Percorso salvataggio
             String uploadDir = System.getProperty("user.dir") + "/uploads/referti/";
-            Path uploadPath = Paths.get(uploadDir);
-            Files.createDirectories(uploadPath);
+            Files.createDirectories(Paths.get(uploadDir));
 
             String filePathString = null;
 
-            // 3️⃣ Salvataggio file (solo se presente)
+            // 3️⃣ Salva file se presente
             if (file != null && !file.isEmpty()) {
                 String fileName = "referto_" + esameId + ".pdf";
-                Path filePath = uploadPath.resolve(fileName);
+                Path filePath = Paths.get(uploadDir).resolve(fileName);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 filePathString = filePath.toString();
-                System.out.println("File salvato in: " + filePath.toAbsolutePath());
             }
 
             // 4️⃣ Crea referto
@@ -75,7 +72,7 @@ public class RefertoServiceImpl implements RefertoService {
             referto.setDescrizione("Documento PDF del referto caricato dal medico");
             referto.setDiagnosi("In attesa di diagnosi");
             referto.setNoteMedico(noteMedico);
-            referto.setFilePath(filePathString); // può essere null
+            referto.setFilePath(filePathString);
             referto.setDataCreazione(LocalDateTime.now());
             referto.setDataReferto(LocalDateTime.now());
 
@@ -85,7 +82,6 @@ public class RefertoServiceImpl implements RefertoService {
             esame.setStato(Esame.StatoEsame.REFERTATO);
             esameRepository.save(esame);
 
-            // 6️⃣ Ritorna DTO
             return new RefertoDTO(
                     referto.getId(),
                     esame.getId(),
@@ -103,17 +99,15 @@ public class RefertoServiceImpl implements RefertoService {
         }
     }
 
-
     // 🔍 Recupera ultimo referto per esame
     @Override
     public RefertoDTO getRefertoByEsame(Long esameId) {
         List<Referto> referti = refertoRepository.findByEsame_Id(esameId);
 
         if (referti.isEmpty()) {
-            throw new RuntimeException("Referto non trovato per questo esame");
+            return null; // NON lanciare eccezione
         }
 
-        // Prende l’ultimo referto
         Referto referto = referti.get(referti.size() - 1);
 
         return new RefertoDTO(
@@ -135,10 +129,15 @@ public class RefertoServiceImpl implements RefertoService {
         Referto referto = refertoRepository.findById(refertoId)
                 .orElseThrow(() -> new RuntimeException("Referto non trovato"));
 
+        if (referto.getFilePath() == null) {
+            throw new RuntimeException("Il referto non contiene alcun file PDF");
+        }
+
         try {
             Path path = Paths.get(referto.getFilePath());
-            System.out.println("Download path: " + path);
-            System.out.println("File esiste? " + Files.exists(path));
+            if (!Files.exists(path)) {
+                throw new RuntimeException("File PDF non trovato sul server");
+            }
 
             return Files.readAllBytes(path);
 
@@ -147,18 +146,23 @@ public class RefertoServiceImpl implements RefertoService {
         }
     }
 
-    // 🔍 PREVIEW PDF (usa SEMPRE l’ultimo referto)
+    // 🔍 PREVIEW PDF
     @Override
     public byte[] previewFile(Long esameId) {
-        try {
-            Referto referto = refertoRepository.findByEsame_Id(esameId)
-                    .stream()
-                    .reduce((first, second) -> second) // prende l’ultimo
-                    .orElseThrow(() -> new RuntimeException("Referto non trovato per questo esame"));
+        Referto referto = refertoRepository.findByEsame_Id(esameId)
+                .stream()
+                .reduce((first, second) -> second)
+                .orElse(null);
 
+        if (referto == null || referto.getFilePath() == null) {
+            throw new RuntimeException("Nessun referto disponibile per questo esame");
+        }
+
+        try {
             Path path = Paths.get(referto.getFilePath());
-            System.out.println("Preview path: " + path);
-            System.out.println("File esiste? " + Files.exists(path));
+            if (!Files.exists(path)) {
+                throw new RuntimeException("File PDF non trovato sul server");
+            }
 
             return Files.readAllBytes(path);
 

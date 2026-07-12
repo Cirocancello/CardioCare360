@@ -256,4 +256,15 @@ public class AppuntamentoServiceImpl implements AppuntamentoService {
 
         return convertToDTO(app);
     }
+    
+    @Override
+    public void completaVisita(Long idAppuntamento) {
+        Appuntamento app = appuntamentoRepository.findById(idAppuntamento)
+                .orElseThrow(() -> new RuntimeException("Appuntamento non trovato"));
+
+        app.setStato(StatoAppuntamento.COMPLETATO);  // ⭐ ENUM, non String
+        appuntamentoRepository.save(app);
+    }
+
+
 }

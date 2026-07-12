@@ -22,13 +22,11 @@ public class Appuntamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ⭐ PAZIENTE
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paziente_id", nullable = false)
     @JsonIgnoreProperties({"appuntamenti", "esami", "parametri", "conversazioni"})
     private Paziente paziente;
 
-    // ⭐ MEDICO
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
     @JsonIgnoreProperties({"pazienti", "visite", "esami"})
@@ -50,19 +48,16 @@ public class Appuntamento {
     @Column(name = "tipo_visita")
     private String tipoVisita;
 
-    // ⭐ NOTIFICHE (senza cascade)
     @OneToMany(mappedBy = "appuntamento")
     @JsonIgnoreProperties({"appuntamento", "utente", "parametroClinico"})
     private List<Notifica> notifiche;
 
-    // ⭐ TERAPIE (senza cascade)
     @OneToMany(mappedBy = "appuntamento")
     @JsonIgnoreProperties({"appuntamento", "paziente", "medico", "farmaco"})
     private List<Terapia> terapie;
 
     public Appuntamento() {}
 
-    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

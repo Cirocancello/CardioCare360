@@ -42,7 +42,7 @@ export default function Sidebar() {
 
         <NavLink to="/paziente/prenota/visita" className="sidebar-link">
           <FaStethoscope className="sidebar-icon" />
-          <span>Visite</span>
+          <span>Prenota Visita</span>
         </NavLink>
 
         <NavLink to="/paziente/prenota/esame" className="sidebar-link">
@@ -57,7 +57,7 @@ export default function Sidebar() {
 
         <NavLink to="/paziente/parametri/inserisci" className="sidebar-link">
           <FaHeartbeat className="sidebar-icon" />
-          <span>Parametri Vitali</span>
+          <span>Inserisci Parametri</span>
         </NavLink>
 
         <NavLink to="/paziente/storico-parametri" className="sidebar-link">
@@ -68,11 +68,6 @@ export default function Sidebar() {
         <NavLink to="/paziente/terapie" className="sidebar-link">
           <FaPills className="sidebar-icon" />
           <span>Terapie</span>
-        </NavLink>
-
-        <NavLink to="/paziente/notifiche" className="sidebar-link">
-          <FaBell className="sidebar-icon" />
-          <span>Notifiche</span>
         </NavLink>
 
         <NavLink to="/paziente/conversazioni" className="sidebar-link">

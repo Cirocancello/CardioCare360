@@ -62,6 +62,13 @@ const StoricoParametri = () => {
           ))
         )}
       </div>
+
+      {/* 🔙 Pulsante torna indietro */}
+      <div className="back-button-container">
+        <button onClick={() => window.history.back()} className="back-button">
+          Torna indietro
+        </button>
+      </div>
     </div>
   );
 };

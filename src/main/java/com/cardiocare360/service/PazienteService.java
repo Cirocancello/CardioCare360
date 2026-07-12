@@ -31,8 +31,10 @@ public interface PazienteService {
 
     // 🔵 Storico esami
     List<Esame> getEsamiByPaziente(Long idPaziente);
-    
-    // Crea paziente
+
+    // 🔵 Creazione paziente
     PazienteDTO creaPaziente(PazienteUpdateDTO request);
 
+    // 🔵 Cambio password paziente
+    boolean cambiaPassword(Long idPaziente, String passwordAttuale, String nuovaPassword);
 }

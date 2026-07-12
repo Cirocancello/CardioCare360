@@ -42,21 +42,25 @@ export default function SelezionaData() {
   if (loading) return <p>Caricamento date disponibili...</p>;
 
   return (
-    <div className="prenotazione-container">
-      <h1>Seleziona la data</h1>
-      <p>Scegli una data tra quelle disponibili per il medico.</p>
+    <div className="visita-container">
+      <h2>Seleziona la data</h2>
+      <p className="visita-descrizione">
+        Scegli una data tra quelle disponibili per il medico selezionato.
+      </p>
 
       {errore && <p className="error-message">{errore}</p>}
 
-      <div className="steps-column">
+      <div className="visita-grid">
         {dateDisponibili.length > 0 ? (
           dateDisponibili.map((data) => (
             <div
               key={data}
-              className={`step-card ${dataSelezionata === data ? "selected" : ""}`}
+              className={`visita-card ${
+                dataSelezionata === data ? "selected" : ""
+              }`}
               onClick={() => setDataSelezionata(data)}
             >
-              {data}
+              <span>{data}</span>
             </div>
           ))
         ) : (
@@ -64,17 +68,13 @@ export default function SelezionaData() {
         )}
       </div>
 
-      <div style={{ marginTop: "30px" }}>
-        <button
-          className="btn-secondary"
-          onClick={() => navigate(-1)}
-          style={{ marginRight: "15px" }}
-        >
+      <div className="bottoni-navigazione">
+        <button className="btn-indietro" onClick={() => navigate(-1)}>
           Indietro
         </button>
 
         <button
-          className="btn-primary"
+          className="btn-continua"
           disabled={!dataSelezionata}
           onClick={handleNext}
         >

@@ -15,12 +15,10 @@ export default function SelezionaOrario() {
     const idMedico = localStorage.getItem("idMedicoSelezionato");
 
     if (!data || !idMedico) {
-      console.error("Dati mancanti:", { data, idMedico });
       navigate("/paziente/prenota/data");
       return;
     }
 
-    // 🔹 Carica slot disponibili
     axios
       .get(`http://localhost:8080/disponibilita/slot/${idMedico}`, {
         params: { data },
@@ -34,7 +32,6 @@ export default function SelezionaOrario() {
       })
       .catch((err) => console.error("Errore nel caricamento slot:", err));
 
-    // 🔹 Carica orari occupati
     axios
       .get("http://localhost:8080/appuntamenti/occupati", {
         params: { idMedico, data },
@@ -56,15 +53,14 @@ export default function SelezionaOrario() {
   };
 
   return (
-    <div className="prenotazione-container">
-      <h1>Seleziona l'orario</h1>
+    <div className="visita-container">
+      <h2>Seleziona l'orario</h2>
 
-      <p>
-        Data scelta:{" "}
-        <strong>{localStorage.getItem("dataPrenotazione")}</strong>
+      <p className="visita-descrizione">
+        Data scelta: <strong>{localStorage.getItem("dataPrenotazione")}</strong>
       </p>
 
-      <div className="steps-column">
+      <div className="visita-grid">
         {slotDisponibili?.length > 0 ? (
           slotDisponibili.map((slot) => {
             const oraSlot = slot.inizio.substring(11, 16);
@@ -76,7 +72,7 @@ export default function SelezionaOrario() {
             return (
               <div
                 key={slot.id}
-                className={`step-card 
+                className={`visita-card 
                   ${orarioSelezionato === slot.inizio ? "selected" : ""} 
                   ${occupato ? "disabled-slot" : ""}`}
                 onClick={() => {
@@ -85,7 +81,7 @@ export default function SelezionaOrario() {
                   }
                 }}
               >
-                {oraSlot} - {oraFine}
+                <span>{oraSlot} - {oraFine}</span>
               </div>
             );
           })
@@ -94,18 +90,13 @@ export default function SelezionaOrario() {
         )}
       </div>
 
-      {/* 🔙 Pulsante Indietro + Continua */}
-      <div style={{ marginTop: "30px" }}>
-        <button
-          className="btn-secondary"
-          onClick={() => navigate(-1)}
-          style={{ marginRight: "15px" }}
-        >
+      <div className="bottoni-navigazione">
+        <button className="btn-indietro" onClick={() => navigate(-1)}>
           Indietro
         </button>
 
         <button
-          className="btn-primary"
+          className="btn-continua"
           disabled={!orarioSelezionato}
           onClick={handleNext}
         >

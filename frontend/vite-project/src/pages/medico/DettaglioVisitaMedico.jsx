@@ -32,6 +32,24 @@ export default function DettaglioVisitaMedico() {
     );
   }
 
+  const completaVisita = async () => {
+  const token = localStorage.getItem("token");
+
+  try {
+    await fetch(`http://localhost:8080/appuntamenti/${id}/completa`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    alert("Visita completata con successo!");
+    navigate("/medico/visite");
+  } catch (err) {
+    console.error("Errore completamento visita:", err);
+    alert("Errore durante il completamento della visita");
+  }
+};
+
+
   return (
     <div className="layout-medico">
       <SidebarMedico />
@@ -53,9 +71,10 @@ export default function DettaglioVisitaMedico() {
           <button className="btn-indietro" onClick={() => navigate("/medico/visite")}>
             ← Torna alla lista
           </button>
-          <button className="btn-completa" onClick={() => alert("Funzionalità in sviluppo")}>
+          <button className="btn-completa" onClick={completaVisita}>
             Completa Visita
           </button>
+
         </div>
       </div>
     </div>

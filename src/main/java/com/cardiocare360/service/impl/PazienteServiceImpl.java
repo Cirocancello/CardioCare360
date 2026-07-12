@@ -170,5 +170,18 @@ public class PazienteServiceImpl implements PazienteService {
         return new PazienteDTO(p);
     }
 
+    public boolean cambiaPassword(Long id, String passwordAttuale, String nuovaPassword) {
+        Paziente paziente = pazienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paziente non trovato"));
+
+        if (!passwordEncoder.matches(passwordAttuale, paziente.getPassword())) {
+            return false;
+        }
+
+        paziente.setPassword(passwordEncoder.encode(nuovaPassword));
+        pazienteRepository.save(paziente);
+        return true;
+    }
+
 
 }

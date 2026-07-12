@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import "../../styles/paziente/listaTerapie.css";
+import "../../styles/paziente/ListaTerapie.css";
 
 const ListaTerapie = () => {
   const [terapie, setTerapie] = useState([]);
@@ -80,6 +80,13 @@ const ListaTerapie = () => {
             </div>
           ))
         )}
+      </div>
+
+       {/* 🔙 Pulsante torna indietro */}
+      <div className="back-button-container">
+        <button onClick={() => window.history.back()} className="back-button">
+          Torna indietro
+        </button>
       </div>
     </div>
   );

@@ -2,10 +2,13 @@ package com.cardiocare360.controller;
 
 import com.cardiocare360.model.response.RefertoDTO;
 import com.cardiocare360.service.RefertoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +20,8 @@ public class RefertoController {
     @Autowired
     private RefertoService refertoService;
 
-    // 📌 1. Upload referto PDF
+    // 📌 1. Upload referto PDF (solo medico)
+    @PreAuthorize("hasAuthority('MEDICO')")
     @PostMapping("/upload")
     public ResponseEntity<RefertoDTO> uploadReferto(
             @RequestParam Long esameId,
@@ -29,23 +33,30 @@ public class RefertoController {
         return ResponseEntity.ok(dto);
     }
 
-    // 📌 2. Generazione automatica PDF (non implementato)
+    // 📌 2. Generazione automatica PDF (solo medico)
+    @PreAuthorize("hasAuthority('MEDICO')")
     @PostMapping("/genera/{esameId}")
     public ResponseEntity<RefertoDTO> generaReferto(@PathVariable Long esameId) {
         RefertoDTO dto = refertoService.generaPdfReferto(esameId);
         return ResponseEntity.ok(dto);
     }
 
-    // 📌 3. Recupera referto tramite esame
+    // 📌 3. Recupera referto tramite esame (paziente o medico)
+    @PreAuthorize("hasAnyAuthority('PAZIENTE','MEDICO')")
     @GetMapping("/esame/{esameId}")
-    public ResponseEntity<RefertoDTO> getRefertoByEsame(@PathVariable Long esameId) {
+    public ResponseEntity<?> getRefertoByEsame(@PathVariable Long esameId) {
+
         RefertoDTO dto = refertoService.getRefertoByEsame(esameId);
+
+        if (dto == null) {
+            return ResponseEntity.status(404).body("Nessun referto disponibile per questo esame");
+        }
+
         return ResponseEntity.ok(dto);
     }
 
-   
-
-    // 📌 5. DOWNLOAD PDF (scarica il file)
+    // 📌 4. DOWNLOAD PDF (paziente o medico)
+    @PreAuthorize("hasAnyAuthority('PAZIENTE','MEDICO')")
     @GetMapping("/download/{refertoId}")
     public ResponseEntity<byte[]> downloadReferto(@PathVariable Long refertoId) {
         byte[] fileBytes = refertoService.downloadFile(refertoId);
@@ -55,22 +66,28 @@ public class RefertoController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileBytes);
     }
-    
+
+    // 📌 5. Anteprima PDF (paziente o medico)
+    @PreAuthorize("hasAnyAuthority('PAZIENTE','MEDICO')")
     @GetMapping("/preview/{esameId}")
-    public ResponseEntity<byte[]> previewReferto(@PathVariable Long esameId) {
+    public ResponseEntity<?> previewReferto(@PathVariable Long esameId) {
 
-        // Recupero referto tramite esame
         RefertoDTO referto = refertoService.getRefertoByEsame(esameId);
-        Long refertoId = referto.getId();
 
-        byte[] fileBytes = refertoService.downloadFile(refertoId);
+        if (referto == null) {
+            return ResponseEntity.status(404).body("Nessun referto disponibile per questo esame");
+        }
+
+        byte[] fileBytes = refertoService.downloadFile(referto.getId());
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=referto_" + refertoId + ".pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=referto_" + referto.getId() + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileBytes);
     }
 
+    // 📌 6. Salva referto (solo medico)
+    @PreAuthorize("hasAuthority('MEDICO')")
     @PostMapping("/esame/{idEsame}")
     public ResponseEntity<RefertoDTO> salvaReferto(
             @PathVariable Long idEsame,
@@ -81,5 +98,4 @@ public class RefertoController {
         RefertoDTO dto = refertoService.uploadReferto(idEsame, medicoId, noteMedico, file);
         return ResponseEntity.ok(dto);
     }
-
 }

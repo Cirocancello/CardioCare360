@@ -34,10 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         System.out.println(">>> [DEBUG] Filtro JWT attivo su path: " + path);
 
-        // 🔥 LOG FONDAMENTALE PER DEBUG
-        System.out.println(">>> [JWT] Path ricevuto: " + path);
-
-        // Endpoint pubblici
+        // Endpoint completamente pubblici (senza token)
         if (path.startsWith("/auth")
                 || path.startsWith("/disponibilita/slot")
                 || path.startsWith("/disponibilita/date")
@@ -65,20 +62,16 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Estrazione email dal token
         String email = jwtUtil.extractEmail(token);
 
-        // 🔥 LOG DIAGNOSTICI (sempre stampati)
         System.out.println(">>> [JWT] Email estratta dal token: " + email);
         System.out.println(">>> [JWT] AuthContext PRIMA del controllo: "
                 + SecurityContextHolder.getContext().getAuthentication());
 
-        // Se email valida e nessuna autenticazione già presente
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             Utente userDetails = customUserDetailsService.loadUserByUsername(email);
 
-            // Validazione token
             if (jwtUtil.validateToken(token, userDetails)) {
 
                 List<String> authoritiesFromToken = jwtUtil.extractAuthorities(token);

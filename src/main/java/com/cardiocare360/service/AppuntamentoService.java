@@ -29,4 +29,7 @@ public interface AppuntamentoService {
 
     // 🔥 Appuntamenti disponibili per creare una terapia
     List<AppuntamentoDTO> getAppuntamentiDisponibili(Long idMedico);
+
+    // ⭐ COMPLETA VISITA (nuovo metodo)
+    void completaVisita(Long idAppuntamento);
 }

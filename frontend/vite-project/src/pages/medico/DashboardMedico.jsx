@@ -5,7 +5,14 @@ import TopbarMedico from "../../components/TopbarMedico.jsx";
 import "../../styles/medico/DashboardMedico.css";
 
 export default function DashboardMedico() {
-  const [medico, setMedico] = useState(null);
+  const [medico, setMedico] = useState({
+    nome: "",
+    cognome: "",
+    email: "",
+    specializzazione: ""
+  });
+
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,11 +35,19 @@ export default function DashboardMedico() {
         }
         return res.json();
       })
-      .then((data) => setMedico(data))
-      .catch((err) => console.error("Errore caricamento medico:", err));
+      .then((data) => {
+        setMedico({
+          nome: data.nome || "",
+          cognome: data.cognome || "",
+          email: data.email || "",
+          specializzazione: data.specializzazione || ""
+        });
+      })
+      .catch((err) => console.error("Errore caricamento medico:", err))
+      .finally(() => setLoading(false));
   }, [navigate]);
 
-  if (!medico) return <p>Caricamento dati...</p>;
+  if (loading) return <p>Caricamento dati...</p>;
 
   return (
     <div className="layout-medico">
@@ -41,12 +56,12 @@ export default function DashboardMedico() {
       <div className="dashboard-medico-container">
         <TopbarMedico />
 
-        
         <h1 className="dashboard-title">
-          Benvenuto, {medico.nomeCompleto}
+          Benvenuto, {medico.nome} {medico.cognome}
         </h1>
 
         <div className="dashboard-grid">
+
           <div className="dashboard-card" onClick={() => navigate("/medico/pazienti")}>
             👤 Gestione Pazienti
           </div>
@@ -79,12 +94,15 @@ export default function DashboardMedico() {
             ⚙️ Profilo
           </div>
 
-          <div className="dashboard-card" onClick={() => {
+          <div
+            className="dashboard-card"
+            onClick={() => {
               localStorage.clear();
               window.location.href = "/login";
-            }}>
-              🚪 Logout
-            </div>
+            }}
+          >
+            🚪 Logout
+          </div>
 
         </div>
       </div>

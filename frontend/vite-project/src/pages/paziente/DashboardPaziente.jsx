@@ -20,7 +20,13 @@ export default function DashboardPaziente() {
     fetch(`http://localhost:8080/paziente/${idPaziente}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          console.error("Errore HTTP:", res.status);
+          throw new Error("Errore HTTP: " + res.status);
+        }
+        return res.json();
+      })
       .then((data) => setPaziente(data))
       .catch((err) => console.error("Errore caricamento paziente:", err));
   }, [navigate]);
@@ -62,6 +68,7 @@ export default function DashboardPaziente() {
             📄 Referti
           </div>
 
+
           <div className="dashboard-card" onClick={() => navigate("/paziente/parametri/inserisci")}>
             ❤️ Inserisci Parametri
           </div>
@@ -78,7 +85,7 @@ export default function DashboardPaziente() {
             💬 Messaggi
           </div>
 
-          {/* Logout come card */}
+          {/* Logout */}
           <div
             className="dashboard-card logout-card"
             onClick={() => {

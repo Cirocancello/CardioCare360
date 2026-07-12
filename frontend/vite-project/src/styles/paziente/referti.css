@@ -1,0 +1,126 @@
+/* Container principale */
+.referti-container {
+  padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Titolo pagina */
+.referti-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* Tabella referti */
+.referti-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.referti-table th {
+  background: #f5f5f5;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}
+
+.referti-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Hover righe */
+.referti-table tr:hover {
+  background: #fafafa;
+}
+
+/* Pulsanti */
+.btn-primary,
+.btn-success {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s ease;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+  margin-right: 10px;
+}
+
+.btn-primary:hover {
+  background: #0069d9;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #218838;
+}
+
+/* Card dettaglio referto */
+.info-card-referto {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.info-card-referto p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+/* Azioni referto */
+.azioni-referto {
+  margin-top: 20px;
+}
+
+.btn-view-pdf,
+.btn-download-pdf {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  font-size: 0.95rem;
+  transition: 0.2s ease;
+}
+
+.btn-view-pdf {
+  background: #17a2b8;
+  color: white;
+}
+
+.btn-view-pdf:hover {
+  background: #138496;
+}
+
+.btn-download-pdf {
+  background: #28a745;
+  color: white;
+}
+
+.btn-download-pdf:hover {
+  background: #218838;
+}
+
+/* Iframe PDF */
+iframe {
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}

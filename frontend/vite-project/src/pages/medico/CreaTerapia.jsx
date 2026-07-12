@@ -44,7 +44,13 @@ export default function CreaTerapia() {
           axios.get("http://localhost:8080/appuntamenti/medico/disponibili", authHeader()),
         ]);
 
-        setPazienti(pazRes.data);
+        // Costruzione nomeCompleto
+        const pazientiConNomeCompleto = pazRes.data.map((p) => ({
+          ...p,
+          nomeCompleto: `${p.nome || ""} ${p.cognome || ""}`.trim(),
+        }));
+
+        setPazienti(pazientiConNomeCompleto);
         setFarmaci(farmRes.data);
         setAppuntamenti(appRes.data);
         setError(null);
@@ -54,7 +60,7 @@ export default function CreaTerapia() {
       }
     };
 
-    fetchData();
+    fetchData(); // ⭐ MANCAVA QUESTA RIGA
   }, []);
 
   const handleSubmit = async (e) => {

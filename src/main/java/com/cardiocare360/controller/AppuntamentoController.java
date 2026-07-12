@@ -4,6 +4,7 @@ import com.cardiocare360.model.response.AppuntamentoDTO;
 import com.cardiocare360.repository.PazienteRepository;
 import com.cardiocare360.service.AppuntamentoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -152,4 +153,12 @@ public class AppuntamentoController {
         AppuntamentoDTO updated = appuntamentoService.aggiornaAppuntamento(id, dto, idUtente);
         return ResponseEntity.ok(updated);
     }
+    
+    @PutMapping("/{id}/completa")
+    @PreAuthorize("hasAuthority('MEDICO')")
+    public ResponseEntity<Void> completaVisita(@PathVariable Long id) {
+        appuntamentoService.completaVisita(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -11,23 +11,16 @@ export default function SelezionaMedico() {
   const [errore, setErrore] = useState("");
 
   useEffect(() => {
-    // 🔥 ORA PRENDIAMO LA SPECIALIZZAZIONE, NON LA VISITA
-    const visita = localStorage.getItem("specializzazioneVisita");
+    const specializzazione = localStorage.getItem("specializzazioneVisita");
     const token = localStorage.getItem("token");
 
-    if (!visita) {
+    if (!specializzazione) {
       navigate("/paziente/prenota/visita");
       return;
     }
 
-    if (!token) {
-      setErrore("Token mancante. Effettua di nuovo il login.");
-      setLoading(false);
-      return;
-    }
-
     axios
-      .get(`http://localhost:8080/medici/visita/${visita}`, {
+      .get(`http://localhost:8080/medico/visita/${specializzazione}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -39,7 +32,7 @@ export default function SelezionaMedico() {
         setErrore("Errore nel caricamento medici. Riprova più tardi.");
         setLoading(false);
       });
-  }, [navigate]);
+  }, []);
 
   const handleNext = () => {
     if (!medicoSelezionato) return;
@@ -51,17 +44,20 @@ export default function SelezionaMedico() {
   }
 
   return (
-    <div className="prenotazione-container">
-      <h1>Seleziona il medico</h1>
+    <div className="visita-container">
+      <h2>Seleziona il medico</h2>
+      <p className="visita-descrizione">
+        Scegli il medico disponibile per la visita selezionata.
+      </p>
 
       {errore && <p className="error-message">{errore}</p>}
 
-      <div className="steps-grid">
+      <div className="visita-grid">
         {medici.length > 0 ? (
           medici.map((medico) => (
             <div
               key={medico.id}
-              className={`step-card ${
+              className={`visita-card ${
                 medicoSelezionato === medico.id ? "selected" : ""
               }`}
               onClick={() => {
@@ -79,18 +75,13 @@ export default function SelezionaMedico() {
         )}
       </div>
 
-      {/* 🔙 Pulsante Indietro + Continua */}
-      <div style={{ marginTop: "30px" }}>
-        <button
-          className="btn-secondary"
-          onClick={() => navigate(-1)}
-          style={{ marginRight: "15px" }}
-        >
+      <div className="bottoni-navigazione">
+        <button className="btn-indietro" onClick={() => navigate(-1)}>
           Indietro
         </button>
 
         <button
-          className="btn-primary"
+          className="btn-continua"
           disabled={!medicoSelezionato}
           onClick={handleNext}
         >

@@ -172,7 +172,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 🔥 PAZIENTE
         if (utente.getRuolo() == Utente.Ruolo.PAZIENTE) {
-            Paziente paziente = pazienteRepository.findById(utente.getId())
+        	 Paziente paziente = pazienteRepository.findByEmail(utente.getEmail())
                     .orElseThrow(() -> new IllegalArgumentException("PAZIENTE_NON_TROVATO"));
 
             return new AuthResponse(

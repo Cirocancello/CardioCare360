@@ -30,7 +30,6 @@ export default function SelezionaVisita() {
 
     const specializzazione = mappa[visitaSelezionata];
 
-    // 🔥 SALVATAGGIO CORRETTO
     localStorage.setItem("visitaSelezionata", visitaSelezionata);
     localStorage.setItem("specializzazioneVisita", specializzazione);
 
@@ -38,36 +37,32 @@ export default function SelezionaVisita() {
   };
 
   return (
-    <div className="prenotazione-container">
-      <h1>Seleziona la visita</h1>
-      <p>Scegli il tipo di visita che desideri prenotare.</p>
+    <div className="visita-container">
+      <h2>Seleziona la visita</h2>
+      <p className="visita-descrizione">
+        Scegli il tipo di visita che desideri prenotare.
+      </p>
 
-      <div className="steps-grid">
+      <div className="visita-grid">
         {visiteDisponibili.map((visita) => (
           <div
             key={visita}
-            className={`step-card ${
+            className={`visita-card ${
               visitaSelezionata === visita ? "selected" : ""
             }`}
             onClick={() => setVisitaSelezionata(visita)}
           >
-            {visita}
+            <span>{visita}</span>
           </div>
         ))}
       </div>
 
-      {/* 🔙 Pulsante Indietro + Continua */}
-      <div style={{ marginTop: "30px" }}>
-        <button
-          className="btn-secondary"
-          onClick={() => navigate(-1)}
-          style={{ marginRight: "15px" }}
-        >
+      <div className="bottoni-navigazione">
+        <button className="btn-indietro" onClick={() => navigate(-1)}>
           Indietro
         </button>
-
         <button
-          className="btn-primary"
+          className="btn-continua"
           disabled={!visitaSelezionata}
           onClick={handleNext}
         >

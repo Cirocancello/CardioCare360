@@ -15,25 +15,44 @@ export default function DettaglioEsame() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resEsame = await api.get(`/esami/${id}`);
+        const token = localStorage.getItem("token");
+
+        // 🔹 Recupero esame
+        const resEsame = await api.get(`/esami/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setEsame(resEsame.data);
 
+        // 🔹 Se refertato → recupero referto
         if (resEsame.data.stato === "REFERTATO") {
-          const resReferto = await api.get(`/referti/esame/${id}`);
+          const resReferto = await api.get(`/referti/esame/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
           setReferto(resReferto.data);
         }
       } catch (error) {
         console.error("Errore nel recupero dei dati:", error);
+       
       }
     };
 
     fetchData();
-  }, [id]);
+  }, [id, navigate]);
 
+  // 🔹 Anteprima PDF
   const apriPdf = async () => {
     try {
+      const token = localStorage.getItem("token");
+
       const res = await api.get(`/referti/preview/${id}`, {
         responseType: "arraybuffer",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       const bytes = new Uint8Array(res.data);
@@ -45,10 +64,16 @@ export default function DettaglioEsame() {
     }
   };
 
+  // 🔹 Download PDF
   const scaricaPdf = async () => {
     try {
+      const token = localStorage.getItem("token");
+
       const res = await api.get(`/referti/download/${referto.id}`, {
         responseType: "arraybuffer",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       const blob = new Blob([res.data], { type: "application/pdf" });
@@ -109,7 +134,6 @@ export default function DettaglioEsame() {
               Visualizza PDF
             </button>
 
-            {/* 🔥 QUI LA CORREZIONE */}
             <button className="btn-download-pdf" onClick={scaricaPdf}>
               Scarica PDF
             </button>
@@ -130,9 +154,9 @@ export default function DettaglioEsame() {
       <div className="azioni-esame">
         <button
           className="btn-primary"
-          onClick={() => navigate("/paziente/esami")}
+          onClick={() => navigate("/dashboard-paziente")}
         >
-          Torna alla lista
+          Torna indietro
         </button>
       </div>
     </div>

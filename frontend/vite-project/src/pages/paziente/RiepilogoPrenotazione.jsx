@@ -5,7 +5,6 @@ import "../../styles/paziente/prenotazione.css";
 export default function RiepilogoPrenotazione() {
   const navigate = useNavigate();
 
-  // 🔹 Recupero dati dal localStorage
   const visita = localStorage.getItem("visitaSelezionata");
   const idMedico = localStorage.getItem("idMedicoSelezionato");
   const dataAppuntamento = localStorage.getItem("dataPrenotazione");
@@ -13,7 +12,6 @@ export default function RiepilogoPrenotazione() {
   const idPaziente = localStorage.getItem("idPaziente");
   const token = localStorage.getItem("token");
 
-  // 🔹 Funzione di conferma prenotazione
   const handleConferma = async () => {
     if (!token) {
       alert("Token mancante. Effettua di nuovo il login.");
@@ -41,9 +39,6 @@ export default function RiepilogoPrenotazione() {
         }
       );
 
-      console.log("Prenotazione confermata:", res.data);
-
-      // 🔹 Redirect automatico alla pagina di conferma
       navigate("/paziente/prenota/confermata");
     } catch (err) {
       console.error("Errore nella conferma:", err);
@@ -52,27 +47,25 @@ export default function RiepilogoPrenotazione() {
   };
 
   return (
-    <div className="prenotazione-container">
-      <h1>Riepilogo prenotazione</h1>
+    <div className="visita-container">
+      <h2>Riepilogo prenotazione</h2>
+      <p className="visita-descrizione">
+        Controlla i dati della tua prenotazione prima di confermare.
+      </p>
 
-      <p><strong>Visita:</strong> {visita}</p>
-      <p><strong>Medico:</strong> Mario Rossi</p>
-      <p><strong>Data:</strong> {dataAppuntamento}</p>
-      <p><strong>Ora:</strong> {oraAppuntamento}</p>
+      <div className="riepilogo-box">
+        <p><strong>Visita:</strong> {visita}</p>
+        <p><strong>Medico:</strong> Mario Rossi</p>
+        <p><strong>Data:</strong> {dataAppuntamento}</p>
+        <p><strong>Ora:</strong> {oraAppuntamento}</p>
+      </div>
 
-      <div style={{ marginTop: "30px" }}>
-        <button
-          className="btn-secondary"
-          onClick={() => navigate(-1)}
-          style={{ marginRight: "15px" }}
-        >
+      <div className="bottoni-navigazione">
+        <button className="btn-indietro" onClick={() => navigate(-1)}>
           Indietro
         </button>
 
-        <button
-          className="btn-primary"
-          onClick={handleConferma}
-        >
+        <button className="btn-continua" onClick={handleConferma}>
           Conferma prenotazione
         </button>
       </div>

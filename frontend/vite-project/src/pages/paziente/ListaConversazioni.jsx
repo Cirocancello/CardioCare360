@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import "../../styles/paziente/listaConversazioni.css";
+import "../../styles/paziente/ListaConversazioni.css";
 
 const ListaConversazioni = () => {
   const [conversazioni, setConversazioni] = useState([]);
@@ -73,6 +73,13 @@ const ListaConversazioni = () => {
           ))
         )}
       </div>
+
+        {/* 🔙 Pulsante torna indietro */}
+    <div className="back-button-container">
+      <button onClick={() => window.history.back()} className="back-button">
+        Torna indietro
+      </button>
+    </div>
     </div>
   );
 };

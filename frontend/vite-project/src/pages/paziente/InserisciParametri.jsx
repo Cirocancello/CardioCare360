@@ -139,6 +139,10 @@ const InserisciParametri = () => {
             Salva Parametri
           </button>
 
+          <button className="btn-indietro" onClick={() => navigate(-1)}>
+            Indietro
+          </button>
+          
         </form>
       </div>
     </div>

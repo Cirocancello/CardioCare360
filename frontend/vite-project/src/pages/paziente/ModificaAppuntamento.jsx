@@ -65,6 +65,7 @@ export default function ModificaAppuntamento() {
 
   return (
     <div className="page-container">
+      
       <h1 className="page-title">Modifica Appuntamento</h1>
 
       <form className="appointment-form" onSubmit={handleSubmit}>
@@ -96,6 +97,16 @@ export default function ModificaAppuntamento() {
         <button className="btn-primary" type="submit">
           Salva modifiche
         </button>
+
+        {/* 🔙 Pulsante torna indietro */}
+      <button
+        className="btn-secondary"
+        onClick={() => navigate(-1)}
+        style={{ marginBottom: "15px" }}
+      >
+        ← Torna indietro
+      </button>
+      
       </form>
     </div>
   );

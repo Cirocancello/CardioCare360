@@ -6,8 +6,10 @@ import com.cardiocare360.model.response.RefertoDTO;
 import com.cardiocare360.service.EsameService;
 import com.cardiocare360.security.jwt.JwtUtil;
 import com.cardiocare360.repository.MedicoRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,36 +23,41 @@ public class EsameController {
     private EsameService esameService;
 
     @Autowired
-    private JwtUtil jwtUtil; // ✅ estrai email dal token
+    private JwtUtil jwtUtil;
 
     @Autowired
-    private MedicoRepository medicoRepository; // ✅ per ottenere ID medico da email
+    private MedicoRepository medicoRepository;
 
-    // Prenotazione esame
+    // 📌 Prenotazione esame (solo paziente)
+    @PreAuthorize("hasAuthority('PAZIENTE')")
     @PostMapping("/prenota")
     public EsameDTO prenotaEsame(@RequestBody EsameDTO dto) {
         return esameService.creaEsame(dto);
     }
 
-    // Lista esami del paziente
+    // 📌 Lista esami del paziente
+    @PreAuthorize("hasAuthority('PAZIENTE')")
     @GetMapping("/paziente/{idPaziente}")
     public List<EsameDTO> getEsamiPaziente(@PathVariable Long idPaziente) {
         return esameService.getEsamiPaziente(idPaziente);
     }
 
-    // Lista esami del medico
+    // 📌 Lista esami del medico
+    @PreAuthorize("hasAuthority('MEDICO')")
     @GetMapping("/medico/{idMedico}")
     public List<EsameDTO> getEsamiMedico(@PathVariable Long idMedico) {
         return esameService.getEsamiMedico(idMedico);
     }
 
-    // Dettaglio esame
+    // 📌 Dettaglio esame (paziente o medico)
+    @PreAuthorize("hasAnyAuthority('PAZIENTE','MEDICO')")
     @GetMapping("/{idEsame}")
     public EsameDTO getEsameById(@PathVariable Long idEsame) {
         return esameService.getEsameById(idEsame);
     }
 
-    // Aggiornamento stato esame (PRENOTATO → COMPLETATO → REFERTATO)
+    // 📌 Aggiornamento stato esame (solo medico)
+    @PreAuthorize("hasAuthority('MEDICO')")
     @PutMapping("/{idEsame}/stato")
     public EsameDTO aggiornaStatoEsame(
             @PathVariable Long idEsame,
@@ -59,19 +66,22 @@ public class EsameController {
         return esameService.aggiornaStatoEsame(idEsame, nuovoStato);
     }
 
-    // Eliminazione esame
+    // 📌 Eliminazione esame (solo admin)
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{idEsame}")
     public void eliminaEsame(@PathVariable Long idEsame) {
         esameService.eliminaEsame(idEsame);
     }
 
-    // Recupero referto
+    // 📌 Recupero referto (paziente o medico)
+    @PreAuthorize("hasAnyAuthority('PAZIENTE','MEDICO')")
     @GetMapping("/{idEsame}/referto")
     public RefertoDTO getReferto(@PathVariable Long idEsame) {
         return esameService.getRefertoByEsame(idEsame);
     }
 
-    // Prossima disponibilità
+    // 📌 Prossima disponibilità (paziente)
+    @PreAuthorize("hasAuthority('PAZIENTE')")
     @GetMapping("/disponibilita/prossima")
     public ResponseEntity<DisponibilitaEsameResponse> getProssimaDisponibilita(
             @RequestParam String tipo
@@ -80,26 +90,21 @@ public class EsameController {
         return ResponseEntity.ok(disponibilita);
     }
 
-    // 🔥 Lista esami da refertare (COMPLETATI)
+    // 📌 Lista esami COMPLETATI da refertare (solo medico)
+    @PreAuthorize("hasAuthority('MEDICO')")
     @GetMapping("/medico/da-refertare")
     public ResponseEntity<List<EsameDTO>> getEsamiDaRefertare(
             @RequestHeader("Authorization") String token) {
 
-        // 1️⃣ Rimuovi "Bearer " e prendi solo il token
         String rawToken = token.substring(7);
-
-        // 2️⃣ Estrai l'email dal JWT
         String email = jwtUtil.extractEmail(rawToken);
 
-        // 3️⃣ Trova l'ID del medico tramite email
         Long idMedico = medicoRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Medico non trovato"))
                 .getId();
 
-        // 4️⃣ Ottieni gli esami COMPLETATI
         List<EsameDTO> esami = esameService.getEsamiDaRefertare(idMedico);
 
         return ResponseEntity.ok(esami);
     }
-
 }

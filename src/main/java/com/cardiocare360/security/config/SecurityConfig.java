@@ -34,6 +34,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+        System.out.println(">>> SECURITY CONFIG IN USO");
+
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -46,115 +48,54 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // -------------------------
-                // CORS preflight
-                // -------------------------
+                // CORS
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // -------------------------
-                // LOGIN / REGISTRAZIONE
-                // -------------------------
+                // LOGIN
                 .requestMatchers("/auth/**").permitAll()
 
-                // -------------------------
-                // ENDPOINT PUBBLICI
-                // -------------------------
+                // PUBBLICI
                 .requestMatchers("/disponibilita/slot/**").permitAll()
                 .requestMatchers("/disponibilita/date/**").permitAll()
                 .requestMatchers("/notifiche/**").permitAll()
+                .requestMatchers("/medico/public/**").permitAll()
 
-                // ----------------------------------------------------
-                // 🔥 ADMIN — PRIORITARIO (DEVE ESSERE PRIMA DI TUTTO)
-                // ----------------------------------------------------
+                // ⭐ PAZIENTE
+                .requestMatchers("/paziente/all").hasAnyAuthority("ADMIN", "MEDICO")
+                .requestMatchers("/paziente/**").hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
+
+                .requestMatchers("/esami/paziente/**").hasAuthority("PAZIENTE")
+                .requestMatchers("/esami/prenota").hasAuthority("PAZIENTE")
+                .requestMatchers("/appuntamenti/paziente/**").hasAuthority("PAZIENTE")
+                .requestMatchers("/terapie/paziente/**").hasAuthority("PAZIENTE")
+                .requestMatchers("/referti/paziente/**").hasAuthority("PAZIENTE")
+
+                // ⭐ MEDICI VISIBILI AL PAZIENTE (SCELTA MEDICO)
+                .requestMatchers("/medici/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+                .requestMatchers("/medico/visita/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+                .requestMatchers("/medico/esami", "/medico/esami/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+
+                // 🔥 ESAMI (PAZIENTE + MEDICO)
+                .requestMatchers("/esami", "/esami/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+
+                // 🔥 REFERTI (PAZIENTE + MEDICO)
+                .requestMatchers("/referti/esame", "/referti/esame/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+                .requestMatchers("/referti/preview/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+                .requestMatchers("/referti/download/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+
+                // Upload referto → solo medico
+                .requestMatchers("/referti/upload", "/api/referti/upload").hasAuthority("MEDICO")
+
+                // 🩺 AREA RISERVATA MEDICO
+                .requestMatchers("/medico/**", "/api/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/appuntamenti/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/terapie/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/farmaci/**", "/api/farmaci/**").hasAuthority("MEDICO")
+
+                // 🔥 ADMIN
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
 
-                // -------------------------
-                // MEDICI (singolo)
-                // -------------------------
-                .requestMatchers(HttpMethod.GET, "/medico/**", "/api/medico/**")
-                    .hasAnyAuthority("MEDICO", "ADMIN")
-
-                .requestMatchers("/medico/visita/**", "/api/medico/visita/**")
-                    .hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
-
-                // -------------------------
-                // MEDICI (plurale)
-                // -------------------------
-                .requestMatchers("/medici/**", "/api/medici/**")
-                    .hasAnyAuthority("MEDICO", "ADMIN")
-
-                // -------------------------
-                // MESSAGGI
-                // -------------------------
-                .requestMatchers("/messaggi/**", "/api/messaggi/**")
-                    .hasAnyAuthority("MEDICO", "PAZIENTE")
-
-                // -------------------------
-                // REFERTI
-                // -------------------------
-                .requestMatchers(HttpMethod.POST, "/referti/esame/**", "/api/referti/esame/**")
-                    .hasAuthority("MEDICO")
-
-                .requestMatchers(HttpMethod.POST, "/referti/upload", "/api/referti/upload")
-                    .hasAuthority("MEDICO")
-
-                .requestMatchers(HttpMethod.GET, "/referti/**", "/api/referti/**")
-                    .hasAnyAuthority("MEDICO", "PAZIENTE")
-
-                // -------------------------
-                // ESAMI
-                // -------------------------
-                .requestMatchers(HttpMethod.PUT, "/esami/**", "/api/esami/**")
-                    .hasAuthority("MEDICO")
-
-                // -------------------------
-                // APPUNTAMENTI
-                // -------------------------
-                .requestMatchers(HttpMethod.GET, "/appuntamenti/paziente/**", "/api/appuntamenti/paziente/**")
-                    .hasAuthority("PAZIENTE")
-
-                .requestMatchers(HttpMethod.GET, "/appuntamenti/medico/**", "/api/appuntamenti/medico/**")
-                    .hasAuthority("MEDICO")
-
-                .requestMatchers(HttpMethod.GET, "/appuntamenti/*", "/api/appuntamenti/*")
-                    .hasAnyAuthority("PAZIENTE", "MEDICO")
-
-                // -------------------------
-                // FARMACI
-                // -------------------------
-                .requestMatchers(HttpMethod.GET, "/farmaci/**", "/api/farmaci/**")
-                    .hasAuthority("MEDICO")
-
-                // -------------------------
-                // PAZIENTI (solo medico)
-                // -------------------------
-                .requestMatchers(HttpMethod.GET, "/paziente/**", "/api/paziente/**")
-                    .hasAuthority("MEDICO")
-
-                // -------------------------
-                // PARAMETRI CLINICI
-                // -------------------------
-                .requestMatchers(HttpMethod.POST, "/pazienti/*/parametri/**", "/api/pazienti/*/parametri/**")
-                    .hasAuthority("PAZIENTE")
-
-                .requestMatchers(HttpMethod.GET, "/pazienti/*/parametri/**", "/api/pazienti/*/parametri/**")
-                    .hasAuthority("PAZIENTE")
-
-                // -------------------------
-                // TERAPIE
-                // -------------------------
-                .requestMatchers(HttpMethod.GET, "/terapie/paziente/*", "/api/terapie/paziente/*")
-                    .hasAuthority("PAZIENTE")
-
-                .requestMatchers(HttpMethod.GET, "/terapie/medico/*", "/api/terapie/medico/*")
-                    .hasAuthority("MEDICO")
-
-                .requestMatchers(HttpMethod.POST, "/terapie", "/api/terapie")
-                    .hasAuthority("MEDICO")
-
-                // -------------------------
-                // TUTTO IL RESTO
-                // -------------------------
+                // RESTO
                 .anyRequest().authenticated()
             )
 

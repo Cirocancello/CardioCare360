@@ -9,13 +9,21 @@ export default function RefertaEsame() {
   const { idEsame } = useParams();
   const navigate = useNavigate();
 
-  const [esame, setEsame] = useState(null);
+  // Stato inizializzato correttamente
+  const [esame, setEsame] = useState({
+    tipoEsame: "",
+    notePaziente: "",
+    stato: "",
+    dataEsame: "",
+    oraEsame: ""
+  });
+
   const [noteMedico, setNoteMedico] = useState("");
   const [file, setFile] = useState(null);
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);   
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // ---------------------------------------------------------
   // 🔍 CARICA DETTAGLI ESAME
@@ -32,8 +40,17 @@ export default function RefertaEsame() {
           }
         );
 
-        setEsame(response.data);
+        // Imposta esame con valori sicuri
+        setEsame({
+          tipoEsame: response.data.tipoEsame || "",
+          notePaziente: response.data.notePaziente || "",
+          stato: response.data.stato || "",
+          dataEsame: response.data.dataEsame || "",
+          oraEsame: response.data.oraEsame || ""
+        });
+
       } catch (err) {
+        console.error(err);
         setError("Errore nel caricamento dell'esame");
       } finally {
         setLoading(false);
@@ -58,11 +75,16 @@ export default function RefertaEsame() {
         return;
       }
 
+      if (!file) {
+        setError("Carica un file PDF prima di salvare.");
+        return;
+      }
+
       // 1️⃣ Salva il referto (note + PDF)
       const formData = new FormData();
       formData.append("medicoId", medicoId);
-      formData.append("noteMedico", noteMedico);
-      formData.append("file", file); // obbligatorio
+      formData.append("noteMedico", noteMedico || "");
+      formData.append("file", file);
 
       await axios.post(
         `http://localhost:8080/referti/esame/${idEsame}`,
@@ -110,16 +132,16 @@ export default function RefertaEsame() {
 
         <div className="referta-container">
           <h2 className="referta-title">
-            Referta Esame numero {idEsame} — {esame.tipoEsame}
+            Referta Esame #{idEsame} — {esame.tipoEsame}
           </h2>
 
-          {success && <p className="success-message">{success}</p>} {/* ⭐ NUOVO */}
+          {success && <p className="success-message">{success}</p>}
 
           <form className="referta-form" onSubmit={handleSubmit}>
             <label>Note del Medico</label>
             <textarea
               rows="5"
-              value={noteMedico}
+              value={noteMedico || ""}
               onChange={(e) => setNoteMedico(e.target.value)}
               required
             ></textarea>
@@ -128,7 +150,7 @@ export default function RefertaEsame() {
             <input
               type="file"
               accept="application/pdf"
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={(e) => setFile(e.target.files[0] || null)}
               required
             />
 

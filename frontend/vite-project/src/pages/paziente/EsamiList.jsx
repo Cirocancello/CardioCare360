@@ -1,45 +1,31 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/api";
 
 import "../../styles/paziente/esami.css";
 
 const EsamiList = () => {
   const [esami, setEsami] = useState([]);
-  const [referti, setReferti] = useState({}); // 🔥 referti per ogni esame
+  const [referti, setReferti] = useState({}); // referti per ogni esame
 
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
   const pazienteId = localStorage.getItem("idPaziente");
 
   useEffect(() => {
     const fetchEsami = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/esami/paziente/${pazienteId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
+        // 🔹 Recupero esami del paziente
+        const response = await api.get(`/esami/paziente/${pazienteId}`);
         setEsami(response.data);
 
-        // 🔥 Per ogni esame, prova a recuperare il referto
+        // 🔹 Per ogni esame, prova a recuperare il referto
         response.data.forEach(async (esame) => {
           try {
-            const refertoRes = await axios.get(
-              `http://localhost:8080/referti/esame/${esame.id}`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            );
-
+            const refertoRes = await api.get(`/referti/esame/${esame.id}`);
             setReferti((prev) => ({
               ...prev,
-              [esame.id]: refertoRes.data, // salva referto associato
+              [esame.id]: refertoRes.data,
             }));
           } catch (err) {
             // Nessun referto → ignora
@@ -51,7 +37,28 @@ const EsamiList = () => {
     };
 
     fetchEsami();
-  }, [pazienteId, token]);
+  }, [pazienteId]);
+
+  // 🔹 Download PDF con token
+  const downloadPdf = async (idReferto) => {
+    try {
+      const res = await api.get(`/referti/download/${idReferto}`, {
+        responseType: "arraybuffer",
+      });
+
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `referto_${idReferto}.pdf`;
+      link.click();
+
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Errore download PDF:", err);
+    }
+  };
 
   const goToDettaglio = (id) => {
     navigate(`/paziente/esami/${id}`);
@@ -71,7 +78,7 @@ const EsamiList = () => {
               <th>Data</th>
               <th>Ora</th>
               <th>Stato</th>
-              <th>Referto</th> {/* 🔥 nuova colonna */}
+              <th>Referto</th>
               <th>Azioni</th>
             </tr>
           </thead>
@@ -95,16 +102,12 @@ const EsamiList = () => {
                   </span>
                 </td>
 
-                {/* 🔥 Se il referto esiste → pulsante download */}
+                {/* 🔹 Se il referto esiste → pulsante download */}
                 <td>
                   {referti[esame.id] ? (
                     <button
                       className="btn-success"
-                      onClick={() =>
-                        window.open(
-                          `http://localhost:8080/referti/download/${referti[esame.id].id}`
-                        )
-                      }
+                      onClick={() => downloadPdf(referti[esame.id].id)}
                     >
                       Scarica PDF
                     </button>
@@ -126,6 +129,22 @@ const EsamiList = () => {
           </tbody>
         </table>
       )}
+
+      {/* 🔙 Pulsante torna indietro */}
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          marginTop: "25px",
+          padding: "10px 16px",
+          borderRadius: "8px",
+          backgroundColor: "#e0e0e0",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "15px"
+        }}
+      >
+        Torna indietro
+      </button>
     </div>
   );
 };
