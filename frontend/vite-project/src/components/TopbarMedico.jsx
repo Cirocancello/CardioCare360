@@ -27,12 +27,13 @@ export default function TopbarMedico() {
           <FaBell />
         </div>
 
-        <div className="topbar-user">
+        <Link to="/medico/profilo" className="topbar-user">
           <FaUserMd className="topbar-avatar" />
           <span className="topbar-username">
             {nomeMedico ? `Dott. ${nomeMedico}` : "Medico"}
           </span>
-        </div>
+        </Link>
+
       </div>
     </div>
   );

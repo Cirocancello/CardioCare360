@@ -1,0 +1,126 @@
+.visita-container {
+  background-color: #f9fbfd;
+  border: 1px solid #dce3eb;
+  border-radius: 12px;
+  padding: 40px 50px;
+  width: 480px;
+  margin: 60px auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* Titolo */
+.visita-container h2 {
+  font-size: 1.8rem;
+  color: #0a2a4d;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+/* Descrizione */
+.visita-descrizione {
+  color: #4a4a4a;
+  margin-bottom: 30px;
+  font-size: 1rem;
+}
+
+/* Gruppi form */
+.form-group {
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #0a2a4d;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #7eb3ff;
+  outline: none;
+}
+
+/* Pulsanti */
+.bottoni-navigazione {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 35px;
+}
+
+.btn-tornaindietro {
+  margin-right: 15px;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-tornaindietro:hover {
+  background-color: #d5d5d5;
+}
+
+.btn-continua {  
+  background-color: #7eb3ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-continua:hover:not(:disabled) {
+  background-color: #5a9cff;
+  transform: translateY(-1px);
+}
+
+/* Messaggi informativi */
+.info-message {
+  background-color: #fff4e6;
+  border-left: 4px solid #ffb347;
+  padding: 12px;
+  border-radius: 6px;
+  color: #8a5a00;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .visita-container {
+    width: 90%;
+    padding: 30px 25px;
+  }
+
+  .bottoni-navigazione {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-tornaindietro,
+  .btn-continua {
+    width: 100%;
+  }
+}

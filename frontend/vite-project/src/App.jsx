@@ -89,6 +89,9 @@ import DisponibilitaMedico from "./pages/medico/DisponibilitaMedico";
 import AggiungiDisponibilita from "./pages/medico/AggiungiDisponibilita";
 
 // 📌 Admin – gestione utenti
+import CambiaPasswordAdmin from "./pages/admin/CambiaPasswordAdmin";
+
+import ProfiloAdmin from "./pages/admin/ProfiloAdmin.jsx";
 import GestioneMedici from "./pages/admin/GestioneMedici";
 import GestionePazienti from "./pages/admin/GestionePazienti";
 import CreaMedico from "./pages/admin/CreaMedico";
@@ -193,6 +196,8 @@ function App() {
       <Route path="/medico/disponibilita/aggiungi" element={<ProtectedRoute><AggiungiDisponibilita /></ProtectedRoute>} />
 
       {/* 📌 Admin */}
+      
+
       <Route path="/admin" element={<ProtectedRoute><DashboardAdmin /></ProtectedRoute>} />
       <Route path="/admin/dashboard" element={<ProtectedRoute><DashboardAdmin /></ProtectedRoute>} />
       <Route path="/admin/medici" element={<ProtectedRoute><GestioneMedici /></ProtectedRoute>} />
@@ -205,6 +210,25 @@ function App() {
       <Route path="/admin/medici/:id/modifica" element={<ProtectedRoute><ModificaMedico /></ProtectedRoute>} />
       <Route path="/admin/medici/:id/elimina" element={<ProtectedRoute><ConfermaEliminazioneMedico /></ProtectedRoute>} />
       <Route path="/admin/medici/:id" element={<ProtectedRoute><DettaglioMedico /></ProtectedRoute>} />
+
+      <Route
+        path="/admin/profilo"
+        element={
+          <>     
+            <ProfiloAdmin />
+          </>
+        }
+      />
+
+      <Route
+        path="/admin/cambia-password"
+        element={
+          <ProtectedRoute>
+            <CambiaPasswordAdmin />
+          </ProtectedRoute>
+        }
+      />
+
 
     </Routes>
   );

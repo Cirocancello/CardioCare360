@@ -12,50 +12,49 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    console.log("TRY PARTITO");
+    try {
+      console.log("TRY PARTITO");
 
-    const data = await login(email, password);
-    console.log("RISPOSTA LOGIN:", data);
+      const data = await login(email, password);
+      console.log("RISPOSTA LOGIN:", data);
 
-    if (!data) {
-      alert("Credenziali non valide");
-      return;
+      if (!data) {
+        alert("Credenziali non valide");
+        return;
+      }
+
+      // 🔥 Salva dati comuni
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("ruolo", data.ruolo);
+      localStorage.setItem("idUtente", data.idUtente);
+
+      // 🔥 Redirect e salvataggio specifico per ruolo
+      if (data.ruolo === "PAZIENTE") {
+        localStorage.setItem("idPaziente", data.idPaziente);
+        navigate("/dashboard-paziente");
+        return;
+      }
+
+      if (data.ruolo === "MEDICO") {
+        localStorage.setItem("idMedico", data.idMedico);
+        navigate("/dashboard-medico");
+        return;
+      }
+
+      if (data.ruolo === "ADMIN") {
+        navigate("/admin");
+        return;
+      }
+
+      alert("Ruolo non riconosciuto");
+
+    } catch (err) {
+      console.error("Errore durante il login:", err);
+      alert("Errore di connessione al server");
     }
-
-    // 🔥 Salva dati comuni
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("ruolo", data.ruolo);
-    localStorage.setItem("idUtente", data.idUtente);
-
-    // 🔥 Redirect e salvataggio specifico per ruolo
-    if (data.ruolo === "PAZIENTE") {
-      localStorage.setItem("idPaziente", data.idPaziente);
-      navigate("/dashboard-paziente");
-      return;
-    }
-
-    if (data.ruolo === "MEDICO") {
-      localStorage.setItem("idMedico", data.idMedico);
-      navigate("/dashboard-medico");
-      return;
-    }
-
-    if (data.ruolo === "ADMIN") {
-      navigate("/admin");
-      return;
-    }
-
-    alert("Ruolo non riconosciuto");
-
-  } catch (err) {
-    console.error("Errore durante il login:", err);
-    alert("Errore di connessione al server");
-  }
-};
-
+  };
 
   return (
     <>
@@ -97,7 +96,6 @@ export default function Login() {
           <a href="/register-paziente" className="user-link">
             Non hai ancora un account? Registrati
           </a>
-
         </div>
       </div>
 

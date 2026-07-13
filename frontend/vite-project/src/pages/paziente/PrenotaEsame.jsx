@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../styles/paziente/prenotazione.css";
+import "../../styles/paziente/prenotazioneEsame.css";
 
 const PrenotaEsame = () => {
   const [tipoEsame, setTipoEsame] = useState("");
@@ -165,6 +165,16 @@ const PrenotaEsame = () => {
         />
       </div>
 
+       {/* 🔙 Pulsante torna indietro */}
+      <button
+        onClick={() => navigate(-1)}
+        className="btn-tornaindietro"
+       
+      >
+        Torna indietro
+      </button>
+
+
       {/* Pulsante conferma */}
       <button
         disabled={!disponibilita || !medicoSelezionato}
@@ -174,22 +184,7 @@ const PrenotaEsame = () => {
         Conferma prenotazione
       </button>
 
-      {/* 🔙 Pulsante torna indietro */}
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          marginTop: "25px",
-          padding: "10px 16px",
-          borderRadius: "8px",
-          backgroundColor: "#e0e0e0",
-          border: "none",
-          cursor: "pointer",
-          fontSize: "15px"
-        }}
-      >
-        Torna indietro
-      </button>
-
+     
     </div>
   );
 };

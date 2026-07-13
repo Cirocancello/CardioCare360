@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
@@ -162,4 +163,65 @@ public class AdminController {
 
         return ResponseEntity.ok("PAZIENTE_ELIMINATO");
     }
+    
+ // PROFILO ADMIN
+    @GetMapping("/{id}")
+    public ResponseEntity<Utente> getAdminById(@PathVariable Long id) {
+        Utente admin = utenteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Admin non trovato"));
+
+        if (admin.getRuolo() != Utente.Ruolo.ADMIN) {
+            throw new RuntimeException("L'utente non è un amministratore");
+        }
+
+        return ResponseEntity.ok(admin);
+    }
+
+ // AGGIORNA PROFILO ADMIN
+    @PutMapping("/{id}")
+    public ResponseEntity<Utente> aggiornaAdmin(
+            @PathVariable Long id,
+            @RequestBody Utente req) {
+
+        Utente admin = utenteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Admin non trovato"));
+
+        if (admin.getRuolo() != Utente.Ruolo.ADMIN) {
+            throw new RuntimeException("L'utente non è un amministratore");
+        }
+
+        admin.setNome(req.getNome());
+        admin.setCognome(req.getCognome());
+        admin.setEmail(req.getEmail());
+
+        return ResponseEntity.ok(utenteRepository.save(admin));
+    }
+    
+    @PutMapping("/{id}/cambia-password")
+    public ResponseEntity<?> cambiaPasswordAdmin(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+
+        Utente admin = utenteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Admin non trovato"));
+
+        if (admin.getRuolo() != Utente.Ruolo.ADMIN) {
+            throw new RuntimeException("L'utente non è un amministratore");
+        }
+
+        String passwordAttuale = body.get("passwordAttuale");
+        String nuovaPassword = body.get("nuovaPassword");
+
+        if (!passwordEncoder.matches(passwordAttuale, admin.getPassword())) {
+            return ResponseEntity.status(401).body("Password attuale errata");
+        }
+
+        admin.setPassword(passwordEncoder.encode(nuovaPassword));
+        utenteRepository.save(admin);
+
+        return ResponseEntity.ok("Password aggiornata con successo");
+    }
+
+
+
 }

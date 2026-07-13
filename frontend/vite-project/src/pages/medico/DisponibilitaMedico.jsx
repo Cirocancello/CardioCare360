@@ -6,21 +6,33 @@ import "../../styles/medico/DisponibilitaMedico.css";
 
 export default function DisponibilitaMedico() {
   const [disponibilita, setDisponibilita] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const idMedico = localStorage.getItem("idMedico");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    if (!token) {
+      alert("Sessione scaduta. Effettua nuovamente il login.");
+      navigate("/login-medico");
+      return;
+    }
     fetchDisponibilita();
   }, []);
 
   const fetchDisponibilita = async () => {
     try {
+      setLoading(true);
+
       const res = await fetch(`http://localhost:8080/disponibilita/medico`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      if (res.status === 401) {
+        alert("Sessione non valida. Effettua di nuovo il login.");
+        navigate("/login-medico");
+        return;
+      }
 
       if (!res.ok) throw new Error("Errore nel caricamento delle disponibilità");
 
@@ -29,6 +41,8 @@ export default function DisponibilitaMedico() {
     } catch (err) {
       console.error(err);
       alert("Errore: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,7 +57,7 @@ export default function DisponibilitaMedico() {
 
       if (!res.ok) throw new Error("Errore durante l'eliminazione");
 
-      alert("Disponibilità eliminata");
+      alert("Disponibilità eliminata con successo.");
       fetchDisponibilita();
     } catch (err) {
       console.error(err);
@@ -67,42 +81,46 @@ export default function DisponibilitaMedico() {
           ➕ Aggiungi disponibilità
         </button>
 
-        <table className="tabella-disponibilita">
-          <thead>
-            <tr>
-              <th>Giorno</th>
-              <th>Ora inizio</th>
-              <th>Ora fine</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {disponibilita.length === 0 ? (
+        {loading ? (
+          <p className="loading">Caricamento disponibilità...</p>
+        ) : (
+          <table className="tabella-disponibilita">
+            <thead>
               <tr>
-                <td colSpan="4" className="vuoto">
-                  Nessuna disponibilità presente
-                </td>
+                <th>Giorno</th>
+                <th>Ora inizio</th>
+                <th>Ora fine</th>
+                <th>Azioni</th>
               </tr>
-            ) : (
-              disponibilita.map((d) => (
-                <tr key={d.id}>
-                  <td>{d.giorno}</td>
-                  <td>{d.oraInizio}</td>
-                  <td>{d.oraFine}</td>
-                  <td>
-                    <button
-                      className="btn-elimina"
-                      onClick={() => eliminaDisponibilita(d.id)}
-                    >
-                      🗑 Elimina
-                    </button>
+            </thead>
+
+            <tbody>
+              {disponibilita.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="vuoto">
+                    Nessuna disponibilità presente
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                disponibilita.map((d) => (
+                  <tr key={d.id}>
+                    <td>{d.giorno}</td>
+                    <td>{d.oraInizio}</td>
+                    <td>{d.oraFine}</td>
+                    <td>
+                      <button
+                        className="btn-elimina"
+                        onClick={() => eliminaDisponibilita(d.id)}
+                      >
+                        🗑 Elimina
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

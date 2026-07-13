@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../styles/paziente/prenotazione.css";
+import "../../styles/paziente/selezionaVisita.css";
 
 export default function SelezionaVisita() {
   const navigate = useNavigate();

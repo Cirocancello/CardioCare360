@@ -6,9 +6,13 @@ export default function SidebarAdmin() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    // 🔥 Chiavi unificate
     localStorage.removeItem("token");
     localStorage.removeItem("ruolo");
-    navigate("/login");
+    localStorage.removeItem("idUtente");
+    localStorage.removeItem("nomeCompleto");
+
+    navigate("/login"); // 🔥 rotta esistente
   };
 
   return (
@@ -18,6 +22,10 @@ export default function SidebarAdmin() {
       <nav className="sidebar-menu">
         <Link to="/admin" className="sidebar-item">
           Dashboard
+        </Link>
+
+        <Link to="/admin/profilo" className="sidebar-item">
+          Profilo
         </Link>
 
         <Link to="/admin/medici" className="sidebar-item">

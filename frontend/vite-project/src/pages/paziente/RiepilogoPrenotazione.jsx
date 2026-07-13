@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../../styles/paziente/prenotazione.css";
+import "../../styles/paziente/selezionaVisita.css";
 
 export default function RiepilogoPrenotazione() {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "../../styles/paziente/prenotazione.css";
+import "../../styles/paziente/prenotazioneEsame.css";
 
 export default function PrenotazioneConfermata() {
   const navigate = useNavigate();

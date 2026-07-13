@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SidebarMedico from "../../components/SidebarMedico";
-import TopbarMedico from "../../components/TopbarMedico";
-import "../../styles/medico/CambiaPasswordMedico.css";
+import SidebarAdmin from "../../components/SidebarAdmin";
+import TopbarAdmin from "../../components/TopbarAdmin";
+import "../../styles/admin/CambiaPasswordAdmin.css";
 
-export default function CambiaPasswordMedico() {
+export default function CambiaPasswordAdmin() {
   const [passwordAttuale, setPasswordAttuale] = useState("");
   const [nuovaPassword, setNuovaPassword] = useState("");
   const [confermaPassword, setConfermaPassword] = useState("");
@@ -19,20 +19,23 @@ export default function CambiaPasswordMedico() {
     }
 
     const token = localStorage.getItem("token");
-    const idMedico = localStorage.getItem("idMedico");
+    const idUtente = localStorage.getItem("idUtente");
 
     try {
-      const res = await fetch(`http://localhost:8080/medico/${idMedico}/cambia-password`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          passwordAttuale,
-          nuovaPassword,
-        }),
-      });
+      const res = await fetch(
+        `http://localhost:8080/admin/${idUtente}/cambia-password`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            passwordAttuale,
+            nuovaPassword,
+          }),
+        }
+      );
 
       if (!res.ok) {
         const msg = await res.text();
@@ -40,7 +43,7 @@ export default function CambiaPasswordMedico() {
       }
 
       alert("Password aggiornata con successo");
-      navigate("/medico/profilo"); // 🔥 redirect corretto
+      navigate("/admin/profilo"); // 🔥 redirect corretto
 
     } catch (err) {
       console.error(err);
@@ -49,11 +52,11 @@ export default function CambiaPasswordMedico() {
   };
 
   return (
-    <div className="layout-medico">
-      <SidebarMedico />
+    <div className="layout-admin">
+      <SidebarAdmin />
 
       <div className="cambia-password-container">
-        <TopbarMedico />
+        <TopbarAdmin />
 
         <h1 className="cambia-password-title">Cambia Password</h1>
 
@@ -83,7 +86,7 @@ export default function CambiaPasswordMedico() {
           />
 
           <button type="submit" className="btn-salva">
-              Salva nuova password
+            Salva nuova password
           </button>
         </form>
       </div>

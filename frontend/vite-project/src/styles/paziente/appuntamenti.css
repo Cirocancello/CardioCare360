@@ -1,62 +1,77 @@
 /* ====== LAYOUT GENERALE ====== */
-
-.page-container {
-  padding: 30px;
-  max-width: 1400px;
-  margin: 0 auto;
+.appuntamenti-page {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  height: 100vh;
+  background-color: #f9f9f9;
+  overflow: hidden;
 }
 
+/* Sidebar fissa a sinistra */
+.sidebar-paziente {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background-color: #0b2e6b;
+  color: #fff;
+  z-index: 1000;
+}
+
+/* Topbar fissa in alto */
+.topbar-paziente {
+  position: fixed;
+  top: 0;
+  left: 240px; /* spazio per la sidebar */
+  right: 0;
+  height: 70px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+}
+
+/* Contenuto principale */
+.appuntamenti-container {
+  flex: 1;
+  margin-left: 240px; /* spazio per la sidebar */
+  padding: 100px 40px 40px; /* spazio per la topbar */
+  overflow-y: auto;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+/* ====== TITOLO ====== */
 .page-title {
-  font-size: 2rem;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  color: #0b2e6b;
   font-weight: 700;
-  margin-bottom: 25px;
-  color: #1a3d7c;
   text-align: center;
+  font-size: 2rem;
 }
 
 /* ====== GRIGLIA APPUNTAMENTI ====== */
-
 .appointments-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); /* 🔹 più larghe */
-  gap: 30px;
-  justify-items: center;
-  align-items: start;
-  padding: 20px 0;
-  width: 100%;
-  max-width: 1200px; /* 🔹 centrato e proporzionato */
-  max-height: 75vh;
-  overflow-y: auto;
-}
-
-/* Scrollbar elegante */
-.appointments-grid::-webkit-scrollbar {
-  width: 8px;
-}
-
-.appointments-grid::-webkit-scrollbar-thumb {
-  background: #1a3d7c;
-  border-radius: 4px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 10px;
 }
 
 /* ====== CARD APPUNTAMENTO ====== */
-
 .appointment-card {
-  width: 100%;
-  max-width: 380px;
   background: #fff;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   border-left: 6px solid #1a3d7c;
   transition: transform 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
 }
 
 .appointment-card:hover {
@@ -70,7 +85,6 @@
 }
 
 /* ====== STATUS BADGES ====== */
-
 .status {
   padding: 5px 10px;
   border-radius: 6px;
@@ -93,48 +107,11 @@
   color: #c62828;
 }
 
-/* ====== DETTAGLIO APPUNTAMENTO ====== */
-
-.appointment-detail-card {
-  background: #ffffff;
-  padding: 25px 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border-left: 6px solid #1a3d7c;
-}
-
-.appointment-detail-card h2 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  color: #1a3d7c;
-}
-
-.appointment-detail-card h3 {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  color: #1a3d7c;
-}
-
-.appointment-detail-card p {
-  font-size: 1rem;
-  margin: 8px 0;
-  color: #333;
-}
-
-hr {
-  margin: 20px 0;
-  border: none;
-  border-top: 1px solid #ddd;
-}
-
 /* ====== BOTTONI ====== */
-
-.actions,
 .appointment-actions {
-  margin-top: 25px;
+  margin-top: 20px;
   display: flex;
-  gap: 15px;
-  justify-content: space-between; /* 🔹 pulsanti allineati orizzontalmente */
+  gap: 10px;
 }
 
 .btn-primary,
@@ -172,147 +149,40 @@ hr {
 
 .btn-danger:hover {
   background: #c64541;
+}
+
+/* ====== PULSANTE TORNA INDIETRO ====== */
+.back-button-container {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.back-button {
+  padding: 12px 20px;
+  background: #1a3d7c;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background: #16356b;
 }
 
 /* ====== RESPONSIVE ====== */
-
-@media (max-width: 1200px) {
-  .appointments-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (max-width: 900px) {
-  .appointments-grid {
-    grid-template-columns: 1fr;
+  .sidebar-paziente {
+    width: 200px;
   }
-}
 
+  .topbar-paziente {
+    left: 200px;
+  }
 
-/* ====== DETTAGLIO APPUNTAMENTO ====== */
-
-.detail-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 30px;
-}
-
-.detail-card {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border-left: 6px solid #1a3d7c;
-}
-
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.detail-header h1 {
-  font-size: 1.8rem;
-  color: #1a3d7c;
-}
-
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.status-badge.prenotato {
-  background: #d0e7ff;
-  color: #1a3d7c;
-}
-
-.status-badge.confermato {
-  background: #d4f8d4;
-  color: #2e7d32;
-}
-
-.status-badge.annullato {
-  background: #ffd6d6;
-  color: #c62828;
-}
-
-.section-title {
-  margin-top: 25px;
-  font-size: 1.2rem;
-  color: #1a3d7c;
-  font-weight: 600;
-}
-
-.detail-row {
-  margin: 10px 0;
-  font-size: 1rem;
-  color: #333;
-}
-
-.detail-row span {
-  font-weight: 600;
-  color: #1a3d7c;
-}
-
-.detail-actions {
-  margin-top: 30px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-}
-
-.btn-primary,
-.btn-secondary,
-.btn-danger {
-  padding: 10px 18px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: 0.2s ease-in-out;
-}
-
-.btn-primary {
-  background: #1a3d7c;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #16356b;
-}
-
-.btn-secondary {
-  background: #e0e0e0;
-  color: #333;
-}
-
-.btn-secondary:hover {
-  background: #d5d5d5;
-}
-
-.btn-danger {
-  background: #d9534f;
-  color: white;
-}
-
-.btn-danger:hover {
-  background: #c64541;
-}
-
-.confirm-box {
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  max-width: 450px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.btn-group {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
+  .appuntamenti-container {
+    margin-left: 200px;
+    padding-top: 90px;
+  }
 }

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "../../styles/paziente/prenotazione.css";
+import "../../styles/paziente/prenotazioneVisita.css";
 
 export default function PrenotazioneVisite() {
   const steps = [

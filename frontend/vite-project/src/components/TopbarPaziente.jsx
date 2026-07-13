@@ -21,12 +21,13 @@ export default function TopbarPaziente({ nomePaziente }) {
           <FaBell />
         </div>
 
-        <div className="topbar-user">
-          <FaUserCircle className="topbar-avatar" />
-          <span className="topbar-username">
-            {nomePaziente ? nomePaziente : "Paziente"}
-          </span>
-        </div>
+        <Link to="/paziente/profilo" className="topbar-user">
+  <FaUserCircle className="topbar-avatar" />
+  <span className="topbar-username">
+    {nomePaziente ? nomePaziente : "Paziente"}
+  </span>
+</Link>
+
       </div>
 
     </div>

@@ -88,6 +88,7 @@ public class SecurityConfig {
 
                 // 🩺 AREA RISERVATA MEDICO
                 .requestMatchers("/medico/**", "/api/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/disponibilita/medico/**").hasAuthority("MEDICO")
                 .requestMatchers("/appuntamenti/medico/**").hasAuthority("MEDICO")
                 .requestMatchers("/terapie/medico/**").hasAuthority("MEDICO")
                 .requestMatchers("/farmaci/**", "/api/farmaci/**").hasAuthority("MEDICO")
