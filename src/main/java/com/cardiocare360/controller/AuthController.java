@@ -27,26 +27,24 @@ public class AuthController {
     private final AppuntamentoRepository appuntamentoRepository;
 
     // 🔥 Registrazione utente (ADMIN → crea PAZIENTE o MEDICO)
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        System.out.println(">>> [AUTH] Richiesta registrazione ricevuta per: " + request.getEmail());
+    @PostMapping("/register-paziente")
+    public ResponseEntity<?> registerPaziente(@RequestBody RegisterRequest request) {
+
+        System.out.println(">>> [AUTH] Registrazione paziente");
+
+        request.setRuolo("PAZIENTE"); // forza il ruolo
 
         try {
             AuthResponse response = authService.register(request);
-            System.out.println(">>> [AUTH] Registrazione completata, ritorno 200");
             return ResponseEntity.ok(response);
 
         } catch (IllegalArgumentException e) {
-            // Errori previsti → email duplicata, CF duplicato, ruolo mancante
-            System.err.println(">>> [AUTH] Errore di validazione: " + e.getMessage());
-            return ResponseEntity.status(409).body(e.getMessage()); // 409 CONFLICT
-
+            return ResponseEntity.status(409).body(e.getMessage());
         } catch (Exception e) {
-            // Errori imprevisti → non mandiamo stacktrace al frontend
-            System.err.println(">>> [AUTH] Errore inatteso: " + e.getMessage());
             return ResponseEntity.status(500).body("ERRORE_SERVER");
         }
     }
+
 
     // 🔥 Login utente
     @PostMapping("/login")

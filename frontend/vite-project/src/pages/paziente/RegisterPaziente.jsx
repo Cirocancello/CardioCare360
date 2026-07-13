@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from "../../api/auth";
-import "../styles/user.css";
-import logo from "../assets/logo-CardioCare360.png";
+import api from "../../api/api";   // 🔥 usa axios configurato
+import "../../styles/public/user.css";
+import logo from "../../assets/logo-CardioCare360.png";
 
-export default function Register() {
+export default function RegisterPaziente() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -36,7 +36,8 @@ export default function Register() {
     }
 
     try {
-      await register(form);
+      // 🔥 Endpoint ufficiale: registra SOLO pazienti
+      await api.post("/auth/register-paziente", form);
 
       setSuccess("Registrazione completata! Reindirizzamento in corso...");
       setTimeout(() => navigate("/login"), 1500);
@@ -44,11 +45,11 @@ export default function Register() {
     } catch (err) {
       console.error("Errore registrazione:", err);
 
-      if (err.message === "EMAIL_DUPLICATA") {
+      if (err.response?.data === "EMAIL_DUPLICATA") {
         setError("Questa email è già registrata.");
-      } else if (err.message === "CF_DUPLICATO") {
+      } else if (err.response?.data === "CF_DUPLICATO") {
         setError("Codice fiscale già presente nel sistema.");
-      } else if (err.message === "DATA_NON_VALIDA") {
+      } else if (err.response?.data === "DATA_NON_VALIDA") {
         setError("Formato data non valido. Usa YYYY-MM-DD.");
       } else {
         setError("Registrazione fallita. Riprova.");
@@ -62,7 +63,7 @@ export default function Register() {
 
         <img src={logo} alt="CardioCare360" className="user-logo" />
 
-        <h2 className="user-title">Crea il tuo account</h2>
+        <h2 className="user-title">Crea il tuo account paziente</h2>
 
         {error && (
           <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>

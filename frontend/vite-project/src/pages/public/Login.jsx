@@ -93,6 +93,11 @@ export default function Login() {
           <a href="/forgot-password" className="user-link">
             Password dimenticata?
           </a>
+
+          <a href="/register-paziente" className="user-link">
+            Non hai ancora un account? Registrati
+          </a>
+
         </div>
       </div>
 

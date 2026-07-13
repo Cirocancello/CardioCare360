@@ -33,18 +33,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
         System.out.println(">>> [DEBUG] Filtro JWT attivo su path: " + path);
+        System.out.println(">>> PATH REALE: [" + path + "]");
 
         // Endpoint completamente pubblici (senza token)
-        if (path.startsWith("/auth")
-                || path.startsWith("/disponibilita/slot")
-                || path.startsWith("/disponibilita/date")
+        if (path.equals("/auth/login")
+                || path.equals("/auth/register-paziente")
+                || path.startsWith("/auth/")
+                || path.startsWith("/disponibilita/")
                 || path.startsWith("/notifiche")
                 || path.startsWith("/api/notifiche")
                 || path.startsWith("/api/appuntamenti")) {
 
+            System.out.println(">>> JWT FILTER SKIPPED SU PATH PUBBLICO: " + path);
             filterChain.doFilter(request, response);
             return;
         }
+
 
         // Header Authorization
         String authHeader = request.getHeader("Authorization");

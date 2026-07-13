@@ -11,6 +11,9 @@ import ForgotPassword from "./pages/public/ForgotPassword";
 // 🔒 Pagine protette
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// REgistrazione nuovo paziente
+import RegisterPaziente from "./pages/paziente/RegisterPaziente";
+
 // Dashboard
 import DashboardPaziente from "./pages/paziente/DashboardPaziente";
 import DashboardMedico from "./pages/medico/DashboardMedico";
@@ -155,6 +158,9 @@ function App() {
         path="/paziente/cambia-password"
         element={<ProtectedRoute><CambiaPasswordPaziente /></ProtectedRoute>}
       />
+
+      <Route path="/register-paziente" element={<RegisterPaziente />} />
+
 
       {/* 📌 Medico – gestione pazienti */}
       <Route path="/medico/pazienti" element={<ProtectedRoute><ListaPazienti /></ProtectedRoute>} />
