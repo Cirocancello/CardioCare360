@@ -68,7 +68,7 @@ export default function CreaPaziente() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/admin/paziente/crea", {
+      const res = await fetch("http://localhost:8080/admin/pazienti", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

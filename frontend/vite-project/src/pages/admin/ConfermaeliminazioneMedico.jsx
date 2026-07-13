@@ -2,7 +2,8 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SidebarAdmin from "../../components/SidebarAdmin";
 import TopbarAdmin from "../../components/TopbarAdmin";
-import "../../styles/admin/ConfermaEliminazione.css";
+import { toast } from "react-toastify";
+import "../../styles/admin/ConfermaElimnazione.css";
 
 export default function ConfermaEliminazioneMedico() {
   const { id } = useParams();
@@ -19,45 +20,51 @@ export default function ConfermaEliminazioneMedico() {
       });
 
       if (res.ok) {
-        alert("Medico eliminato con successo!");
-        navigate("/admin/medici");
+        toast.success("Medico eliminato con successo!");
+
+        setTimeout(() => {
+          navigate("/admin/medici");
+        }, 600);
+
       } else {
-        alert("Errore durante l'eliminazione del medico");
+        toast.error("Errore durante l'eliminazione del medico");
       }
     } catch (err) {
       console.error("Errore:", err);
-      alert("Errore di connessione al server");
+      toast.error("Errore di connessione al server");
     }
   };
 
   return (
     <div className="layout-admin">
-      <SidebarAdmin />
+     
       <div className="dashboard-admin-container">
-        <TopbarAdmin />
+       
 
         <div className="confirm-delete-container">
-          <h1 className="title">Conferma Eliminazione</h1>
+          <div className="confirm-box">
+            <h1 className="title">Conferma Eliminazione</h1>
 
-          <p className="warning-text">
-            Sei sicuro di voler eliminare il medico con ID <strong>{id}</strong>?
-            <br />
-            Questa azione è irreversibile.
-          </p>
+            <p className="warning-text">
+              Sei sicuro di voler eliminare il medico con ID <strong>{id}</strong>?<br />
+              Questa azione è irreversibile.
+            </p>
 
-          <div className="button-group">
-            <button className="btn-delete" onClick={handleDelete}>
-              Elimina
-            </button>
+            <div className="button-group">
+              <button className="btn-delete" onClick={handleDelete}>
+                Elimina
+              </button>
 
-            <button
-              className="btn-cancel"
-              onClick={() => navigate("/admin/medici")}
-            >
-              Annulla
-            </button>
+              <button
+                className="btn-cancel"
+                onClick={() => navigate("/admin/medici")}
+              >
+                Annulla
+              </button>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   );

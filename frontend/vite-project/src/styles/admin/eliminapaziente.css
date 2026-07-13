@@ -3,22 +3,85 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0,0,0,0.05);
+  background: #f5f7fa;
+  padding: 20px;
 }
 
 .confirm-box {
-  background: white;
-  padding: 30px 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  background: #ffffff;
+  padding: 40px 50px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   text-align: center;
+  max-width: 480px;
+  width: 100%;
 }
 
 .confirm-box h2 {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #0d2b6b;
 }
 
 .confirm-box p {
-  margin-bottom: 25px;
-  font-size: 16px;
+  margin-bottom: 30px;
+  font-size: 17px;
+  color: #555;
+}
+
+/* Gruppo pulsanti */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+/* Stile base per entrambi */
+.btn-delete,
+.btn-cancel {
+  width: 160px; /* uguali */
+  height: 48px; /* uguali */
+  padding: 0; /* rimuove padding variabile */
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🔴 Conferma */
+.btn-delete {
+  background-color: #e63946;
+  color: #fff;
+}
+
+.btn-delete:hover {
+  background-color: #d62828;
+  transform: translateY(-2px);
+}
+
+/* 🔵 Annulla (blu CardioCare) */
+.btn-cancel {
+  background-color: #0d2b6b;
+  color: #fff;
+}
+
+.btn-cancel:hover {
+  background-color: #0a1f4f;
+  transform: translateY(-2px);
+}
+
+/* Messaggio errore */
+.error-box {
+  background-color: #ffe5e5;
+  color: #a30000;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 600;
 }

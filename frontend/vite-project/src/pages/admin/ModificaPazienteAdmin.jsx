@@ -99,7 +99,7 @@ export default function ModificaPazienteAdmin() {
     setError("");
 
     try {
-      const res = await fetch(`http://localhost:8080/admin/paziente/${id}`, {
+      const res = await fetch(`http://localhost:8080/admin/pazienti/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

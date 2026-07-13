@@ -1,38 +1,20 @@
 .confirm-delete-container {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  max-width: 500px;
-  margin: 40px auto;
-  text-align: center;
-}
-
-.warning-text {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: #444;
-}
-
-.button-group {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  align-items: center;
+  min-height: calc(100vh - 80px); /* evita sovrapposizione con topbar */
+  background-color: #f8fafc;
+  margin-left: 220px; /* spazio per la sidebar */
+  padding: 40px 20px;
 }
 
-.btn-delete {
-  background-color: #d9534f;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-cancel {
-  background-color: #6c757d;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
+.confirm-box {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  margin: auto;
 }

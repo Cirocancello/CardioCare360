@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import "../../styles/admin/eliminapaziente.css";
 
 export default function ConfermaEliminazionePaziente() {
   const { id } = useParams();
@@ -23,13 +25,13 @@ export default function ConfermaEliminazionePaziente() {
       });
 
       if (res.status === 401) {
-        setError("Sessione scaduta. Effettua di nuovo il login.");
+        toast.error("Sessione scaduta. Effettua di nuovo il login.");
         setLoading(false);
         return;
       }
 
       if (res.status === 404) {
-        setError("Paziente non trovato.");
+        toast.error("Paziente non trovato.");
         setLoading(false);
         return;
       }
@@ -38,21 +40,25 @@ export default function ConfermaEliminazionePaziente() {
         const text = await res.text();
 
         if (text.includes("PAZIENTE_CON_APPUNTAMENTI")) {
-          setError("Impossibile eliminare: il paziente ha appuntamenti attivi.");
+          toast.error("Impossibile eliminare: il paziente ha appuntamenti attivi.");
         } else {
-          setError("Errore durante l'eliminazione del paziente.");
+          toast.error("Errore durante l'eliminazione del paziente.");
         }
 
         setLoading(false);
         return;
       }
 
-      // Eliminazione riuscita
-      navigate("/admin/pazienti");
+      // ⭐ Eliminazione riuscita
+      toast.success("Paziente eliminato con successo!");
+
+      setTimeout(() => {
+        navigate("/admin/pazienti");
+      }, 600);
 
     } catch (err) {
       console.error("Errore:", err);
-      setError("Errore di connessione al server.");
+      toast.error("Errore di connessione al server.");
       setLoading(false);
     }
   };
@@ -63,24 +69,25 @@ export default function ConfermaEliminazionePaziente() {
         <h2>Conferma Eliminazione</h2>
         <p>Sei sicuro di voler eliminare questo paziente?</p>
 
-        {/* ⭐ Messaggio di errore */}
         {error && <div className="error-box">{error}</div>}
 
-        <button
-          className="btn-delete"
-          onClick={eliminaPaziente}
-          disabled={loading}
-        >
-          {loading ? "Eliminazione in corso..." : "Conferma"}
-        </button>
+        <div className="button-group">
+          <button
+            className="btn-delete"
+            onClick={eliminaPaziente}
+            disabled={loading}
+          >
+            {loading ? "Eliminazione in corso..." : "Conferma"}
+          </button>
 
-        <button
-          className="btn-edit"
-          onClick={() => navigate("/admin/pazienti")}
-          disabled={loading}
-        >
-          Annulla
-        </button>
+          <button
+            className="btn-cancel"
+            onClick={() => navigate("/admin/pazienti")}
+            disabled={loading}
+          >
+            Annulla
+          </button>
+        </div>
       </div>
     </div>
   );
