@@ -1,0 +1,137 @@
+/* ============================
+   CardioCare360 – Prenotazione Esame Confermata
+   Layout moderno e pulito
+============================ */
+
+/* Sfondo pagina */
+.conferma-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #f0f4ff 0%, #f8fafc 40%, #ffffff 100%);
+  padding: 40px 20px;
+}
+
+/* Card centrale */
+.conferma-box {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 40px 50px;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.18);
+  text-align: center;
+}
+
+/* Titolo */
+.titolo-conferma {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+/* Icona */
+.icona-conferma {
+  font-size: 2.2rem;
+  margin-bottom: 16px;
+}
+
+/* Testo descrittivo */
+.testo-conferma {
+  font-size: 1.05rem;
+  color: #4b5563;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+/* Box riepilogo */
+.riepilogo-box {
+  text-align: left;
+  background-color: #f9fbff;
+  border-radius: 14px;
+  padding: 22px 26px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 28px;
+}
+
+.riepilogo-box h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.riepilogo-box p {
+  font-size: 0.98rem;
+  color: #374151;
+  margin: 6px 0;
+}
+
+.riepilogo-box strong {
+  color: #0f172a;
+}
+
+/* Azioni */
+.azioni-conferma {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+/* Pulsanti */
+.btn-primary,
+.btn-secondary {
+  min-width: 180px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s ease;
+}
+
+/* Primario: vai ai miei esami */
+.btn-primary {
+  background: linear-gradient(135deg, #0f6ad8, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.45);
+}
+
+/* Secondario: prenota un altro esame */
+.btn-secondary {
+  background-color: #f3f4f6;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .conferma-box {
+    padding: 28px 22px;
+    border-radius: 16px;
+  }
+
+  .azioni-conferma {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

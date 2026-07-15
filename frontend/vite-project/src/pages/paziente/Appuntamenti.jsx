@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SidebarPaziente from "../../components/SidebarPaziente";
 import TopbarPaziente from "../../components/TopbarPaziente";
-import "../../styles/paziente/Appuntamenti.css";
+import "../../styles/paziente/appuntamenti.css";
 
 export default function Appuntamenti() {
   const [appuntamenti, setAppuntamenti] = useState([]);

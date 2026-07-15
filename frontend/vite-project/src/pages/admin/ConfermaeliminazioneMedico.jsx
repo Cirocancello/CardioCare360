@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import SidebarAdmin from "../../components/SidebarAdmin";
 import TopbarAdmin from "../../components/TopbarAdmin";
 import { toast } from "react-toastify";
-import "../../styles/admin/ConfermaElimnazione.css";
+import "../../styles/admin/ConfermaEliminazione.css";
 
 export default function ConfermaEliminazioneMedico() {
   const { id } = useParams();

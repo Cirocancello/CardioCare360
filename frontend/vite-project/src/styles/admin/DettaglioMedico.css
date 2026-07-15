@@ -33,10 +33,19 @@
   color: #2c3e50;
 }
 
-.button-group {
-  display: flex;
+/* BASE COMUNE PER TUTTI I PULSANTI */
+.button-group button {
+  width: 180px;          /* 🔥 stessa larghezza */
+  height: 48px;          /* 🔥 stessa altezza */
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  display: flex;         /* 🔥 centra il testo */
   justify-content: center;
-  gap: 20px;
+  align-items: center;
+  transition: all 0.25s ease;
 }
 
 .btn-edit {

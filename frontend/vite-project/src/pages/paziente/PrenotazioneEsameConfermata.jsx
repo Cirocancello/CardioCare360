@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "../../styles/paziente/prenotazioneEsame.css";
+import "../../styles/paziente/esameConfermato.css";
 
 export default function PrenotazioneEsameConfermata() {
 
