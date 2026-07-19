@@ -42,6 +42,34 @@ const StoricoParametri = () => {
     fetchParametri();
   }, []);
 
+  // Funzione per ottenere il nome del parametro
+  const getNomeParametro = (tipo) => {
+    switch (tipo) {
+      case "PRESSIONE_SIS": return "Pressione Sistolica";
+      case "PRESSIONE_DIA": return "Pressione Diastolica";
+      case "BATTITI": return "Battiti";
+      case "GLICEMIA": return "Glicemia";
+      case "SATURAZIONE": return "Saturazione";
+      case "PESO": return "Peso";
+      case "TEMPERATURA": return "Temperatura";
+      default: return tipo;
+    }
+  };
+
+  // Funzione per ottenere il valore corretto
+  const getValoreParametro = (p) => {
+    switch (p.tipo) {
+      case "PRESSIONE_SIS": return p.pressioneSistolica;
+      case "PRESSIONE_DIA": return p.pressioneDiastolica;
+      case "BATTITI": return p.battiti;
+      case "GLICEMIA": return p.glicemia;
+      case "SATURAZIONE": return p.saturazione;
+      case "PESO": return p.peso;
+      case "TEMPERATURA": return p.temperatura;
+      default: return "";
+    }
+  };
+
   return (
     <div className="storico-page">
       <div className="storico-container">
@@ -53,10 +81,27 @@ const StoricoParametri = () => {
           Object.entries(gruppi).map(([data, parametri]) => (
             <div key={data} className="parametro-card">
               <h5 className="parametro-data">{data}</h5>
+
               {parametri.map((p) => (
-                <p key={p.id} className="parametro-info">
-                  <span>{p.nome}:</span> {p.valore} {p.unitaMisura}
-                </p>
+                <div key={p.id} className="parametro-info">
+                  
+                  {/* Nome parametro */}
+                  <p>
+                    <strong>{getNomeParametro(p.tipo)}:</strong>
+                  </p>
+
+                  {/* Valore parametro */}
+                  <p>
+                    {getValoreParametro(p)} {p.unitaMisura || ""}
+                  </p>
+
+                  {/* Alert */}
+                  {p.alert && (
+                    <p style={{ color: "red", fontWeight: "bold" }}>
+                      ⚠️ {p.alert}
+                    </p>
+                  )}
+                </div>
               ))}
             </div>
           ))
