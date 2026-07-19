@@ -18,17 +18,16 @@ public class SogliaParametro {
     @JsonIgnoreProperties({"appuntamenti", "esami", "parametri", "conversazioni"})
     private Paziente paziente;
 
-    // ⭐ PARAMETRO CLINICO
+    // ⭐ PARAMETRO (NUOVA ENTITÀ)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "parametro_id", nullable = false)
-    @JsonIgnoreProperties({"paziente"})
-    private ParametroClinico parametro;
+    @JoinColumn(name = "parametro_id", referencedColumnName = "id", nullable = false)
+    private Parametro parametro;
 
-    @Column(name = "valore_min", length = 50)
-    private String valoreMin;
+    @Column(name = "valore_min", nullable = false)
+    private Double valoreMin;
 
-    @Column(name = "valore_max", length = 50)
-    private String valoreMax;
+    @Column(name = "valore_max", nullable = false)
+    private Double valoreMax;
 
     public SogliaParametro() {}
 
@@ -38,12 +37,12 @@ public class SogliaParametro {
     public Paziente getPaziente() { return paziente; }
     public void setPaziente(Paziente paziente) { this.paziente = paziente; }
 
-    public ParametroClinico getParametro() { return parametro; }
-    public void setParametro(ParametroClinico parametro) { this.parametro = parametro; }
+    public Parametro getParametro() { return parametro; }
+    public void setParametro(Parametro parametro) { this.parametro = parametro; }
 
-    public String getValoreMin() { return valoreMin; }
-    public void setValoreMin(String valoreMin) { this.valoreMin = valoreMin; }
+    public Double getValoreMin() { return valoreMin; }
+    public void setValoreMin(Double valoreMin) { this.valoreMin = valoreMin; }
 
-    public String getValoreMax() { return valoreMax; }
-    public void setValoreMax(String valoreMax) { this.valoreMax = valoreMax; }
+    public Double getValoreMax() { return valoreMax; }
+    public void setValoreMax(Double valoreMax) { this.valoreMax = valoreMax; }
 }

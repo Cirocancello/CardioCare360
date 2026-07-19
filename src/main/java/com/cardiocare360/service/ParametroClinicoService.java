@@ -1,12 +1,14 @@
 package com.cardiocare360.service;
 
+import com.cardiocare360.model.entity.Parametro;
 import com.cardiocare360.model.entity.ParametroClinico;
 import com.cardiocare360.model.entity.Paziente;
+import com.cardiocare360.model.entity.SogliaParametro;
 import com.cardiocare360.model.request.ParametroClinicoRequest;
-import com.cardiocare360.model.response.ParametriRecentiDTO;
-import com.cardiocare360.model.response.ParametroClinicoStoricoDTO;
 import com.cardiocare360.repository.ParametroClinicoRepository;
+import com.cardiocare360.repository.ParametroRepository;
 import com.cardiocare360.repository.PazienteRepository;
+import com.cardiocare360.repository.SogliaParametroRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -32,6 +34,12 @@ public class ParametroClinicoService {
     @Autowired
     private PazienteRepository pazienteRepo;
 
+    @Autowired
+    private SogliaParametroRepository sogliaParametroRepository;
+
+    @Autowired
+    private ParametroRepository parametroRepository;
+
     // ============================================================
     // 1) INSERIMENTO PARAMETRI (PAZIENTE)
     // ============================================================
@@ -48,17 +56,30 @@ public class ParametroClinicoService {
                 ? request.getDataRilevazione()
                 : LocalDateTime.now();
 
-        // PRESSIONE
-        if (request.getPressioneSistolica() != null && request.getPressioneDiastolica() != null) {
-            ParametroClinico pressione = new ParametroClinico();
-            pressione.setPaziente(paziente);
-            pressione.setTipo("PRESSIONE");
-            pressione.setNome("Pressione arteriosa");
-            pressione.setValore(request.getPressioneSistolica() + "/" + request.getPressioneDiastolica());
-            pressione.setUnitaMisura("mmHg");
-            pressione.setDataRilevazione(data);
-            parametri.add(pressione);
+     // PRESSIONE SISTOLICA
+        if (request.getPressioneSistolica() != null) {
+            ParametroClinico sis = new ParametroClinico();
+            sis.setPaziente(paziente);
+            sis.setTipo("PRESSIONE_SIS");
+            sis.setNome("Pressione sistolica");
+            sis.setPressioneSistolica(request.getPressioneSistolica());
+            sis.setUnitaMisura("mmHg");
+            sis.setDataRilevazione(data);
+            parametri.add(sis);
         }
+
+        // PRESSIONE DIASTOLICA
+        if (request.getPressioneDiastolica() != null) {
+            ParametroClinico dia = new ParametroClinico();
+            dia.setPaziente(paziente);
+            dia.setTipo("PRESSIONE_DIA");
+            dia.setNome("Pressione diastolica");
+            dia.setPressioneDiastolica(request.getPressioneDiastolica());
+            dia.setUnitaMisura("mmHg");
+            dia.setDataRilevazione(data);
+            parametri.add(dia);
+        }
+
 
         // BATTITI
         if (request.getBattiti() != null) {
@@ -66,7 +87,7 @@ public class ParametroClinicoService {
             battiti.setPaziente(paziente);
             battiti.setTipo("BATTITI");
             battiti.setNome("Frequenza cardiaca");
-            battiti.setValore(String.valueOf(request.getBattiti()));
+            battiti.setBattiti(request.getBattiti().doubleValue());
             battiti.setUnitaMisura("bpm");
             battiti.setDataRilevazione(data);
             parametri.add(battiti);
@@ -78,7 +99,7 @@ public class ParametroClinicoService {
             glicemia.setPaziente(paziente);
             glicemia.setTipo("GLICEMIA");
             glicemia.setNome("Glicemia");
-            glicemia.setValore(String.valueOf(request.getGlicemia()));
+            glicemia.setGlicemia(request.getGlicemia().doubleValue());
             glicemia.setUnitaMisura("mg/dL");
             glicemia.setDataRilevazione(data);
             parametri.add(glicemia);
@@ -90,7 +111,7 @@ public class ParametroClinicoService {
             saturazione.setPaziente(paziente);
             saturazione.setTipo("SATURAZIONE");
             saturazione.setNome("Saturazione ossigeno");
-            saturazione.setValore(String.valueOf(request.getSaturazione()));
+            saturazione.setSaturazione(request.getSaturazione().doubleValue());
             saturazione.setUnitaMisura("%");
             saturazione.setDataRilevazione(data);
             parametri.add(saturazione);
@@ -102,7 +123,7 @@ public class ParametroClinicoService {
             peso.setPaziente(paziente);
             peso.setTipo("PESO");
             peso.setNome("Peso corporeo");
-            peso.setValore(String.valueOf(request.getPeso()));
+            peso.setPeso(request.getPeso());
             peso.setUnitaMisura("kg");
             peso.setDataRilevazione(data);
             parametri.add(peso);
@@ -114,121 +135,88 @@ public class ParametroClinicoService {
             temperatura.setPaziente(paziente);
             temperatura.setTipo("TEMPERATURA");
             temperatura.setNome("Temperatura corporea");
-            temperatura.setValore(String.valueOf(request.getTemperatura()));
+            temperatura.setTemperatura(request.getTemperatura());
             temperatura.setUnitaMisura("°C");
             temperatura.setDataRilevazione(data);
             parametri.add(temperatura);
         }
 
-        // Salva tutti i parametri
+        // Salva tutti i parametri + calcolo alert
         for (ParametroClinico p : parametri) {
             entityManager.persist(p);
+
+            String alert = checkParametroFuoriSoglia(p);
+            p.setAlert(alert);
         }
 
         return parametri;
     }
 
     // ============================================================
-    // 2) PARAMETRI RECENTI (MEDICO)
+    // 6) CHECK SOGLIA (VERSIONE CORRETTA)
     // ============================================================
-    public List<ParametriRecentiDTO> getParametriRecentiByMedico(Long idMedico) {
+    public String checkParametroFuoriSoglia(ParametroClinico parametroClinico) {
 
-        List<Paziente> pazienti = pazienteRepo.findByMedico_Id(idMedico);
-        List<ParametriRecentiDTO> lista = new ArrayList<>();
+        String tipo = parametroClinico.getTipo();
 
-        for (Paziente p : pazienti) {
+        Parametro parametro = parametroRepository.findByTipo(tipo);
+        if (parametro == null) {
+            return null;
+        }
 
-            ParametroClinico ultimo = parametroRepo
-                    .findTopByPazienteIdOrderByDataRilevazioneDesc(p.getId());
+        SogliaParametro soglia = sogliaParametroRepository.findByPazienteIdAndParametroId(
+                parametroClinico.getPaziente().getId(),
+                parametro.getId()
+        );
 
-            if (ultimo == null) {
-                lista.add(new ParametriRecentiDTO(
-                        p.getId(),
-                        p.getNome(),
-                        p.getCognome(),
-                        null,
-                        null, null, null, null, null, null,
-                        "NODATA"
-                ));
-                continue;
-            }
+        if (soglia == null) {
+            return null;
+        }
 
-            Integer sistolica = null;
-            Integer diastolica = null;
-            Integer battiti = null;
-            Integer glicemia = null;
-            Integer saturazione = null;
-            Double temperatura = null;
+        Double valore = null;
 
-            switch (ultimo.getTipo()) {
-                case "PRESSIONE" -> {
-                    String[] parts = ultimo.getValore().split("/");
-                    sistolica = Integer.parseInt(parts[0]);
-                    diastolica = Integer.parseInt(parts[1]);
+        switch (tipo) {
+
+            case "PRESSIONE_SIS" -> {
+                valore = parametroClinico.getPressioneSistolica();
+                if (valore < soglia.getValoreMin() || valore > soglia.getValoreMax()) {
+                    return "Pressione sistolica fuori soglia";
                 }
-                case "BATTITI" -> battiti = Integer.parseInt(ultimo.getValore());
-                case "GLICEMIA" -> glicemia = Integer.parseInt(ultimo.getValore());
-                case "SATURAZIONE" -> saturazione = Integer.parseInt(ultimo.getValore());
-                case "TEMPERATURA" -> temperatura = Double.parseDouble(ultimo.getValore());
+                return null;
             }
 
-            String stato = calcolaStato(sistolica, diastolica, battiti, glicemia, saturazione, temperatura);
+            case "PRESSIONE_DIA" -> {
+                valore = parametroClinico.getPressioneDiastolica();
+                if (valore < soglia.getValoreMin() || valore > soglia.getValoreMax()) {
+                    return "Pressione diastolica fuori soglia";
+                }
+                return null;
+            }
 
-            lista.add(new ParametriRecentiDTO(
-                    p.getId(),
-                    p.getNome(),
-                    p.getCognome(),
-                    ultimo.getDataRilevazione().toString(),
-                    sistolica,
-                    diastolica,
-                    battiti,
-                    glicemia,
-                    saturazione,
-                    temperatura,
-                    stato
-            ));
+            case "BATTITI" -> valore = parametroClinico.getBattiti();
+            case "GLICEMIA" -> valore = parametroClinico.getGlicemia();
+            case "SATURAZIONE" -> valore = parametroClinico.getSaturazione();
+            case "PESO" -> valore = parametroClinico.getPeso();
+            case "TEMPERATURA" -> valore = parametroClinico.getTemperatura();
         }
 
-        return lista;
-    }
+        if (valore == null) return null;
 
-    // ============================================================
-    // 3) CALCOLO STATO CLINICO
-    // ============================================================
-    private String calcolaStato(Integer sist, Integer dias, Integer battiti,
-                                Integer glicemia, Integer saturazione, Double temperatura) {
+        // Messaggi personalizzati per ogni parametro
+        if (valore < soglia.getValoreMin() || valore > soglia.getValoreMax()) {
 
-        if (sist != null && sist > 160) return "DANGER";
-        if (dias != null && dias > 100) return "DANGER";
-        if (battiti != null && battiti > 120) return "DANGER";
-        if (glicemia != null && glicemia > 200) return "DANGER";
-        if (saturazione != null && saturazione < 90) return "DANGER";
-        if (temperatura != null && temperatura > 39) return "DANGER";
-
-        return "OK";
-    }
-
-    // ============================================================
-    // 4) STORICO PARAMETRI (MEDICO) — VERSIONE DTO
-    // ============================================================
-    public List<ParametroClinicoStoricoDTO> getStoricoParametriByPaziente(Long idPaziente) {
-
-        List<ParametroClinico> lista = parametroRepo
-                .findByPazienteIdOrderByDataRilevazioneDesc(idPaziente);
-
-        List<ParametroClinicoStoricoDTO> dtoList = new ArrayList<>();
-
-        for (ParametroClinico p : lista) {
-            dtoList.add(new ParametroClinicoStoricoDTO(
-                    p.getId(),
-                    p.getTipo(),
-                    p.getNome(),
-                    p.getValore(),
-                    p.getUnitaMisura(),
-                    p.getDataRilevazione().toString()
-            ));
+            return switch (tipo) {
+                case "BATTITI" -> "Battiti fuori soglia";
+                case "GLICEMIA" -> "Glicemia fuori soglia";
+                case "SATURAZIONE" -> "Saturazione fuori soglia";
+                case "PESO" -> "Peso fuori soglia";
+                case "TEMPERATURA" -> "Temperatura fuori soglia";
+                default -> "Parametro fuori soglia";
+            };
         }
 
-        return dtoList;
+        return null;
     }
+
+
 }

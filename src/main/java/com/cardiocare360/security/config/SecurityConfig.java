@@ -95,6 +95,10 @@ public class SecurityConfig {
 
                 // 🔥 ADMIN
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                
+                // Pazienti
+                .requestMatchers("/api/pazienti/**").permitAll()
+
 
                 // RESTO
                 .anyRequest().authenticated()

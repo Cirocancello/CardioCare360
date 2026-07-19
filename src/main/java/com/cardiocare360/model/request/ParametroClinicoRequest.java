@@ -4,102 +4,48 @@ import java.time.LocalDateTime;
 
 public class ParametroClinicoRequest {
 
-    // Campo opzionale: se non arriva, il service lo deduce automaticamente
+    // Tipo logico (es. "PRESSIONE", "GLICEMIA")
     private String tipo;
 
-    // Valore generico (non usato per i parametri vitali classici)
-    private String valore;
-
-    // Campi specifici dei parametri vitali
-    private Integer pressioneSistolica;
-    private Integer pressioneDiastolica;
-    private Integer battiti;
-    private Integer glicemia;
-    private Integer saturazione;
+    // 🔥 Campi specifici dei parametri vitali
+    private Double pressioneSistolica;
+    private Double pressioneDiastolica;
+    private Double battiti;
+    private Double glicemia;
+    private Double saturazione;
     private Double peso;
     private Double temperatura;
 
     // Data rilevazione (opzionale)
     private LocalDateTime dataRilevazione;
 
+    public ParametroClinicoRequest() {}
+
     // GETTER & SETTER
-    public String getTipo() {
-        return tipo;
-    }
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
+    public Double getPressioneSistolica() { return pressioneSistolica; }
+    public void setPressioneSistolica(Double pressioneSistolica) { this.pressioneSistolica = pressioneSistolica; }
 
-    public String getValore() {
-        return valore;
-    }
+    public Double getPressioneDiastolica() { return pressioneDiastolica; }
+    public void setPressioneDiastolica(Double pressioneDiastolica) { this.pressioneDiastolica = pressioneDiastolica; }
 
-    public void setValore(String valore) {
-        this.valore = valore;
-    }
+    public Double getBattiti() { return battiti; }
+    public void setBattiti(Double battiti) { this.battiti = battiti; }
 
-    public Integer getPressioneSistolica() {
-        return pressioneSistolica;
-    }
+    public Double getGlicemia() { return glicemia; }
+    public void setGlicemia(Double glicemia) { this.glicemia = glicemia; }
 
-    public void setPressioneSistolica(Integer pressioneSistolica) {
-        this.pressioneSistolica = pressioneSistolica;
-    }
+    public Double getSaturazione() { return saturazione; }
+    public void setSaturazione(Double saturazione) { this.saturazione = saturazione; }
 
-    public Integer getPressioneDiastolica() {
-        return pressioneDiastolica;
-    }
+    public Double getPeso() { return peso; }
+    public void setPeso(Double peso) { this.peso = peso; }
 
-    public void setPressioneDiastolica(Integer pressioneDiastolica) {
-        this.pressioneDiastolica = pressioneDiastolica;
-    }
+    public Double getTemperatura() { return temperatura; }
+    public void setTemperatura(Double temperatura) { this.temperatura = temperatura; }
 
-    public Integer getBattiti() {
-        return battiti;
-    }
-
-    public void setBattiti(Integer battiti) {
-        this.battiti = battiti;
-    }
-
-    public Integer getGlicemia() {
-        return glicemia;
-    }
-
-    public void setGlicemia(Integer glicemia) {
-        this.glicemia = glicemia;
-    }
-
-    public Integer getSaturazione() {
-        return saturazione;
-    }
-
-    public void setSaturazione(Integer saturazione) {
-        this.saturazione = saturazione;
-    }
-
-    public Double getPeso() {
-        return peso;
-    }
-
-    public void setPeso(Double peso) {
-        this.peso = peso;
-    }
-
-    public Double getTemperatura() {
-        return temperatura;
-    }
-
-    public void setTemperatura(Double temperatura) {
-        this.temperatura = temperatura;
-    }
-
-    public LocalDateTime getDataRilevazione() {
-        return dataRilevazione;
-    }
-
-    public void setDataRilevazione(LocalDateTime dataRilevazione) {
-        this.dataRilevazione = dataRilevazione;
-    }
+    public LocalDateTime getDataRilevazione() { return dataRilevazione; }
+    public void setDataRilevazione(LocalDateTime dataRilevazione) { this.dataRilevazione = dataRilevazione; }
 }

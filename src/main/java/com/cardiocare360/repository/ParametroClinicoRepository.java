@@ -1,5 +1,6 @@
 package com.cardiocare360.repository;
 
+import com.cardiocare360.model.entity.Parametro;
 import com.cardiocare360.model.entity.ParametroClinico;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,9 +17,11 @@ public interface ParametroClinicoRepository extends JpaRepository<ParametroClini
     // 🔹 Ultimo parametro registrato (per dashboard medico)
     ParametroClinico findTopByPazienteIdOrderByDataRilevazioneDesc(Long pazienteId);
 
-    // ❌ RIMOSSO: metodo sbagliato, nome campo errato e firma non valida
-    // List<ParametroClinico> findByPazienteIdOrderByDataRegistrazioneDesc(Long idPaziente, Long idMedico);
+    public interface ParametroRepository extends JpaRepository<Parametro, Integer> {
+        Parametro findByTipo(String tipo);
+    }
 
+   
     // 🔹 (Opzionale) Se vuoi filtrare anche per medico:
     // List<ParametroClinico> findByPazienteIdAndMedicoIdOrderByDataRilevazioneDesc(Long pazienteId, Long medicoId);
 }

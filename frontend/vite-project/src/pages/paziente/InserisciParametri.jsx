@@ -45,7 +45,8 @@ const InserisciParametri = () => {
         dataRilevazione: new Date().toISOString()
       };
 
-      await axios.post(
+      // 🔥 Chiamata API
+      const response = await axios.post(
         `http://localhost:8080/api/pazienti/${idPaziente}/parametri`,
         payload,
         {
@@ -55,7 +56,17 @@ const InserisciParametri = () => {
         }
       );
 
-      toast.success("Parametri salvati con successo");
+      // 🔥 Gestione nuova struttura alert (lista)
+      const alerts = response.data.alert;
+
+      if (alerts && alerts.length > 0) {
+        alerts.forEach(a => {
+          toast.warning(a.message);
+        });
+      } else {
+        toast.success("Parametri salvati con successo");
+      }
+
       navigate("/paziente/storico-parametri");
 
     } catch (err) {
