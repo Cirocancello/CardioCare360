@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import "../../styles/paziente/appuntamenti.css";
+import "../../styles/paziente/DettaglioAppuntamento.css";
 
 export default function DettaglioAppuntamento() {
   const { id } = useParams();

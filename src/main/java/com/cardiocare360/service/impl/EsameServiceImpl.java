@@ -200,14 +200,15 @@ public class EsameServiceImpl implements EsameService {
         }
     }
     
+    
     @Override
     public List<EsameDTO> getEsamiDaRefertare(Long idMedico) {
-        return esameRepository.findByMedicoIdAndStato(idMedico, Esame.StatoEsame.ESEGUITO)
-
+        return esameRepository.findByMedicoIdAndStato(idMedico, Esame.StatoEsame.PRENOTATO)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
+
 
 
 }

@@ -1,3 +1,6 @@
+/* ============================
+   Layout generale
+============================ */
 .dettaglio-paziente-container {
   flex: 1;
   padding: 60px 100px 60px 260px;
@@ -12,6 +15,9 @@
   color: #1a3c8b;
 }
 
+/* ============================
+   Sezioni
+============================ */
 .section {
   background: white;
   border-radius: 12px;
@@ -25,6 +31,9 @@
   margin-bottom: 15px;
 }
 
+/* ============================
+   Tabelle (visite, esami)
+============================ */
 .section table {
   width: 100%;
   border-collapse: collapse;
@@ -41,6 +50,9 @@
   border-bottom: 1px solid #eee;
 }
 
+/* ============================
+   Pulsanti
+============================ */
 .btn-messaggio {
   background: #1a3c8b;
   color: white;
@@ -53,4 +65,80 @@
 
 .btn-messaggio:hover {
   background: #163577;
+}
+
+/* ============================
+   PARAMETRI VITALI — CARD GRID
+============================ */
+.parametri-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.parametro-card {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  border-left: 6px solid #ccc;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.parametro-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* Header card */
+.parametro-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.parametro-icona {
+  font-size: 32px;
+}
+
+.parametro-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a3c8b;
+}
+
+/* Valore */
+.parametro-valore {
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: 12px;
+  color: #333;
+}
+
+.unita {
+  font-size: 16px;
+  color: #666;
+}
+
+/* Data */
+.parametro-data {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #777;
+}
+
+/* ============================
+   COLORI ALERT
+============================ */
+.parametro-ok {
+  border-color: #4caf50; /* verde */
+}
+
+.parametro-warning {
+  border-color: #ffc107; /* giallo */
+}
+
+.parametro-danger {
+  border-color: #f44336; /* rosso */
 }

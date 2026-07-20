@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import SidebarPaziente from "../../components/SidebarPaziente";
-import TopbarPaziente from "../../components/TopbarPaziente";
 import "../../styles/paziente/appuntamenti.css";
 
 export default function Appuntamenti() {
@@ -20,33 +18,41 @@ export default function Appuntamenti() {
   }, []);
 
   return (
-    <div className="appuntamenti-page">
-      <SidebarPaziente />
+    <div className="appuntamenti-container">
+     <button
+        className="btn-secondary back-button"
+        onClick={() => navigate("/dashboard-paziente")}
+      >
+        Torna alla Dashboard
+      </button>
 
-      <div className="appuntamenti-container">
-        <TopbarPaziente />
 
-        <h1 className="page-title">I tuoi appuntamenti</h1>
 
-        <div className="appointments-grid">
-          {appuntamenti.map(app => (
-            <div key={app.id} className="appointment-card">
-              <div className="appointment-header">
-                <h3>{app.dataAppuntamento} – {app.oraAppuntamento}</h3>
-                <span className={`status ${app.stato?.toLowerCase()}`}>
-                  {app.stato}
-                </span>
-              </div>
+      <h1 className="page-title">I tuoi appuntamenti</h1>
 
-              <div className="appointment-actions">
-                <Link to={`/paziente/appuntamenti/${app.id}`} className="btn-primary">Dettagli</Link>
-                <Link to={`/paziente/appuntamenti/${app.id}/modifica`} className="btn-secondary">Modifica</Link>
-                <Link to={`/paziente/appuntamenti/${app.id}/annulla`} className="btn-danger">Annulla</Link>
-              </div>
+      <div className="appointments-grid">
+        {appuntamenti.map(app => (
+          <div key={app.id} className="appointment-card">
+            <div className="appointment-header">
+              <h3>{app.dataAppuntamento} – {app.oraAppuntamento}</h3>
+              <span className={`status ${app.stato?.toLowerCase()}`}>
+                {app.stato}
+              </span>
             </div>
-          ))}
-        </div>
-        
+
+            <div className="appointment-actions">
+              <Link to={`/paziente/appuntamenti/${app.id}`} className="btn-primary">
+                Dettagli
+              </Link>
+              <Link to={`/paziente/appuntamenti/${app.id}/modifica`} className="btn-secondary">
+                Modifica
+              </Link>
+              <Link to={`/paziente/appuntamenti/${app.id}/annulla`} className="btn-danger">
+                Annulla
+              </Link>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

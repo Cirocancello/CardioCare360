@@ -65,6 +65,20 @@ export default function DisponibilitaMedico() {
     }
   };
 
+  // ⭐ Converte LUN → Lunedì
+  const formatGiorno = (g) => {
+    const map = {
+      LUN: "Lunedì",
+      MAR: "Martedì",
+      MER: "Mercoledì",
+      GIO: "Giovedì",
+      VEN: "Venerdì",
+      SAB: "Sabato",
+      DOM: "Domenica",
+    };
+    return map[g] || g;
+  };
+
   return (
     <div className="layout-medico">
       <SidebarMedico />
@@ -103,10 +117,12 @@ export default function DisponibilitaMedico() {
                 </tr>
               ) : (
                 disponibilita.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.giorno}</td>
+                  <tr key={d.id}>                    
+                    <td>{formatGiorno(d.giornoSettimana)}</td>
+
                     <td>{d.oraInizio}</td>
                     <td>{d.oraFine}</td>
+
                     <td>
                       <button
                         className="btn-elimina"

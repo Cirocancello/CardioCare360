@@ -5,6 +5,7 @@ import com.cardiocare360.model.entity.ParametroClinico;
 import com.cardiocare360.model.entity.Paziente;
 import com.cardiocare360.model.entity.SogliaParametro;
 import com.cardiocare360.model.request.ParametroClinicoRequest;
+import com.cardiocare360.model.response.ParametroClinicoStoricoDTO;
 import com.cardiocare360.repository.ParametroClinicoRepository;
 import com.cardiocare360.repository.ParametroRepository;
 import com.cardiocare360.repository.PazienteRepository;
@@ -56,7 +57,7 @@ public class ParametroClinicoService {
                 ? request.getDataRilevazione()
                 : LocalDateTime.now();
 
-     // PRESSIONE SISTOLICA
+        // PRESSIONE SISTOLICA
         if (request.getPressioneSistolica() != null) {
             ParametroClinico sis = new ParametroClinico();
             sis.setPaziente(paziente);
@@ -79,7 +80,6 @@ public class ParametroClinicoService {
             dia.setDataRilevazione(data);
             parametri.add(dia);
         }
-
 
         // BATTITI
         if (request.getBattiti() != null) {
@@ -144,7 +144,6 @@ public class ParametroClinicoService {
         // Salva tutti i parametri + calcolo alert
         for (ParametroClinico p : parametri) {
             entityManager.persist(p);
-
             String alert = checkParametroFuoriSoglia(p);
             p.setAlert(alert);
         }
@@ -153,59 +152,39 @@ public class ParametroClinicoService {
     }
 
     // ============================================================
-    // 6) CHECK SOGLIA (VERSIONE CORRETTA)
+    // 2) CHECK SOGLIA
     // ============================================================
     public String checkParametroFuoriSoglia(ParametroClinico parametroClinico) {
 
         String tipo = parametroClinico.getTipo();
 
         Parametro parametro = parametroRepository.findByTipo(tipo);
-        if (parametro == null) {
-            return null;
-        }
+        if (parametro == null) return null;
 
         SogliaParametro soglia = sogliaParametroRepository.findByPazienteIdAndParametroId(
                 parametroClinico.getPaziente().getId(),
                 parametro.getId()
         );
 
-        if (soglia == null) {
-            return null;
-        }
+        if (soglia == null) return null;
 
-        Double valore = null;
-
-        switch (tipo) {
-
-            case "PRESSIONE_SIS" -> {
-                valore = parametroClinico.getPressioneSistolica();
-                if (valore < soglia.getValoreMin() || valore > soglia.getValoreMax()) {
-                    return "Pressione sistolica fuori soglia";
-                }
-                return null;
-            }
-
-            case "PRESSIONE_DIA" -> {
-                valore = parametroClinico.getPressioneDiastolica();
-                if (valore < soglia.getValoreMin() || valore > soglia.getValoreMax()) {
-                    return "Pressione diastolica fuori soglia";
-                }
-                return null;
-            }
-
-            case "BATTITI" -> valore = parametroClinico.getBattiti();
-            case "GLICEMIA" -> valore = parametroClinico.getGlicemia();
-            case "SATURAZIONE" -> valore = parametroClinico.getSaturazione();
-            case "PESO" -> valore = parametroClinico.getPeso();
-            case "TEMPERATURA" -> valore = parametroClinico.getTemperatura();
-        }
+        Double valore = switch (tipo) {
+            case "PRESSIONE_SIS" -> parametroClinico.getPressioneSistolica();
+            case "PRESSIONE_DIA" -> parametroClinico.getPressioneDiastolica();
+            case "BATTITI" -> parametroClinico.getBattiti();
+            case "GLICEMIA" -> parametroClinico.getGlicemia();
+            case "SATURAZIONE" -> parametroClinico.getSaturazione();
+            case "PESO" -> parametroClinico.getPeso();
+            case "TEMPERATURA" -> parametroClinico.getTemperatura();
+            default -> null;
+        };
 
         if (valore == null) return null;
 
-        // Messaggi personalizzati per ogni parametro
         if (valore < soglia.getValoreMin() || valore > soglia.getValoreMax()) {
-
             return switch (tipo) {
+                case "PRESSIONE_SIS" -> "Pressione sistolica fuori soglia";
+                case "PRESSIONE_DIA" -> "Pressione diastolica fuori soglia";
                 case "BATTITI" -> "Battiti fuori soglia";
                 case "GLICEMIA" -> "Glicemia fuori soglia";
                 case "SATURAZIONE" -> "Saturazione fuori soglia";
@@ -218,5 +197,43 @@ public class ParametroClinicoService {
         return null;
     }
 
+    // ============================================================
+    // 3) STORICO PARAMETRI (MEDICO + PAZIENTE)
+    // ============================================================
+    public List<ParametroClinicoStoricoDTO> getStoricoParametriByPaziente(Long idPaziente) {
 
+        List<ParametroClinico> parametri = parametroRepo
+                .findByPazienteIdOrderByDataRilevazioneDesc(idPaziente);
+
+        List<ParametroClinicoStoricoDTO> lista = new ArrayList<>();
+
+        for (ParametroClinico p : parametri) {
+
+            String valore = switch (p.getTipo()) {
+                case "PRESSIONE_SIS" -> p.getPressioneSistolica() != null ? p.getPressioneSistolica().toString() : null;
+                case "PRESSIONE_DIA" -> p.getPressioneDiastolica() != null ? p.getPressioneDiastolica().toString() : null;
+                case "BATTITI"       -> p.getBattiti() != null ? p.getBattiti().toString() : null;
+                case "GLICEMIA"      -> p.getGlicemia() != null ? p.getGlicemia().toString() : null;
+                case "SATURAZIONE"   -> p.getSaturazione() != null ? p.getSaturazione().toString() : null;
+                case "PESO"          -> p.getPeso() != null ? p.getPeso().toString() : null;
+                case "TEMPERATURA"   -> p.getTemperatura() != null ? p.getTemperatura().toString() : null;
+                default -> null;
+            };
+
+            String dataString = p.getDataRilevazione() != null
+                    ? p.getDataRilevazione().toString()
+                    : null;
+
+            lista.add(new ParametroClinicoStoricoDTO(
+                    p.getId(),
+                    p.getTipo(),
+                    p.getNome(),
+                    valore,
+                    p.getUnitaMisura(),
+                    dataString
+            ));
+        }
+
+        return lista;
+    }
 }

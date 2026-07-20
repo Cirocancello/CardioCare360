@@ -1,0 +1,72 @@
+/* ====== CONTENITORE PRINCIPALE ====== */
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #eef2f7;
+  min-height: 100vh;
+}
+
+/* ====== TITOLO ====== */
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a3d7c;
+  margin-bottom: 30px;
+}
+
+/* ====== CARD DETTAGLIO ====== */
+.appointment-detail-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-left: 6px solid #1a3d7c;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ====== SEZIONI ====== */
+.appointment-detail-card h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #1a3d7c;
+}
+
+.appointment-detail-card p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* ====== BOTTONI ====== */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 6px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-primary { background: #1a3d7c; color: #fff; }
+.btn-secondary { background: #e0e0e0; color: #333; }
+.btn-danger { background: #d9534f; color: #fff; }
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 600px) {
+  .actions {
+    flex-direction: column;
+  }
+}

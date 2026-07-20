@@ -48,7 +48,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // CORS
+                // CORS preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 // LOGIN
@@ -60,6 +60,15 @@ public class SecurityConfig {
                 .requestMatchers("/notifiche/**").permitAll()
                 .requestMatchers("/medico/public/**").permitAll()
 
+                // 🩺 AREA RISERVATA MEDICO (PRIMA!)
+                .requestMatchers("/api/medici/**").hasAuthority("MEDICO")
+                .requestMatchers("/api/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/disponibilita/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/appuntamenti/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/terapie/medico/**").hasAuthority("MEDICO")
+                .requestMatchers("/farmaci/**", "/api/farmaci/**").hasAuthority("MEDICO")
+
                 // ⭐ PAZIENTE
                 .requestMatchers("/paziente/all").hasAnyAuthority("ADMIN", "MEDICO")
                 .requestMatchers("/paziente/**").hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
@@ -70,7 +79,7 @@ public class SecurityConfig {
                 .requestMatchers("/terapie/paziente/**").hasAuthority("PAZIENTE")
                 .requestMatchers("/referti/paziente/**").hasAuthority("PAZIENTE")
 
-                // ⭐ MEDICI VISIBILI AL PAZIENTE (SCELTA MEDICO)
+                // ⭐ MEDICI VISIBILI AL PAZIENTE
                 .requestMatchers("/medici/**").hasAnyAuthority("PAZIENTE", "MEDICO")
                 .requestMatchers("/medico/visita/**").hasAnyAuthority("PAZIENTE", "MEDICO")
                 .requestMatchers("/medico/esami", "/medico/esami/**").hasAnyAuthority("PAZIENTE", "MEDICO")
@@ -86,19 +95,11 @@ public class SecurityConfig {
                 // Upload referto → solo medico
                 .requestMatchers("/referti/upload", "/api/referti/upload").hasAuthority("MEDICO")
 
-                // 🩺 AREA RISERVATA MEDICO
-                .requestMatchers("/medico/**", "/api/medico/**").hasAuthority("MEDICO")
-                .requestMatchers("/disponibilita/medico/**").hasAuthority("MEDICO")
-                .requestMatchers("/appuntamenti/medico/**").hasAuthority("MEDICO")
-                .requestMatchers("/terapie/medico/**").hasAuthority("MEDICO")
-                .requestMatchers("/farmaci/**", "/api/farmaci/**").hasAuthority("MEDICO")
-
                 // 🔥 ADMIN
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                
-                // Pazienti
-                .requestMatchers("/api/pazienti/**").permitAll()
 
+                // API PAZIENTI (NON PIÙ permitAll)
+                .requestMatchers("/api/pazienti/**").hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
                 // RESTO
                 .anyRequest().authenticated()

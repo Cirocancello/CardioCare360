@@ -6,6 +6,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  gap: 25px;
 }
 
 /* Barra superiore */
@@ -55,6 +56,7 @@
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   padding: 20px;
+  
 }
 
 /* Tabella */

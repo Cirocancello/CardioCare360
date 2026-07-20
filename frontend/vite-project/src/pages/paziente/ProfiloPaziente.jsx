@@ -69,13 +69,22 @@ export default function ProfiloPaziente() {
         <h1 className="profilo-title">Profilo Paziente</h1>
 
         <div className="profilo-card">
-          <label>Nome completo</label>
-          <input
-            name="nomeCompleto"
-            value={form.nomeCompleto || ""}
-            onChange={handleChange}
-            disabled={!editing}
-          />
+          <label>Nome</label>
+            <input
+              name="nome"
+              value={form.nome || ""}
+              onChange={handleChange}
+              disabled={!editing}
+            />
+
+            <label>Cognome</label>
+            <input
+              name="cognome"
+              value={form.cognome || ""}
+              onChange={handleChange}
+              disabled={!editing}
+            />
+
 
           <label>Email</label>
           <input
