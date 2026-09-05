@@ -5,6 +5,7 @@ import com.cardiocare360.model.entity.ParametroClinico;
 import com.cardiocare360.model.entity.Paziente;
 import com.cardiocare360.model.entity.SogliaParametro;
 import com.cardiocare360.model.request.ParametroClinicoRequest;
+import com.cardiocare360.model.response.ParametriRecentiDTO;
 import com.cardiocare360.model.response.ParametroClinicoStoricoDTO;
 import com.cardiocare360.repository.ParametroClinicoRepository;
 import com.cardiocare360.repository.ParametroRepository;
@@ -236,4 +237,11 @@ public class ParametroClinicoService {
 
         return lista;
     }
+
+	public List<ParametriRecentiDTO> getParametriRecentiByMedico(Long idMedico) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }
