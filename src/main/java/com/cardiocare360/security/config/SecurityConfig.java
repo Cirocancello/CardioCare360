@@ -60,7 +60,12 @@ public class SecurityConfig {
                 .requestMatchers("/notifiche/**").permitAll()
                 .requestMatchers("/medico/public/**").permitAll()
 
-                // 🩺 AREA RISERVATA MEDICO (PRIMA!)
+                // ⭐ MEDICI VISIBILI AL PAZIENTE (PRIMA DEL BLOCCO /medico/**)
+                .requestMatchers("/medico/visita/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+                .requestMatchers("/medico/esami", "/medico/esami/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+                .requestMatchers("/medici/**").hasAnyAuthority("PAZIENTE", "MEDICO")
+
+                // 🩺 AREA RISERVATA MEDICO (DOPO!)
                 .requestMatchers("/api/medici/**").hasAuthority("MEDICO")
                 .requestMatchers("/api/medico/**").hasAuthority("MEDICO")
                 .requestMatchers("/medico/**").hasAuthority("MEDICO")
@@ -79,11 +84,6 @@ public class SecurityConfig {
                 .requestMatchers("/terapie/paziente/**").hasAuthority("PAZIENTE")
                 .requestMatchers("/referti/paziente/**").hasAuthority("PAZIENTE")
 
-                // ⭐ MEDICI VISIBILI AL PAZIENTE
-                .requestMatchers("/medici/**").hasAnyAuthority("PAZIENTE", "MEDICO")
-                .requestMatchers("/medico/visita/**").hasAnyAuthority("PAZIENTE", "MEDICO")
-                .requestMatchers("/medico/esami", "/medico/esami/**").hasAnyAuthority("PAZIENTE", "MEDICO")
-
                 // 🔥 ESAMI (PAZIENTE + MEDICO)
                 .requestMatchers("/esami", "/esami/**").hasAnyAuthority("PAZIENTE", "MEDICO")
 
@@ -98,7 +98,7 @@ public class SecurityConfig {
                 // 🔥 ADMIN
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
 
-                // API PAZIENTI (NON PIÙ permitAll)
+                // API PAZIENTI
                 .requestMatchers("/api/pazienti/**").hasAnyAuthority("PAZIENTE", "MEDICO", "ADMIN")
 
                 // RESTO
